@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Muhammed Ashique — Creative Director & Visual Storyteller | Malappuram, Kerala</title>
+  <meta name="description" content="Muhammed Ashique — Graphic Designer, Videographer, AI Videographer & Visual Storyteller from Malappuram, Kerala. Visuals that stop the scroll." />
+  <meta name="keywords" content="Graphic Designer Kerala, Videographer Malappuram, AI Video, Visual Storyteller, Muhammed Ashique, ashique__o" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;900&family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Custom Cursor -->
+  <div id="cursor" class="cursor"></div>
+  <div id="cursor-follower" class="cursor-follower"></div>
+
+  <!-- Preloader -->
+  <div id="preloader">
+    <div class="preloader-inner">
+      <div class="pl-logo">A</div>
+      <div class="pl-name">MUHAMMED ASHIQUE</div>
+      <div class="pl-role">Creative Director · Visual Storyteller</div>
+      <div class="preloader-progress">
+        <div class="preloader-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav id="navbar">
+    <div class="nav-logo">
+      <span class="logo-a">A</span><span class="logo-rest">SHIQUE</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#work">Work</a></li>
+      <li><a href="#videos">Videos</a></li>
+      <li><a href="#ai">AI Art</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <!-- Theme toggle -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle light/dark mode" title="Switch theme">
+      <span class="theme-icon dark-icon">🌙</span>
+      <span class="theme-icon light-icon">☀️</span>
+    </button>
+    <a href="#contact" class="nav-cta" id="nav-hire">Hire Me</a>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <ul>
+      <li><a href="#about" onclick="closeMobile()">About</a></li>
+      <li><a href="#services" onclick="closeMobile()">Services</a></li>
+      <li><a href="#work" onclick="closeMobile()">Work</a></li>
+      <li><a href="#videos" onclick="closeMobile()">Videos</a></li>
+      <li><a href="#ai" onclick="closeMobile()">AI Art</a></li>
+      <li><a href="#contact" onclick="closeMobile()">Contact</a></li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════ HERO ═══════════════════════ -->
+  <section id="hero">
+    <div class="hero-bg-overlay"></div>
+    <canvas id="particles-canvas"></canvas>
+
+    <div class="hero-content">
+      <div class="hero-eyebrow">
+        <span class="eyebrow-dash"></span>
+        <span class="eyebrow-text">Malappuram, Kerala · India</span>
+      </div>
+
+      <div class="hero-name-block">
+        <div class="hero-name-line">
+          <span class="hn-muhammed">MUHAMMED</span>
+        </div>
+        <div class="hero-name-line hero-name-main">
+          <span class="hn-ashique" id="glitch-text" data-text="ASHIQUE">ASHIQUE</span>
+        </div>
+      </div>
+
+      <div class="hero-descriptor">
+        <em class="hd-italic">the art of</em>
+        <span class="hd-role" id="typed-role">Graphic Design</span>
+        <span class="hd-cursor-blink">|</span>
+      </div>
+
+      <p class="hero-sub">
+        I'm a mess — but I <em style="font-style:normal">mess with your problems</em><br/>
+        and solve them. <span class="highlight-word">Every. Single. Time.</span>
+      </p>
+
+      <div class="hero-actions">
+        <a href="#work" class="btn-primary" id="see-work-btn">
+          <span>See My Work</span>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a href="#contact" class="btn-ghost" id="lets-talk-btn">Let's Talk</a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="h-stat">
+          <span class="h-stat-num">50<em>+</em></span>
+          <span class="h-stat-label">Projects Done</span>
+        </div>
+        <div class="h-stat-divider"></div>
+        <div class="h-stat">
+          <span class="h-stat-num">3<em>+</em></span>
+          <span class="h-stat-label">Years Creative</span>
+        </div>
+        <div class="h-stat-divider"></div>
+        <div class="h-stat">
+          <span class="h-stat-num">4</span>
+          <span class="h-stat-label">Disciplines</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero portrait — new ashique 1 (cinematic creative director shot) -->
+    <div class="hero-portrait-wrap">
+      <div class="hero-bg-word">CREATIVE</div>
+      <div class="hero-portrait-glow"></div>
+      <img src="assets/images/hero_new1.jpeg" alt="Muhammed Ashique — Creative Director" class="hero-portrait" id="hero-portrait" />
+      <div class="hero-float-tag tag-top" id="tag-top">
+        <svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="#e74c3c"/></svg>
+        AI Videographer
+      </div>
+      <div class="hero-float-tag tag-bottom" id="tag-bottom">
+        <svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="#e67e22"/></svg>
+        Visual Storyteller
+      </div>
+    </div>
+
+    <div class="hero-scroll-cue">
+      <div class="scroll-mouse"><div class="scroll-wheel"></div></div>
+      <span>SCROLL DOWN</span>
+    </div>
+  </section>
+
+  <!-- ══════ TICKER STRIP ══════ -->
+  <div class="ticker-strip">
+    <div class="ticker-track">
+      <span>Graphic Design</span><span class="t-dot">◆</span>
+      <span>Videography</span><span class="t-dot">◆</span>
+      <span>AI Video</span><span class="t-dot">◆</span>
+      <span>Visual Storytelling</span><span class="t-dot">◆</span>
+      <span>Motion Design</span><span class="t-dot">◆</span>
+      <span>Brand Identity</span><span class="t-dot">◆</span>
+      <span>Creative Direction</span><span class="t-dot">◆</span>
+      <span>Poster Design</span><span class="t-dot">◆</span>
+      <span>Graphic Design</span><span class="t-dot">◆</span>
+      <span>Videography</span><span class="t-dot">◆</span>
+      <span>AI Video</span><span class="t-dot">◆</span>
+      <span>Visual Storytelling</span><span class="t-dot">◆</span>
+      <span>Motion Design</span><span class="t-dot">◆</span>
+      <span>Brand Identity</span><span class="t-dot">◆</span>
+      <span>Creative Direction</span><span class="t-dot">◆</span>
+      <span>Poster Design</span><span class="t-dot">◆</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════ ABOUT ═══════════════════════ -->
+  <section id="about">
+    <div class="container">
+      <div class="about-grid">
+
+        <!-- LEFT: portrait stack -->
+        <div class="about-visual">
+          <div class="about-bg-letter">M</div>
+
+          <!-- Image switcher: show multiple shots -->
+          <div class="about-portrait-wrap">
+            <!-- Main portrait frame — new ashique 3 (sunglasses, artistic bg) -->
+            <div class="about-portrait-frame">
+              <img src="assets/images/hero_new3.jpeg" alt="Muhammed Ashique" class="about-portrait" id="aboutImg" />
+            </div>
+            <!-- Thumbnail switcher -->
+            <div class="portrait-thumbs">
+              <img src="assets/images/hero_new1.jpeg" onclick="switchAboutImg(this, 'assets/images/hero_new1.jpeg')" class="thumb-img active" alt="Shot 1" />
+              <img src="assets/images/hero_new3.jpeg" onclick="switchAboutImg(this, 'assets/images/hero_new3.jpeg')" class="thumb-img" alt="Shot 2" />
+              <img src="assets/images/hero_new4.jpeg" onclick="switchAboutImg(this, 'assets/images/hero_new4.jpeg')" class="thumb-img" alt="Shot 3" />
+            </div>
+
+            <div class="about-sticker sticker1">
+              <span class="sticker-icon">✦</span>
+              <span class="sticker-text">ONE IN A<br/>MILLION</span>
+            </div>
+            <div class="about-sticker sticker2">
+              <span class="sticker-num">100%</span>
+              <span class="sticker-label">Dedicated</span>
+            </div>
+          </div>
+          <div class="about-vertical-text">ASHIQUE · ashique__o · 2026</div>
+        </div>
+
+        <!-- RIGHT: text -->
+        <div class="about-text">
+          <p class="section-tag">— WHO I AM</p>
+
+          <div class="about-title-block">
+            <span class="atb-serif">You think I'm weird?</span>
+            <span class="atb-display">I'm actually</span>
+            <span class="atb-accent">WIRED.</span>
+          </div>
+
+          <p class="about-desc">
+            Wired to cameras. Wired to timelines. Wired to ideas at 2AM that hit different by morning. I'm <strong>Ashique</strong> from <strong>Malappuram, Kerala</strong> — an English Literature guy who, instead of reading Homer's Odyssey, is out here editing <em>homie's odyssey reel.</em> Duh.
+          </p>
+          <p class="about-desc">
+            I'm a teacher by training — which means I can explain <em>anything</em> to anyone, whether you're 5 or 55. Creative briefs? Client ideas? Chaotic vision boards? Hand it over. I'll make it make sense.
+          </p>
+          <p class="about-desc">
+            My music taste feels like I'm from the 90s — but open my timeline and you'll get <strong>full Gen Z energy.</strong> I'm a Brazil fan too, so you already know: <em>expect nothing less than a 5-star performance.</em> 🇧🇷
+          </p>
+
+          <div class="tool-tags">
+            <span class="tool-tag">Canva Pro</span>
+            <span class="tool-tag">Adobe Premiere</span>
+            <span class="tool-tag">ChatGPT / DALL·E</span>
+            <span class="tool-tag">CapCut</span>
+            <span class="tool-tag">Photoshop</span>
+            <span class="tool-tag">Runway ML</span>
+            <span class="tool-tag">Sora</span>
+          </div>
+
+          <div class="about-skills">
+            <div class="skill-bar-item">
+              <div class="skill-bar-top"><span>Graphic Design</span><span class="skill-pct">92%</span></div>
+              <div class="skill-bar"><div class="skill-fill" data-width="92"></div></div>
+            </div>
+            <div class="skill-bar-item">
+              <div class="skill-bar-top"><span>Videography & Editing</span><span class="skill-pct">88%</span></div>
+              <div class="skill-bar"><div class="skill-fill" data-width="88"></div></div>
+            </div>
+            <div class="skill-bar-item">
+              <div class="skill-bar-top"><span>AI Generation & Prompt Craft</span><span class="skill-pct">85%</span></div>
+              <div class="skill-bar"><div class="skill-fill" data-width="85"></div></div>
+            </div>
+            <div class="skill-bar-item">
+              <div class="skill-bar-top"><span>Visual Storytelling</span><span class="skill-pct">95%</span></div>
+              <div class="skill-bar"><div class="skill-fill" data-width="95"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ SERVICES ═══════════════════════ -->
+  <section id="services">
+    <div class="container">
+      <div class="services-heading">
+        <p class="section-tag">— WHAT I DO</p>
+        <div class="svc-title-block">
+          <span class="stb-regular">Services that</span>
+          <span class="stb-italic">hit different</span>
+        </div>
+      </div>
+
+      <div class="services-grid">
+        <div class="service-card" id="svc1">
+          <div class="svc-num">01</div>
+          <div class="service-icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none"><rect x="6" y="6" width="36" height="36" rx="4" stroke="currentColor" stroke-width="2.5"/><path d="M14 34L22 18l6 12 4-6 6 10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Graphic<br/>Design</h3>
+          <p>Duhhh… the hell you think I did all this? Posters that stop thumbs. Brands that breathe. Social creatives that actually get clicked — not just liked and scrolled past.</p>
+          <div class="service-tags"><span>Posters</span><span>Branding</span><span>Social</span></div>
+          <div class="svc-arrow">→</div>
+        </div>
+        <div class="service-card" id="svc2">
+          <div class="svc-num">02</div>
+          <div class="service-icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="16" stroke="currentColor" stroke-width="2.5"/><path d="M20 16l12 8-12 8V16z" fill="currentColor"/></svg>
+          </div>
+          <h3>Video<br/>graphy</h3>
+          <p>Even though my music taste screams 90s, my edits are pure Gen Z. Every cut is intentional. Every frame is felt. It's not just a video — it's a <em>whole mood.</em> A vibe. A story your audience didn't know they needed.</p>
+          <div class="service-tags"><span>Editing</span><span>Reels</span><span>Cinematic</span></div>
+          <div class="svc-arrow">→</div>
+        </div>
+        <div class="service-card featured" id="svc3">
+          <div class="featured-badge">★ Most Unique</div>
+          <div class="svc-num svc-num-light">03</div>
+          <div class="service-icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none"><path d="M8 24C8 15.163 15.163 8 24 8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M40 24C40 32.837 32.837 40 24 40" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle cx="24" cy="24" r="6" stroke="currentColor" stroke-width="2.5"/><path d="M24 8v4M24 36v4M8 24h4M36 24h4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+          </div>
+          <h3>AI<br/>Videography</h3>
+          <p>While everyone else is figuring out prompts, I'm already three steps ahead. I'm wired to this stuff — AI video generation that looks like a Hollywood budget but costs you a conversation.</p>
+          <div class="service-tags"><span>AI Gen</span><span>Prompts</span><span>Concepts</span></div>
+          <div class="svc-arrow">→</div>
+        </div>
+        <div class="service-card" id="svc4">
+          <div class="svc-num">04</div>
+          <div class="service-icon-wrap">
+            <svg viewBox="0 0 48 48" fill="none"><path d="M8 14h32M8 24h20M8 34h28" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+          </div>
+          <h3>Visual<br/>Storytelling</h3>
+          <p>I'm an English Lit person — you can trust me on content. I'll take your chaotic brief and turn it into a narrative that lands, whether your audience is 5 or 55. Story is my first language.</p>
+          <div class="service-tags"><span>Narrative</span><span>Concept</span><span>Emotion</span></div>
+          <div class="svc-arrow">→</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ WORK ═══════════════════════ -->
+  <section id="work">
+    <div class="container">
+      <div class="work-header">
+        <div>
+          <p class="section-tag">— MY WORK</p>
+          <div class="work-title-block">
+            <span class="wtb-light">Graphic</span>
+            <span class="wtb-bold">DESIGN</span>
+            <span class="wtb-serif">Portfolio.</span>
+          </div>
+        </div>
+        <div class="filter-tabs">
+          <button class="filter-btn active" data-filter="all" id="filter-all">All</button>
+          <button class="filter-btn" data-filter="event" id="filter-event">Events</button>
+          <button class="filter-btn" data-filter="brand" id="filter-brand">Branding</button>
+          <button class="filter-btn" data-filter="edu" id="filter-edu">Education</button>
+        </div>
+      </div>
+
+      <div class="work-masonry" id="workGrid">
+        <div class="work-item tall" data-cat="event" id="wi1">
+          <img src="assets/images/poster_tarang.png" alt="Tarang 2026 Event Poster" loading="lazy" />
+          <div class="work-overlay">
+            <span class="work-cat">Event Design</span>
+            <h4>TARANG '26</h4>
+            <p>Emerald International School — Cinematic fire & light composition</p>
+          </div>
+        </div>
+        <div class="work-item" data-cat="event" id="wi2">
+          <img src="assets/images/poster_music.png" alt="Music Event Poster" loading="lazy" />
+          <div class="work-overlay">
+            <span class="work-cat">Event Design</span>
+            <h4>Ishal Ramayanam</h4>
+            <p>Kerala Mappila Kala Academy — Cultural bilingual event poster</p>
+          </div>
+        </div>
+        <div class="work-item" data-cat="brand" id="wi3">
+          <img src="assets/images/poster_inline_dm.png" alt="InLine Digital Marketing" loading="lazy" />
+          <div class="work-overlay">
+            <span class="work-cat">Brand Design</span>
+            <h4>InLine Digital Marketing</h4>
+            <p>Course promotion with 3D design and strong CTA hierarchy</p>
+          </div>
+        </div>
+        <div class="work-item tall" data-cat="edu" id="wi4">
+          <img src="assets/images/poster_brillianton.png" alt="Brillianton Global Education" loading="lazy" />
+          <div class="work-overlay">
+            <span class="work-cat">Education</span>
+            <h4>Brillianton × CIGI</h4>
+            <p>IVY League Scholars Mentorship Program poster</p>
+          </div>
+        </div>
+        <div class="work-item" data-cat="edu" id="wi5">
+          <img src="assets/images/poster_calicut.png" alt="Calicut University" loading="lazy" />
+          <div class="work-overlay">
+            <span class="work-cat">Education</span>
+            <h4>University of Calicut</h4>
+            <p>CCISIT Admission 2026 — Institutional premium design</p>
+          </div>
+        </div>
+        <div class="work-item" data-cat="brand" id="wi6">
+          <img src="assets/images/poster_inline_tuition.png" alt="InLine Tuition Faculty" loading="lazy" />
+          <div class="work-overlay">
+            <span class="work-cat">Brand Design</span>
+            <h4>InLine Recruitment</h4>
+            <p>Faculty recruitment — bold split-layout with strong contrast</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Self-designed showcase — new ashique 2 is his own creative poster -->
+      <div class="work-showcase-card">
+        <div class="wsc-img">
+          <img src="assets/images/hero_new2.jpeg" alt="Ashique Creative Portfolio Poster" />
+        </div>
+        <div class="wsc-text">
+          <span class="wsc-tag">Self-Designed · Personal Branding</span>
+          <h3>"I Don't Just Design. I Create."</h3>
+          <p>This poster is me. Designed entirely by myself — the concept, the composition, the typography, the color story. <em>Pixels. Purpose. Passion.</em></p>
+          <p class="wsc-quote">When I make something for myself, I pull zero punches. This is what I can do when I'm fully unleashed.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ VIDEOS ═══════════════════════ -->
+  <section id="videos">
+    <div class="container">
+      <p class="section-tag">— MOTION WORK</p>
+      <div class="vid-title-block">
+        <span class="vtb-display">VIDEO</span>
+        <span class="vtb-serif">&amp; Motion</span>
+        <span class="vtb-outline">PROJECTS</span>
+      </div>
+
+      <div class="video-grid">
+        <div class="video-card featured-video" id="vid1">
+          <div class="video-thumb-wrap">
+            <video muted loop preload="metadata" class="vid-preview" id="mainVid">
+              <source src="assets/videos/content_video1.mp4" type="video/mp4" />
+            </video>
+            <div class="video-play-btn" id="mainVidBtn" onclick="toggleVideo('mainVid', 'mainVidBtn')">
+              <div class="play-circle">
+                <svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            </div>
+            <div class="video-label">
+              <span class="vid-type">Content · Creative Edit</span>
+              <h4>Content Reel #1</h4>
+            </div>
+          </div>
+        </div>
+        <div class="video-right-col">
+          <div class="video-card" id="vid2">
+            <div class="video-thumb-wrap">
+              <video muted loop preload="metadata" class="vid-preview" id="vid2p">
+                <source src="assets/videos/edit4.mp4" type="video/mp4" />
+              </video>
+              <div class="video-play-btn" id="vid2pBtn" onclick="toggleVideo('vid2p','vid2pBtn')">
+                <div class="play-circle small"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
+              </div>
+              <div class="video-label">
+                <span class="vid-type">Cinematic Edit</span>
+                <h4>Edit #1</h4>
+              </div>
+            </div>
+          </div>
+          <div class="video-card" id="vid3">
+            <div class="video-thumb-wrap">
+              <video muted loop preload="metadata" class="vid-preview" id="vid3p">
+                <source src="assets/videos/edit_video2.mp4" type="video/mp4" />
+              </video>
+              <div class="video-play-btn" id="vid3pBtn" onclick="toggleVideo('vid3p','vid3pBtn')">
+                <div class="play-circle small"><svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>
+              </div>
+              <div class="video-label">
+                <span class="vid-type">Cinematic Edit</span>
+                <h4>Edit #2</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ AI SECTION ═══════════════════════ -->
+  <section id="ai">
+    <div class="container">
+      <p class="section-tag">— AI GENERATION</p>
+      <div class="ai-title-block">
+        <span class="aitb-top">Wired to the Future —</span>
+        <span class="aitb-main">AI Video &amp; <em>Art</em></span>
+        <span class="aitb-sub">While you were Googling "what is AI", I was already generating cinemas. Welcome to my world.</span>
+      </div>
+
+      <div class="ai-video-row">
+        <div class="ai-vid-card" id="aiv1">
+          <video autoplay muted loop playsinline class="ai-vid">
+            <source src="assets/videos/ai_video7.mp4" type="video/mp4" />
+          </video>
+          <div class="ai-vid-overlay">
+            <span class="ai-chip">AI Generated</span>
+            <h4>Sharp Dresser</h4>
+          </div>
+        </div>
+        <div class="ai-vid-card" id="aiv2">
+          <video autoplay muted loop playsinline class="ai-vid">
+            <source src="assets/videos/ai_video8.mp4" type="video/mp4" />
+          </video>
+          <div class="ai-vid-overlay">
+            <span class="ai-chip">AI Generated</span>
+            <h4>Visual Concept #2</h4>
+          </div>
+        </div>
+        <div class="ai-vid-card" id="aiv3">
+          <video autoplay muted loop playsinline class="ai-vid">
+            <source src="assets/videos/edit_video3.mp4" type="video/mp4" />
+          </video>
+          <div class="ai-vid-overlay">
+            <span class="ai-chip">AI Generated</span>
+            <h4>Visual Concept #3</h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-art-label-row">
+        <span class="aal-line"></span>
+        <span class="aal-text">AI Art Direction</span>
+        <span class="aal-line"></span>
+      </div>
+
+      <div class="ai-art-grid">
+        <div class="ai-art-item" id="art1"><img src="assets/images/ai_art1.png" alt="AI Art 1" loading="lazy" /></div>
+        <div class="ai-art-item" id="art2"><img src="assets/images/ai_art2.png" alt="AI Art 2" loading="lazy" /></div>
+        <div class="ai-art-item" id="art3"><img src="assets/images/ai_art3.png" alt="AI Art 3" loading="lazy" /></div>
+        <div class="ai-art-item" id="art4"><img src="assets/images/ai_art4.png" alt="AI Art 4" loading="lazy" /></div>
+        <div class="ai-art-item" id="art5"><img src="assets/images/ai_art5.png" alt="AI Art 5" loading="lazy" /></div>
+        <div class="ai-art-item" id="art6"><img src="assets/images/ai_art6.png" alt="AI Art 6" loading="lazy" /></div>
+        <div class="ai-art-item" id="art7"><img src="assets/images/ai_art7.png" alt="AI Art 7" loading="lazy" /></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ CONTACT ═══════════════════════ -->
+  <section id="contact">
+    <div class="container">
+      <div class="contact-wrap">
+        <div class="contact-left">
+          <p class="section-tag">— GET IN TOUCH</p>
+          <div class="contact-title-block">
+            <span class="ctb-line1">Let's</span>
+            <span class="ctb-line2">CREATE</span>
+            <span class="ctb-line3"><em>something</em></span>
+            <span class="ctb-line4">EPIC.</span>
+          </div>
+
+          <p class="contact-sub">I'm a mess — but I mess with your problems and solve them. Drop a message, shoot a voice note, scan the QR. However you roll, let's cook something that makes people stop and say <em>"wait, who made this?"</em></p>
+
+          <div class="contact-info">
+            <a href="tel:+917902448123" class="contact-line" id="phone-link">
+              <div class="contact-icon">📞</div>
+              <div>
+                <span class="cl-label">Phone</span>
+                <span class="cl-val">+91 79024 48123</span>
+              </div>
+            </a>
+            <a href="mailto:ashiquemuhammed057@gmail.com" class="contact-line" id="email-link">
+              <div class="contact-icon">✉</div>
+              <div>
+                <span class="cl-label">Email</span>
+                <span class="cl-val">ashiquemuhammed057@gmail.com</span>
+              </div>
+            </a>
+            <a href="https://wa.me/919947045212" target="_blank" class="contact-line" id="whatsapp-link">
+              <div class="contact-icon">💬</div>
+              <div>
+                <span class="cl-label">WhatsApp</span>
+                <span class="cl-val">+91 99470 45212</span>
+              </div>
+            </a>
+            <div class="contact-line" id="location-info">
+              <div class="contact-icon">📍</div>
+              <div>
+                <span class="cl-label">Location</span>
+                <span class="cl-val">Malappuram, Kerala, India</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="social-row">
+            <a href="https://www.instagram.com/ashique__o?igsh=MXZkNGV4eHlybXFveg%3D%3D&utm_source=qr" target="_blank" class="social-btn" id="instagram-link" aria-label="Instagram @ashique__o">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </a>
+            <a href="https://wa.me/919947045212" target="_blank" class="social-btn" id="wa-social-btn" aria-label="WhatsApp">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/></svg>
+            </a>
+            <a href="https://www.instagram.com/ashique__o" target="_blank" class="social-btn" id="ig-handle-btn" aria-label="@ashique__o">
+              <span style="font-size:.65rem;font-weight:700;letter-spacing:0;">@o</span>
+            </a>
+          </div>
+
+          <!-- Instagram handle badge -->
+          <div class="insta-badge" id="insta-badge">
+            <div class="insta-icon">📷</div>
+            <div>
+              <span class="ib-label">Instagram</span>
+              <span class="ib-handle">@ashique__o</span>
+            </div>
+            <a href="https://www.instagram.com/ashique__o?igsh=MXZkNGV4eHlybXFveg%3D%3D&utm_source=qr" target="_blank" class="ib-follow">Follow</a>
+          </div>
+        </div>
+
+        <!-- RIGHT: WhatsApp QR instead of contact form -->
+        <div class="contact-right">
+          <div class="whatsapp-qr-card" id="whatsapp-qr-card">
+            <div class="wqr-top">
+              <div class="wqr-badge">
+                <svg viewBox="0 0 24 24" fill="#25D366" width="24" height="24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/></svg>
+                <span>Scan to WhatsApp me</span>
+              </div>
+              <p class="wqr-desc">Point your camera here and let's talk about your project directly — no forms, no delays. Just a quick chat and we're moving.</p>
+            </div>
+            <div class="wqr-img-wrap">
+              <img src="assets/images/whatsapp_qr.jpeg" alt="Ashique WhatsApp QR Code" class="wqr-img" />
+              <div class="wqr-pulse"></div>
+            </div>
+            <div class="wqr-bottom">
+              <span class="wqr-number">+91 99470 45212</span>
+              <a href="https://wa.me/919947045212?text=Hi%20Ashique!%20I%20checked%20out%20your%20portfolio%20and%20I'd%20love%20to%20discuss%20a%20project." target="_blank" class="btn-primary wqr-btn" id="wa-open-btn">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/></svg>
+                Open WhatsApp
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ FOOTER ═══════════════════════ -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-big-text">ASHIQUE</div>
+      <p class="footer-tagline"><em>"Instead of reading Homer's Odyssey, I'm out here editing homie's odyssey reel."</em> — Ashique, probably.</p>
+      <p class="footer-copy">© 2026 Muhammed Ashique · <a href="https://www.instagram.com/ashique__o" target="_blank" style="color:inherit;opacity:.6;">@ashique__o</a> · All Rights Reserved · Malappuram, Kerala</p>
+    </div>
+    <a href="#hero" class="back-to-top" id="back-top" aria-label="Back to top">↑</a>
+  </footer>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+    <div class="lightbox-inner" onclick="event.stopPropagation()">
+      <button class="lb-close" onclick="closeLightbox()">✕</button>
+      <img id="lb-img" src="" alt="Lightbox" />
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
