@@ -1894,3 +1894,131 @@ p, .ch-body-txt, .ch-lead, .service-card p,
   .cook-headline { font-size: clamp(3rem, 14vw, 5rem); }
   .cook-photo { max-height: 280px; }
 }
+
+/* -----------------------------------------------
+   v6 — THOUGHT BUBBLES + HERO WIDE + EXPRESSIONS
+   ----------------------------------------------- */
+
+/* Hero portrait — ashique 1 is landscape/wide so handle differently */
+.hero-portrait-wide {
+  object-position: center 20%;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+}
+
+/* Thought bubble container */
+.thought-wrap {
+  position: relative; width: 100%;
+}
+.thought-photo { width: 100%; }
+
+/* Thought bubbles — sticky note / speech bubble style */
+.thought-bubble {
+  position: absolute;
+  font-family: "DM Sans", sans-serif;
+  font-size: .78rem; font-weight: 600; font-style: italic;
+  line-height: 1.4;
+  color: #1a1a1a;
+  background: #fffbe6;
+  border: 1.5px solid rgba(0,0,0,.1);
+  border-radius: 12px;
+  padding: 7px 12px;
+  box-shadow: 2px 4px 16px rgba(0,0,0,.18), 0 1px 0 rgba(255,255,255,.6) inset;
+  pointer-events: none; user-select: none;
+  white-space: nowrap;
+  /* tail */
+}
+.thought-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -8px; left: 20px;
+  width: 0; height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid #fffbe6;
+}
+
+/* Float-in animations with slight rotations for personality */
+.tb1 {
+  top: 10%; left: -30px;
+  transform: rotate(-3deg);
+  animation: tbFloat1 5s ease-in-out infinite;
+  background: #fff9e0;
+}
+.tb2 {
+  top: 32%; right: -20px;
+  transform: rotate(2deg);
+  animation: tbFloat2 4.5s ease-in-out infinite 0.8s;
+  background: #e8f4fd;
+  border-color: rgba(52,152,219,.2);
+  color: #0d2a3a;
+}
+.tb2::after { border-top-color: #e8f4fd; }
+.tb3 {
+  top: 57%; left: -20px;
+  transform: rotate(-2deg);
+  animation: tbFloat3 5.5s ease-in-out infinite 0.4s;
+  background: #fdecea;
+  border-color: rgba(192,57,43,.2);
+  color: #4a1010;
+}
+.tb3::after { border-top-color: #fdecea; }
+.tb4 {
+  bottom: 12%; right: -15px;
+  transform: rotate(3deg);
+  animation: tbFloat1 6s ease-in-out infinite 1.2s;
+  background: #e8fdf0;
+  border-color: rgba(39,174,96,.2);
+  color: #0e3320;
+}
+.tb4::after { border-top-color: #e8fdf0; }
+
+@keyframes tbFloat1 {
+  0%,100% { transform: rotate(-3deg) translateY(0); }
+  50%      { transform: rotate(-3deg) translateY(-5px); }
+}
+@keyframes tbFloat2 {
+  0%,100% { transform: rotate(2deg) translateY(0); }
+  50%      { transform: rotate(2deg) translateY(-6px); }
+}
+@keyframes tbFloat3 {
+  0%,100% { transform: rotate(-2deg) translateY(0); }
+  50%      { transform: rotate(-2deg) translateY(-4px); }
+}
+
+/* Story intro — poster-style portrait for ashique 2 */
+.si-portrait-poster {
+  object-position: center top !important;
+  aspect-ratio: 3/4;
+}
+
+/* Ch05 expression grid */
+.ch-expressions-grid {
+  display: flex; flex-direction: column; gap: 12px; align-items: center;
+}
+.ch-expr-img {
+  width: 100%; border-radius: 16px;
+  box-shadow: 0 16px 48px rgba(0,0,0,.35);
+  transition: transform .4s;
+}
+.ch-expr-img:hover { transform: scale(1.03); }
+.ch-expr-caption {
+  font-family: "DM Sans", sans-serif;
+  font-size: .85rem; color: var(--clr-muted);
+  font-style: italic; text-align: center;
+}
+
+/* Mobile thought bubbles */
+@media (max-width: 900px) {
+  .tb1 { left: 0px; font-size: .7rem; }
+  .tb2 { right: 0px; font-size: .7rem; }
+  .tb3 { left: 0px; font-size: .7rem; }
+  .tb4 { right: 0px; font-size: .7rem; }
+}
+@media (max-width: 600px) {
+  .thought-bubble { display: none; }
+}
+
+/* light mode thought bubbles */
+[data-theme="light"] .thought-bubble { box-shadow: 2px 4px 12px rgba(0,0,0,.1); }
