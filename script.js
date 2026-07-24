@@ -388,3 +388,26 @@ document.getElementById('aboutImg') && (document.getElementById('aboutImg').styl
     });
   });
 })();
+
+/* -- VIDEO LIGHTBOX -- */
+function openVideoLightbox(src) {
+  const lb = document.getElementById('video-lightbox');
+  const vid = document.getElementById('vlb-video');
+  const source = document.getElementById('vlb-source');
+  source.src = src;
+  vid.load();
+  vid.play();
+  lb.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeVideoLightbox() {
+  const lb = document.getElementById('video-lightbox');
+  const vid = document.getElementById('vlb-video');
+  vid.pause();
+  vid.currentTime = 0;
+  lb.classList.remove('active');
+  document.body.style.overflow = 'auto';
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeVideoLightbox(); closeLightbox(); }
+});

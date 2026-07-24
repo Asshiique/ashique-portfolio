@@ -2022,3 +2022,72 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 
 /* light mode thought bubbles */
 [data-theme="light"] .thought-bubble { box-shadow: 2px 4px 12px rgba(0,0,0,.1); }
+
+/* -----------------------------------------------
+   VIDEO LIGHTBOX + FULLSCREEN BUTTON
+   ----------------------------------------------- */
+
+/* Fullscreen button on video cards */
+.vid-fullscreen-btn {
+  position: absolute; top: 10px; right: 10px; z-index: 5;
+  width: 32px; height: 32px; border-radius: 8px;
+  background: rgba(0,0,0,.55); border: 1px solid rgba(255,255,255,.2);
+  color: white; font-size: 1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .2s, background .2s;
+  backdrop-filter: blur(4px);
+}
+.video-thumb-wrap:hover .vid-fullscreen-btn { opacity: 1; }
+.vid-fullscreen-btn:hover { background: var(--clr-red2); border-color: var(--clr-red2); }
+
+/* Video lightbox overlay */
+.video-lightbox {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,.95);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity .3s;
+  backdrop-filter: blur(6px);
+}
+.video-lightbox.active {
+  opacity: 1; pointer-events: all;
+}
+
+.vlb-inner {
+  position: relative;
+  width: min(90vw, 1100px);
+  max-height: 90vh;
+  background: #000;
+  border-radius: 16px; overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0,0,0,.8);
+  animation: vlbSlideIn .3s ease;
+}
+@keyframes vlbSlideIn {
+  from { transform: scale(.92); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.vlb-video {
+  width: 100%; max-height: 90vh;
+  display: block; background: #000;
+}
+
+.vlb-close {
+  position: absolute; top: 12px; right: 12px; z-index: 2;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(0,0,0,.6); border: 1px solid rgba(255,255,255,.25);
+  color: white; font-size: 1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .2s, transform .2s;
+}
+.vlb-close:hover { background: var(--clr-red2); transform: scale(1.1); }
+
+/* 4-column right col for videos */
+.video-right-col {
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .vlb-inner { width: 95vw; }
+  .vid-fullscreen-btn { opacity: 1; } /* always show on mobile */
+}
