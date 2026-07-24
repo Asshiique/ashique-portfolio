@@ -101,21 +101,25 @@ function startTyper() {
 
 /* ── SCROLL REVEAL ── */
 function initReveal() {
-  const els = document.querySelectorAll(
-    '.service-card,.work-item,.video-card,.ai-vid-card,.ai-art-item,.about-text,.about-visual,.contact-left,.contact-right,.ai-title-block,.vid-title-block,.svc-title-block,.work-title-block'
+  // Static reveals (added in JS)
+  const jsEls = document.querySelectorAll(
+    '.service-card,.work-item,.video-card,.ai-vid-card,.ai-art-item,.contact-left,.contact-right,.ai-title-block,.vid-title-block,.svc-title-block,.work-title-block,.work-showcase-card,.footer-ps'
   );
-  els.forEach((el, i) => {
+  jsEls.forEach((el, i) => {
     el.classList.add('reveal');
     const mod = i % 3;
     if (mod === 1) el.classList.add('reveal-d1');
     if (mod === 2) el.classList.add('reveal-d2');
   });
+
+  // All elements with reveal class (including chapters pre-assigned in HTML)
+  const allReveals = document.querySelectorAll('.reveal');
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
     });
-  }, { threshold: 0.07 });
-  els.forEach(el => obs.observe(el));
+  }, { threshold: 0.05, rootMargin: '0px 0px -40px 0px' });
+  allReveals.forEach(el => obs.observe(el));
 }
 
 /* ── SKILL BARS ── */
