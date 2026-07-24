@@ -1518,3 +1518,205 @@ section, nav, footer, .ticker-strip { position: relative; z-index: 1; }
   .sc-compare { grid-template-columns: 1fr; }
   .filter-tabs { flex-wrap: wrap; gap: 8px; }
 }
+
+/* -----------------------------------------------
+   v5 — REDESIGNED CHAPTERS + TYPOGRAPHY OVERHAUL
+   ----------------------------------------------- */
+
+/* Global typography refinement */
+body { font-family: "DM Sans", "Inter", sans-serif; }
+
+h1,h2,h3 { font-family: "Bebas Neue", sans-serif; letter-spacing: .04em; }
+.ch-headline, .si-greeting, .svc-title-block, .work-title-block,
+.vid-title-block, .contact-title-block, .footer-big-text,
+.ai-title-block .aitb-main { font-family: "Bebas Neue", sans-serif; }
+
+.si-hook, .ch-punchline em, .wsc-quote, .footer-tagline,
+.hd-italic, .about-desc em, .atb-serif { font-family: "Playfair Display", serif; }
+
+p, .ch-body-txt, .ch-lead, .service-card p,
+.contact-sub, .about-desc, .si-subhook { font-family: "DM Sans", sans-serif; font-size: 1rem; line-height: 1.75; }
+
+/* Expression strip — ashique 8 collage */
+.expression-strip {
+  max-width: 1100px; margin: 0 auto 80px;
+  padding: 0 40px;
+  display: flex; align-items: center; gap: 40px;
+}
+.es-label {
+  display: flex; flex-direction: column; gap: 8px;
+  flex-shrink: 0;
+}
+.es-label span {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  letter-spacing: .06em; color: var(--clr-text);
+  line-height: 1;
+}
+.es-label span:nth-child(2) { color: var(--clr-red2); }
+.es-label span:nth-child(3) { color: var(--clr-muted); font-size: clamp(1rem, 2vw, 1.4rem); }
+.es-img {
+  flex: 1; border-radius: 20px; max-height: 340px;
+  object-fit: cover; object-position: top;
+  box-shadow: 0 24px 60px rgba(0,0,0,.4);
+  transition: transform .4s ease;
+}
+.es-img:hover { transform: scale(1.02); }
+
+/* Chapters wrapper */
+.chapters-wrap {
+  max-width: 1100px; margin: 0 auto;
+  padding: 0 40px;
+  display: flex; flex-direction: column; gap: 60px;
+}
+
+/* Individual chapter */
+.chapter-block {
+  position: relative;
+  padding: 52px 52px 52px 60px;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: 24px; overflow: hidden;
+  border-left: 4px solid var(--clr-red2);
+  transition: transform .3s, box-shadow .3s;
+}
+.chapter-block:hover { transform: translateY(-3px); box-shadow: 0 20px 60px rgba(0,0,0,.25); }
+.chapter-block.ch-final-block {
+  border-color: var(--clr-red2);
+  background: linear-gradient(135deg, var(--clr-surface) 0%, rgba(192,57,43,.06) 100%);
+}
+
+.ch-bg-num {
+  position: absolute; right: 20px; top: 50%;
+  transform: translateY(-50%);
+  font-family: "Bebas Neue", sans-serif;
+  font-size: clamp(7rem, 14vw, 12rem);
+  color: var(--clr-red2); opacity: .05; line-height: 1;
+  pointer-events: none; user-select: none;
+}
+.chapter-block.ch-alt .ch-bg-num { right: auto; left: 20px; }
+
+/* Chapter layout — two-col */
+.ch-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 48px; align-items: center;
+}
+.chapter-block.ch-alt .ch-layout {
+  grid-template-columns: 280px 1fr;
+}
+.ch-layout-center {
+  grid-template-columns: 1fr;
+}
+
+.ch-tag {
+  display: inline-block; margin-bottom: 12px;
+  font-family: "DM Sans", sans-serif;
+  font-size: .65rem; font-weight: 700;
+  letter-spacing: .2em; text-transform: uppercase;
+  color: var(--clr-red2);
+  padding: 4px 12px; border: 1px solid var(--clr-red2); border-radius: 99px;
+}
+.ch-headline {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: clamp(2.2rem, 4.5vw, 3.6rem);
+  letter-spacing: .04em; line-height: 1.05;
+  color: var(--clr-text); margin-bottom: 20px;
+}
+.ch-headline em { color: var(--clr-amber2); font-style: normal; }
+.ch-headline-lg { font-size: clamp(2.8rem, 5.5vw, 4.8rem); text-align: center; }
+
+.ch-lead {
+  font-family: "DM Sans", sans-serif;
+  font-size: clamp(.95rem, 1.5vw, 1.05rem);
+  color: var(--clr-muted); line-height: 1.75; margin-bottom: 16px;
+}
+.ch-body-txt {
+  font-size: clamp(.9rem, 1.4vw, 1rem);
+  color: var(--clr-muted); line-height: 1.8; margin-bottom: 12px;
+}
+.ch-body-txt strong { color: var(--clr-text); }
+
+.ch-breaks { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
+.ch-br-item { display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap; }
+.ch-br-q {
+  font-family: "DM Sans", sans-serif; font-style: italic;
+  font-size: .9rem; color: var(--clr-dim); min-width: 110px; flex-shrink: 0;
+}
+.ch-br-a {
+  font-family: "DM Sans", sans-serif; font-weight: 700;
+  font-size: 1rem; color: var(--clr-text);
+}
+
+.ch-punchline {
+  font-family: "DM Sans", sans-serif;
+  font-size: clamp(.95rem, 1.5vw, 1.05rem);
+  color: var(--clr-text); line-height: 1.75; margin-top: 16px;
+  padding-left: 16px; border-left: 3px solid var(--clr-red2);
+}
+.ch-punchline strong { color: var(--clr-text); }
+.ch-punchline em { color: var(--clr-amber2); font-style: italic; }
+.ch-text-center { text-align: center; padding: 0 20px; }
+.ch-text-center .ch-punchline { border-left: none; padding-left: 0; border-top: 2px solid var(--clr-red2); padding-top: 16px; }
+
+/* Chapter photo */
+.ch-photo {
+  width: 100%; height: 300px;
+  object-fit: cover; object-position: top;
+  border-radius: 16px;
+  box-shadow: 0 16px 48px rgba(0,0,0,.35);
+  transition: transform .4s; display: block;
+}
+.ch-photo:hover { transform: scale(1.03); }
+.ch-photo-poster { object-position: center; }
+.ch-visual-poster { display: flex; align-items: center; justify-content: center; }
+
+.ch-cta-btn { margin: 24px auto 0; display: inline-flex !important; }
+
+/* P.S. Strip */
+.ps-strip {
+  max-width: 1100px; margin: 60px auto 0;
+  padding: 36px 48px; display: flex; align-items: center; gap: 28px;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border); border-radius: 20px;
+  border-left: 4px solid var(--clr-amber2);
+}
+.ps-label {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 3rem; color: var(--clr-amber2);
+  line-height: 1; flex-shrink: 0;
+}
+.ps-strip p { font-size: .95rem; color: var(--clr-muted); line-height: 1.75; margin: 0; }
+.ps-strip p strong { color: var(--clr-text); }
+.ps-strip p em { color: var(--clr-amber2); font-style: normal; }
+
+/* white mode overrides for new elements */
+[data-theme="light"] .chapter-block { background: #fff; border-color: rgba(0,0,0,.1); }
+[data-theme="light"] .ch-headline { color: #111 !important; }
+[data-theme="light"] .ch-lead, [data-theme="light"] .ch-body-txt { color: #555 !important; }
+[data-theme="light"] .ch-punchline { color: #111 !important; }
+[data-theme="light"] .ch-br-a { color: #111 !important; }
+[data-theme="light"] .ch-br-q { color: #999 !important; }
+[data-theme="light"] .es-label span { color: #111 !important; }
+[data-theme="light"] .es-label span:nth-child(3) { color: #888 !important; }
+[data-theme="light"] .ps-strip { background: #fff; border-color: rgba(0,0,0,.1); }
+[data-theme="light"] .ps-strip p { color: #555 !important; }
+[data-theme="light"] .expression-strip .es-img { box-shadow: 0 24px 60px rgba(0,0,0,.12); }
+
+/* Mobile updates for new layout */
+@media (max-width: 900px) {
+  .ch-layout { grid-template-columns: 1fr !important; gap: 28px; }
+  .chapter-block.ch-alt .ch-layout { grid-template-columns: 1fr !important; }
+  .ch-visual-col { order: -1; }
+  .chapter-block.ch-alt .ch-visual-col { order: -1; }
+  .ch-photo { height: 220px; }
+  .expression-strip { flex-direction: column; gap: 24px; text-align: center; }
+  .ps-strip { flex-direction: column; text-align: center; padding: 28px 24px; }
+}
+@media (max-width: 600px) {
+  .chapters-wrap { padding: 0 16px; gap: 32px; }
+  .chapter-block { padding: 28px 22px; border-radius: 16px; }
+  .ch-bg-num { font-size: 5rem; opacity: .03; }
+  .expression-strip { padding: 0 16px; }
+  .ps-strip { margin: 40px 16px 0; }
+}
