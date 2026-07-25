@@ -141,6 +141,12 @@ function startTyper() {
 
 /* SCROLL REVEAL */
 function initReveal() {
+  /* Hero elements - always visible immediately, no animation */
+  document.querySelectorAll("#hero .reveal, #hero [class*=hero-]").forEach(function(el) {
+    el.classList.add("revealed");
+  });
+
+  /* Below-fold sections - add reveal class dynamically */
   const jsEls = document.querySelectorAll(
     ".service-card,.work-item,.video-card,.ai-vid-card,.ai-art-item,.contact-left,.contact-right,.ai-title-block,.vid-title-block,.svc-title-block,.work-title-block,.work-showcase-card"
   );
@@ -150,13 +156,27 @@ function initReveal() {
     if (mod === 1) el.classList.add("reveal-d1");
     if (mod === 2) el.classList.add("reveal-d2");
   });
+
+  /* Observe ALL reveal elements - immediately reveal if in viewport */
   const allReveals = document.querySelectorAll(".reveal");
   const obs = new IntersectionObserver(function(entries) {
     entries.forEach(function(entry) {
-      if (entry.isIntersecting) { entry.target.classList.add("revealed"); obs.unobserve(entry.target); }
+      if (entry.isIntersecting) {
+        entry.target.classList.add("revealed");
+        obs.unobserve(entry.target);
+      }
     });
-  }, { threshold: 0.08, rootMargin: "0px 0px -40px 0px" });
-  allReveals.forEach(function(el) { obs.observe(el); });
+  }, { threshold: 0.05, rootMargin: "0px 0px -20px 0px" });
+
+  allReveals.forEach(function(el) {
+    /* If already in viewport at init time, reveal immediately */
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      el.classList.add("revealed");
+    } else {
+      obs.observe(el);
+    }
+  });
 }
 
 function animateSkillBars() {

@@ -879,7 +879,7 @@ footer {
 
 /* ── SCROLL REVEAL ── */
 .reveal { opacity: 0; transform: translateY(36px); transition: opacity .8s var(--ease-expo), transform .8s var(--ease-expo); }
-.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal.revealed { opacity: 1; transform: translateY(0); }
 .reveal-d1 { transition-delay: .1s; }
 .reveal-d2 { transition-delay: .2s; }
 .reveal-d3 { transition-delay: .3s; }
@@ -2365,10 +2365,7 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 }
 
 /* -- PERFORMANCE CSS ------------------------------------- */
-#services, #work, #videos, #ai, #contact, footer {
-  content-visibility: auto;
-  contain-intrinsic-size: 0 600px;
-}
+/* content-visibility removed - was hiding all sections */
 #preloader.hidden { transition-duration: .35s !important; }
 @media (max-width: 768px) {
   .glitch::before, .glitch::after { display: none; }
@@ -2378,3 +2375,16 @@ p, .ch-body-txt, .ch-lead, .service-card p,
   .tb2, .tb3 { right: 2px !important; left: auto; }
 }
 .vid-preview { background: #0a0a0a; }
+
+/* ===== EMERGENCY FALLBACK =====
+   If JS fails, ensure no content stays hidden forever */
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1 !important; transform: none !important; }
+}
+/* Force reveal after 4s via CSS animation fallback */
+.reveal {
+  animation: revealFallback 0s 4s forwards;
+}
+@keyframes revealFallback {
+  to { opacity: 1; transform: translateY(0); }
+}
