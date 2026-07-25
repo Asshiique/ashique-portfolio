@@ -2,16 +2,29 @@
    ASHIQUE PORTFOLIO v2 — JavaScript
    ═══════════════════════════════════════════════ */
 
-/* ── PRELOADER ── */
+/* ── PERFORMANCE: mobile detection ── */
+const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent)
+              || window.innerWidth < 768;
+const isSlowConn = navigator.connection && ['slow-2g','2g'].includes(navigator.connection.effectiveType);
+
+/* ── PRELOADER: fast on mobile/slow conn ── */
 document.body.style.overflow = 'hidden';
+const PRELOAD_DELAY = (isMobile || isSlowConn) ? 600 : 900;
+function dismissPreloader() {
+  const pl = document.getElementById('preloader');
+  if (pl) pl.classList.add('hidden');
+  document.body.style.overflow = 'auto';
+  initReveal();
+  startTyper();
+  if (!isMobile) animateSkillBars();
+}
+/* DOMContentLoaded fires earlier than load — start UI right away */
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(dismissPreloader, PRELOAD_DELAY);
+});
+/* Safety net: also on full load */
 window.addEventListener('load', () => {
-  setTimeout(() => {
-    document.getElementById('preloader').classList.add('hidden');
-    document.body.style.overflow = 'auto';
-    initReveal();
-    animateSkillBars();
-    startTyper();
-  }, 2400);
+  setTimeout(dismissPreloader, 100);
 });
 
 /* ── CURSOR ── */
@@ -66,17 +79,19 @@ function startTyper() {
   setTimeout(type, 800);
 }
 
-/* ── PARTICLES ── */
+/* ── PARTICLES ── (skip on slow connections / low-end mobile) */
 (function initParticles() {
+  if (isSlowConn) return;                       // skip on 2G
   const canvas = document.getElementById('particles-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   let W, H;
   const COLORS = ['192,57,43','230,126,34','192,57,43','200,80,40'];
   const particles = [];
+  const COUNT = isMobile ? 22 : 70;            // 22 on mobile, 70 on desktop
   function resize() { W = canvas.width = canvas.offsetWidth; H = canvas.height = canvas.offsetHeight; }
   window.addEventListener('resize', resize); resize();
-  for (let i = 0; i < 70; i++) {
+  for (let i = 0; i < COUNT; i++) {
     particles.push({
       x: Math.random()*W, y: Math.random()*H,
       r: Math.random()*1.5+0.3,
@@ -85,6 +100,7 @@ function startTyper() {
       c: COLORS[Math.floor(Math.random()*COLORS.length)]
     });
   }
+  let rafId;
   function draw() {
     ctx.clearRect(0,0,W,H);
     particles.forEach(p => {
@@ -94,10 +110,16 @@ function startTyper() {
       if(p.x<0||p.x>W) p.dx*=-1;
       if(p.y<0||p.y>H) p.dy*=-1;
     });
-    requestAnimationFrame(draw);
+    rafId = requestAnimationFrame(draw);
   }
+  /* Pause particles when tab is hidden */
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) cancelAnimationFrame(rafId);
+    else draw();
+  });
   draw();
 })();
+
 
 /* ── SCROLL REVEAL ── */
 function initReveal() {
@@ -411,3 +433,219 @@ function closeVideoLightbox() {
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') { closeVideoLightbox(); closeLightbox(); }
 });
+
+/* ------------------------------------------------------
+   ASH � MASCOT CHARACTER ENGINE
+   A mini 3D Ashique that jumps top?bottom of page,
+   chats with visitors, falls into a black hole, respawns.
+   ------------------------------------------------------ */
+(function initAsh() {
+
+  /* -- speeches per section/state -- */
+  const SPEECHES = {
+    hero:    ["Yo! That's me up there ??", "Welcome to my world ??", "Scroll down, it gets better fr fr"],
+    story:   ["This is my origin story lol", "English Lit grad doing design?? Big W ??", "I overthink everything. That's my superpower."],
+    service: ["Pick any service, I got you ??", "AI video? Yeah I literally do that ??", "I don't just design. I cook. You saw the footer ??"],
+    work:    ["That InLine Times poster? All me ??", "Every pixel placed with intention fr", "Tap any poster for a closer look ??"],
+    video:   ["Press play! Don't be shy ??", "These edits go hard ngl", "Best viewed with headphones ??"],
+    ai:      ["AI + creativity = unstoppable ??", "While you sleep, I generate ??", "The future is NOW and I'm already in it"],
+    contact: ["DM me, don't be shy ??", "I reply fast. Faster than your upload speed ??", "Let's cook something people stop and stare at ??"],
+    idle:    ["Still reading? I respect that ??", "This site took blood, sweat and coffee ?", "bro scroll slower, appreciate the design ??", "I see you lurking ??", "You good? Need anything?"],
+    touch:   ["Hey! That tickles ??", "Oi! Hands to yourself ??", "Watch the fit!! ??", "OK OK I see you ??", "bro chill ??"],
+  };
+
+  /* -- DOM scaffold -- */
+  const el = document.createElement('div');
+  el.id = 'ash-mascot';
+  el.innerHTML = `
+    <div id="ash-body">
+      <div id="ash-bubble" class="ash-bubble hidden"></div>
+      <div id="ash-char"></div>
+    </div>
+    <div id="ash-blackhole"></div>
+  `;
+  document.body.appendChild(el);
+
+  const body   = document.getElementById('ash-body');
+  const char   = document.getElementById('ash-char');
+  const bubble = document.getElementById('ash-bubble');
+  const hole   = document.getElementById('ash-blackhole');
+
+  /* -- state -- */
+  let posY = -20;          // % of total page height (0=top, 100=bottom)
+  let falling = false;
+  let chatting = false;
+  let chatTimer = null;
+  let loopTimer = null;
+  let bubbleTimer = null;
+
+  /* -- section map -- */
+  function getSectionAt(scrollPct) {
+    if (scrollPct < 12)  return 'hero';
+    if (scrollPct < 28)  return 'story';
+    if (scrollPct < 45)  return 'service';
+    if (scrollPct < 58)  return 'work';
+    if (scrollPct < 72)  return 'video';
+    if (scrollPct < 85)  return 'ai';
+    return 'contact';
+  }
+
+  /* -- speech bubble -- */
+  function say(text, duration) {
+    clearTimeout(bubbleTimer);
+    bubble.textContent = text;
+    bubble.classList.remove('hidden');
+    bubble.classList.add('pop');
+    setTimeout(() => bubble.classList.remove('pop'), 10);
+    bubbleTimer = setTimeout(() => bubble.classList.add('hidden'), duration || 3200);
+  }
+
+  function sayRandom(pool) {
+    say(pool[Math.floor(Math.random() * pool.length)]);
+  }
+
+  /* -- character pose -- */
+  const POSES = { fall:'fall', wave:'wave', land:'land', hole:'hole', spawn:'spawn' };
+  function setPose(p) {
+    char.className = 'ash-pose-' + p;
+  }
+
+  /* -- animate fall loop -- */
+  function doFall() {
+    falling = true;
+    setPose(POSES.fall);
+    posY = -8;  // start just above viewport
+    renderPos();
+
+    const totalDoc = document.documentElement.scrollHeight;
+    const speed = isMobile ? 0.045 : 0.032;  // % per frame
+    let lastSection = '';
+    let pauseAt = pickRandomPausePoint();
+
+    function step() {
+      if (!falling) return;
+      posY += speed;
+
+      const scrollPct = posY;
+      const section = getSectionAt(scrollPct);
+
+      // Section-change quip
+      if (section !== lastSection) {
+        lastSection = section;
+        setTimeout(() => {
+          if (!chatting) sayRandom(SPEECHES[section] || SPEECHES.idle);
+        }, 600);
+      }
+
+      // Pause at random points to interact
+      if (Math.abs(posY - pauseAt) < speed * 2 && !chatting) {
+        chatting = true;
+        setPose(POSES.wave);
+        sayRandom(SPEECHES.idle);
+        chatTimer = setTimeout(() => {
+          chatting = false;
+          setPose(POSES.fall);
+          pauseAt = posY + 12 + Math.random() * 20;  // next pause
+          loopTimer = requestAnimationFrame(step);
+        }, 3000);
+        return;
+      }
+
+      renderPos();
+
+      if (posY >= 96) {
+        // Reached bottom � fall into black hole
+        triggerBlackHole();
+        return;
+      }
+
+      loopTimer = requestAnimationFrame(step);
+    }
+    loopTimer = requestAnimationFrame(step);
+  }
+
+  function pickRandomPausePoint() {
+    // Pause somewhere between 15% and 75%
+    return 15 + Math.random() * 60;
+  }
+
+  /* -- render position on page -- */
+  function renderPos() {
+    const totalH = document.documentElement.scrollHeight;
+    const px = totalH * (posY / 100);
+    body.style.transform = `translateY(${px}px)`;
+  }
+
+  /* -- black hole sequence -- */
+  function triggerBlackHole() {
+    falling = false;
+    setPose(POSES.hole);
+    say("see ya on the other side... ??", 2500);
+    body.classList.add('falling-into-hole');
+    hole.classList.add('active');
+
+    setTimeout(() => {
+      body.classList.remove('falling-into-hole');
+      body.classList.add('hidden');
+      hole.classList.remove('active');
+    }, 1400);
+
+    setTimeout(() => {
+      body.classList.remove('hidden');
+      body.classList.add('spawning');
+      setPose(POSES.spawn);
+      posY = -8;
+      renderPos();
+      say("RESPAWN! Back at it ??", 2000);
+      setTimeout(() => {
+        body.classList.remove('spawning');
+        doFall();
+      }, 1200);
+    }, 3800);
+  }
+
+  /* -- user touch/click interaction -- */
+  body.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (chatting) return;
+    chatting = true;
+    cancelAnimationFrame(loopTimer);
+    setPose(POSES.wave);
+    sayRandom(SPEECHES.touch);
+    setTimeout(() => {
+      chatting = false;
+      setPose(POSES.fall);
+      if (falling) {
+        loopTimer = requestAnimationFrame(function step() {
+          if (!falling || chatting) return;
+          posY += 0.032;
+          renderPos();
+          if (posY >= 96) { triggerBlackHole(); return; }
+          loopTimer = requestAnimationFrame(step);
+        });
+      }
+    }, 2800);
+  });
+
+  /* -- dismiss bubble on scroll stop -- */
+  let scrollDebounce;
+  window.addEventListener('scroll', () => {
+    clearTimeout(scrollDebounce);
+    scrollDebounce = setTimeout(() => {
+      if (!chatting && !bubble.classList.contains('hidden')) {
+        bubble.classList.add('hidden');
+      }
+    }, 4000);
+  }, { passive: true });
+
+  /* -- kick off after a short delay -- */
+  setTimeout(() => {
+    setPose(POSES.spawn);
+    posY = -8;
+    renderPos();
+    body.classList.remove('hidden');
+    say("Yo! I'm Ash ?? Your scroll buddy fr", 3000);
+    setTimeout(doFall, 1600);
+  }, 2400);
+
+})();
