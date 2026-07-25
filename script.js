@@ -1,66 +1,86 @@
-/* ═══════════════════════════════════════════════
-   ASHIQUE PORTFOLIO v2 — JavaScript
-   ═══════════════════════════════════════════════ */
+﻿/* ASHIQUE PORTFOLIO - Main JavaScript */
 
-/* ── PERFORMANCE: mobile detection ── */
+/* PERFORMANCE: mobile detection */
 const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent)
               || window.innerWidth < 768;
 const isSlowConn = navigator.connection && ['slow-2g','2g'].includes(navigator.connection.effectiveType);
 
-/* ── PRELOADER: fast on mobile/slow conn ── */
-document.body.style.overflow = 'hidden';
+/* PRELOADER */
+document.body.style.overflow = "hidden";
+let preloaderDismissed = false;
 const PRELOAD_DELAY = (isMobile || isSlowConn) ? 600 : 900;
+
 function dismissPreloader() {
-  const pl = document.getElementById('preloader');
-  if (pl) pl.classList.add('hidden');
-  document.body.style.overflow = 'auto';
-  initReveal();
-  startTyper();
-  if (!isMobile) animateSkillBars();
+  if (preloaderDismissed) return;
+  preloaderDismissed = true;
+  try {
+    const pl = document.getElementById("preloader");
+    if (pl) pl.classList.add("hidden");
+    document.body.style.overflow = "auto";
+    initReveal();
+    startTyper();
+    if (!isMobile) animateSkillBars();
+  } catch(e) {
+    const pl = document.getElementById("preloader");
+    if (pl) pl.style.display = "none";
+    document.body.style.overflow = "auto";
+  }
 }
-/* DOMContentLoaded fires earlier than load — start UI right away */
-document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(dismissPreloader, PRELOAD_DELAY);
-});
-/* Safety net: also on full load */
-window.addEventListener('load', () => {
-  setTimeout(dismissPreloader, 100);
-});
 
-/* ── CURSOR ── */
-const cursor = document.getElementById('cursor');
-const follower = document.getElementById('cursor-follower');
+document.addEventListener("DOMContentLoaded", function() { setTimeout(dismissPreloader, PRELOAD_DELAY); });
+window.addEventListener("load", function() { setTimeout(dismissPreloader, 100); });
+setTimeout(function() {
+  const pl = document.getElementById("preloader");
+  if (pl && !pl.classList.contains("hidden")) {
+    pl.style.display = "none";
+    document.body.style.overflow = "auto";
+  }
+}, 3000);
+
+/* CURSOR */
+const cursor = document.getElementById("cursor");
+const follower = document.getElementById("cursor-follower");
 let cx = 0, cy = 0, fx = 0, fy = 0;
-document.addEventListener('mousemove', e => {
-  cx = e.clientX; cy = e.clientY;
-  cursor.style.left = cx + 'px'; cursor.style.top = cy + 'px';
-});
-(function animF() {
-  fx += (cx - fx) * 0.1; fy += (cy - fy) * 0.1;
-  follower.style.left = fx + 'px'; follower.style.top = fy + 'px';
-  requestAnimationFrame(animF);
-})();
-document.querySelectorAll('a,button,.work-item,.service-card,.ai-art-item,.video-card,.filter-btn,.ai-vid-card').forEach(el => {
-  el.addEventListener('mouseenter', () => { cursor.classList.add('hover'); follower.classList.add('hover'); });
-  el.addEventListener('mouseleave', () => { cursor.classList.remove('hover'); follower.classList.remove('hover'); });
-});
+if (cursor && follower) {
+  document.addEventListener("mousemove", function(e) {
+    cx = e.clientX; cy = e.clientY;
+    cursor.style.left = cx + "px"; cursor.style.top = cy + "px";
+  });
+  (function animF() {
+    fx += (cx - fx) * 0.1; fy += (cy - fy) * 0.1;
+    follower.style.left = fx + "px"; follower.style.top = fy + "px";
+    requestAnimationFrame(animF);
+  })();
+  document.querySelectorAll("a,button,.work-item,.service-card,.ai-art-item,.video-card,.filter-btn,.ai-vid-card").forEach(function(el) {
+    el.addEventListener("mouseenter", function() { cursor.classList.add("hover"); follower.classList.add("hover"); });
+    el.addEventListener("mouseleave", function() { cursor.classList.remove("hover"); follower.classList.remove("hover"); });
+  });
+}
 
-/* ── NAVBAR ── */
-const navbar = document.getElementById('navbar');
-window.addEventListener('scroll', () => { navbar.classList.toggle('scrolled', window.scrollY > 60); });
+/* NAVBAR */
+const navbar = document.getElementById("navbar");
+window.addEventListener("scroll", function() {
+  if (navbar) navbar.classList.toggle("scrolled", window.scrollY > 60);
+}, { passive: true });
 
-/* ── HAMBURGER ── */
-const hamburger = document.getElementById('hamburger');
-const mobileMenu = document.getElementById('mobileMenu');
-hamburger.addEventListener('click', () => {
-  hamburger.classList.toggle('open'); mobileMenu.classList.toggle('open');
-});
-function closeMobile() { hamburger.classList.remove('open'); mobileMenu.classList.remove('open'); }
+/* HAMBURGER */
+const hamburger = document.getElementById("hamburger");
+const mobileMenu = document.getElementById("mobileMenu");
+if (hamburger && mobileMenu) {
+  hamburger.addEventListener("click", function() {
+    hamburger.classList.toggle("open");
+    mobileMenu.classList.toggle("open");
+  });
+}
+function closeMobile() {
+  if (hamburger) hamburger.classList.remove("open");
+  if (mobileMenu) mobileMenu.classList.remove("open");
+}
 
-/* ── TYPED ROLE TEXT ── */
+/* TYPED ROLE TEXT */
 function startTyper() {
-  const roles = ['Graphic Design', 'Videography', 'AI Videography', 'Storytelling', 'Creative Direction'];
-  const el = document.getElementById('typed-role');
+  const roles = ["Graphic Design", "Videography", "AI Videography", "Storytelling", "Creative Direction"];
+  const el = document.getElementById("typed-role");
   if (!el) return;
   let i = 0, charI = 0, deleting = false;
   function type() {
@@ -79,18 +99,19 @@ function startTyper() {
   setTimeout(type, 800);
 }
 
-/* ── PARTICLES ── (skip on slow connections / low-end mobile) */
+/* PARTICLES */
 (function initParticles() {
-  if (isSlowConn) return;                       // skip on 2G
-  const canvas = document.getElementById('particles-canvas');
+  if (isSlowConn) return;
+  const canvas = document.getElementById("particles-canvas");
   if (!canvas) return;
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext("2d");
   let W, H;
-  const COLORS = ['192,57,43','230,126,34','192,57,43','200,80,40'];
+  const COLORS = ["192,57,43","230,126,34","192,57,43","200,80,40"];
   const particles = [];
-  const COUNT = isMobile ? 22 : 70;            // 22 on mobile, 70 on desktop
+  const COUNT = isMobile ? 20 : 65;
   function resize() { W = canvas.width = canvas.offsetWidth; H = canvas.height = canvas.offsetHeight; }
-  window.addEventListener('resize', resize); resize();
+  window.addEventListener("resize", resize, { passive: true });
+  resize();
   for (let i = 0; i < COUNT; i++) {
     particles.push({
       x: Math.random()*W, y: Math.random()*H,
@@ -103,603 +124,324 @@ function startTyper() {
   let rafId;
   function draw() {
     ctx.clearRect(0,0,W,H);
-    particles.forEach(p => {
+    particles.forEach(function(p) {
       ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-      ctx.fillStyle = `rgba(${p.c},${p.alpha})`; ctx.fill();
+      ctx.fillStyle = "rgba("+p.c+","+p.alpha+")"; ctx.fill();
       p.x+=p.dx; p.y+=p.dy;
       if(p.x<0||p.x>W) p.dx*=-1;
       if(p.y<0||p.y>H) p.dy*=-1;
     });
     rafId = requestAnimationFrame(draw);
   }
-  /* Pause particles when tab is hidden */
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) cancelAnimationFrame(rafId);
-    else draw();
+  document.addEventListener("visibilitychange", function() {
+    if (document.hidden) cancelAnimationFrame(rafId); else draw();
   });
   draw();
 })();
 
-
-/* ── SCROLL REVEAL ── */
+/* SCROLL REVEAL */
 function initReveal() {
-  // Static reveals (added in JS)
   const jsEls = document.querySelectorAll(
-    '.service-card,.work-item,.video-card,.ai-vid-card,.ai-art-item,.contact-left,.contact-right,.ai-title-block,.vid-title-block,.svc-title-block,.work-title-block,.work-showcase-card,.footer-ps'
+    ".service-card,.work-item,.video-card,.ai-vid-card,.ai-art-item,.contact-left,.contact-right,.ai-title-block,.vid-title-block,.svc-title-block,.work-title-block,.work-showcase-card"
   );
-  jsEls.forEach((el, i) => {
-    el.classList.add('reveal');
+  jsEls.forEach(function(el, i) {
+    el.classList.add("reveal");
     const mod = i % 3;
-    if (mod === 1) el.classList.add('reveal-d1');
-    if (mod === 2) el.classList.add('reveal-d2');
+    if (mod === 1) el.classList.add("reveal-d1");
+    if (mod === 2) el.classList.add("reveal-d2");
   });
-
-  // All elements with reveal class (including chapters pre-assigned in HTML)
-  const allReveals = document.querySelectorAll('.reveal');
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+  const allReveals = document.querySelectorAll(".reveal");
+  const obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) { entry.target.classList.add("revealed"); obs.unobserve(entry.target); }
     });
-  }, { threshold: 0.05, rootMargin: '0px 0px -40px 0px' });
-  allReveals.forEach(el => obs.observe(el));
+  }, { threshold: 0.08, rootMargin: "0px 0px -40px 0px" });
+  allReveals.forEach(function(el) { obs.observe(el); });
 }
 
-/* ── SKILL BARS ── */
 function animateSkillBars() {
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.querySelectorAll('.skill-fill').forEach(b => { b.style.width = b.dataset.width + '%'; });
-        obs.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.3 });
-  const about = document.getElementById('about');
-  if (about) obs.observe(about);
+  document.querySelectorAll(".skill-bar-fill").forEach(function(bar) {
+    bar.style.width = (bar.dataset.pct || "80") + "%";
+  });
 }
 
-/* ── FILTER TABS ── */
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const f = btn.dataset.filter;
-    document.querySelectorAll('.work-item').forEach(item => {
-      const show = f === 'all' || item.dataset.cat === f;
-      item.style.transition = 'opacity .4s, transform .4s';
-      item.style.opacity = show ? '1' : '0.1';
-      item.style.transform = show ? 'scale(1)' : 'scale(0.95)';
-      item.style.pointerEvents = show ? 'auto' : 'none';
-    });
-  });
-});
+/* GLITCH */
+const glitchEl = document.getElementById("glitch-text");
+if (glitchEl) {
+  setInterval(function() {
+    glitchEl.classList.add("glitching");
+    setTimeout(function() { glitchEl.classList.remove("glitching"); }, 200);
+  }, 4000);
+}
 
-/* ── VIDEO TOGGLE ── */
-function toggleVideo(id, btnId) {
-  const vid = document.getElementById(id);
+/* ABOUT IMAGE SWITCHER */
+function switchAboutImg(thumb, src) {
+  const mainImg = document.getElementById("aboutImg");
+  if (mainImg) mainImg.src = src;
+  document.querySelectorAll(".thumb-img").forEach(function(t) { t.classList.remove("active"); });
+  thumb.classList.add("active");
+}
+
+/* VIDEO TOGGLE */
+function toggleVideo(vidId, btnId) {
+  const vid = document.getElementById(vidId);
   const btn = document.getElementById(btnId);
   if (!vid) return;
-  const circle = btn ? btn.querySelector('.play-circle') : null;
-  if (vid.paused) {
-    vid.play();
-    if (circle) circle.innerHTML = '<svg viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
-    if (btn) btn.style.opacity = '.25';
-  } else {
-    vid.pause();
-    if (circle) circle.innerHTML = '<svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>';
-    if (btn) btn.style.opacity = '1';
-  }
+  if (vid.paused) { vid.play(); if (btn) btn.style.opacity = "0"; }
+  else { vid.pause(); if (btn) btn.style.opacity = "1"; }
 }
 
-/* ── LIGHTBOX ── */
-const lightbox = document.getElementById('lightbox');
-const lbImg = document.getElementById('lb-img');
-document.querySelectorAll('.work-item, .ai-art-item').forEach(item => {
-  item.addEventListener('click', () => {
-    const img = item.querySelector('img');
-    if (img) {
-      lbImg.src = img.src;
-      lightbox.classList.add('open');
-      document.body.style.overflow = 'hidden';
-    }
+/* WORK FILTER */
+document.querySelectorAll(".filter-btn").forEach(function(btn) {
+  btn.addEventListener("click", function() {
+    document.querySelectorAll(".filter-btn").forEach(function(b) { b.classList.remove("active"); });
+    btn.classList.add("active");
+    const filter = btn.dataset.filter;
+    document.querySelectorAll(".work-item").forEach(function(item) {
+      item.style.display = (filter === "all" || item.dataset.cat === filter) ? "" : "none";
+    });
   });
 });
+
+/* LIGHTBOX */
+function openLightbox(src) {
+  const lb = document.getElementById("lightbox");
+  const img = document.getElementById("lb-img");
+  if (!lb || !img) return;
+  img.src = src;
+  lb.classList.add("active");
+  document.body.style.overflow = "hidden";
+}
 function closeLightbox() {
-  lightbox.classList.remove('open');
-  document.body.style.overflow = 'auto';
+  const lb = document.getElementById("lightbox");
+  if (lb) lb.classList.remove("active");
+  document.body.style.overflow = "auto";
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+document.querySelectorAll(".work-item img, .ai-art-item img").forEach(function(img) {
+  img.style.cursor = "zoom-in";
+  img.addEventListener("click", function() { openLightbox(img.src); });
+});
 
-/* ── CONTACT FORM ── */
-function submitForm(e) {
-  e.preventDefault();
-  const btn = document.getElementById('submit-btn');
-  const span = btn.querySelector('span');
-  btn.disabled = true; span.textContent = 'Sending...';
-  setTimeout(() => {
-    span.textContent = '✓ Sent! I\'ll reply soon.';
-    btn.style.background = 'linear-gradient(135deg,#27ae60,#2ecc71)';
-    document.getElementById('contactForm').reset();
-    setTimeout(() => {
-      span.textContent = 'Send Message';
-      btn.style.background = '';
-      btn.disabled = false;
-    }, 3500);
-  }, 1500);
-}
-
-/* ── ACTIVE NAV HIGHLIGHT ── */
-const sections = document.querySelectorAll('section[id]');
-const navLinks = document.querySelectorAll('.nav-links a');
-window.addEventListener('scroll', () => {
-  let cur = '';
-  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 200) cur = s.id; });
-  navLinks.forEach(a => {
-    a.style.color = a.getAttribute('href') === '#' + cur ? '#eeeeee' : '';
-  });
-}, { passive: true });
-
-/* ── PARALLAX on hero portrait ── */
-window.addEventListener('mousemove', e => {
-  const portrait = document.getElementById('hero-portrait');
-  if (!portrait) return;
-  const xr = (e.clientX / window.innerWidth - 0.5) * 12;
-  const yr = (e.clientY / window.innerHeight - 0.5) * 8;
-  portrait.style.transform = `perspective(800px) rotateY(${xr}deg) rotateX(${-yr}deg)`;
-}, { passive: true });
-
-/* -- THEME TOGGLE -- */
-(function initTheme() {
-  const html = document.documentElement;
-  const btn = document.getElementById('themeToggle');
-  const saved = localStorage.getItem('ashique-theme') || 'dark';
-  html.setAttribute('data-theme', saved);
-  if (btn) {
-    btn.addEventListener('click', () => {
-      const curr = html.getAttribute('data-theme');
-      const next = curr === 'dark' ? 'light' : 'dark';
-      html.setAttribute('data-theme', next);
-      localStorage.setItem('ashique-theme', next);
-    });
-  }
-})();
-
-/* -- PORTRAIT SWITCHER -- */
-function switchAboutImg(thumbEl, src) {
-  const main = document.getElementById('aboutImg');
-  if (!main) return;
-  main.style.opacity = '0';
-  setTimeout(() => {
-    main.src = src;
-    main.style.opacity = '1';
-  }, 250);
-  document.querySelectorAll('.thumb-img').forEach(t => t.classList.remove('active'));
-  thumbEl.classList.add('active');
-}
-document.getElementById('aboutImg') && (document.getElementById('aboutImg').style.transition = 'opacity .3s ease');
-
-/* -----------------------------------------------
-   BACKGROUND FLOW LINES + 3D ELEMENTS
-   ----------------------------------------------- */
-
-/* -- FULL PAGE FLOWING LINES CANVAS -- */
-(function initFlowLines() {
-  const canvas = document.createElement('canvas');
-  canvas.id = 'flow-canvas';
-  canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.55;';
-  document.body.prepend(canvas);
-
-  const ctx = canvas.getContext('2d');
-  let W, H;
-
-  function resize() {
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-  }
-  window.addEventListener('resize', resize);
-  resize();
-
-  // Flowing sine streams
-  const STREAMS = 7;
-  const streams = [];
-  for (let i = 0; i < STREAMS; i++) {
-    streams.push({
-      x: (W / (STREAMS + 1)) * (i + 1),
-      phase: Math.random() * Math.PI * 2,
-      speed: 0.003 + Math.random() * 0.004,
-      amp: 30 + Math.random() * 50,
-      freq: 0.004 + Math.random() * 0.004,
-      color: i % 2 === 0
-        ? `rgba(192,57,43,`
-        : `rgba(212,114,10,`,
-      dots: [],
-      dotSpacing: 14 + Math.floor(Math.random() * 8),
-    });
-  }
-
-  // Drop particles along each stream
-  streams.forEach(s => {
-    for (let y = 0; y < H + 100; y += s.dotSpacing) {
-      s.dots.push({ y, alpha: Math.random() });
-    }
-  });
-
-  let t = 0;
-  function draw() {
-    ctx.clearRect(0, 0, W, H);
-
-    streams.forEach(s => {
-      // draw the flowing path
-      ctx.beginPath();
-      let first = true;
-      for (let y = -20; y < H + 20; y += 3) {
-        const x = s.x + Math.sin(y * s.freq + t + s.phase) * s.amp;
-        if (first) { ctx.moveTo(x, y); first = false; }
-        else ctx.lineTo(x, y);
-      }
-      ctx.strokeStyle = s.color + '0.06)';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      // draw flowing dots along the path
-      s.dots.forEach(d => {
-        d.y += 0.6;
-        if (d.y > H + 20) { d.y = -20; d.alpha = Math.random() * 0.5 + 0.1; }
-        const x = s.x + Math.sin(d.y * s.freq + t + s.phase) * s.amp;
-        const a = Math.sin(d.y * 0.012 + t * 2) * 0.3 + 0.35;
-        ctx.beginPath();
-        ctx.arc(x, d.y, 1.2, 0, Math.PI * 2);
-        ctx.fillStyle = s.color + (a * d.alpha).toFixed(2) + ')';
-        ctx.fill();
-      });
-    });
-
-    t += 0.012;
-    requestAnimationFrame(draw);
-  }
-  draw();
-})();
-
-/* -- 3D ROTATING ORBS / CUBE in Hero -- */
-(function init3D() {
-  // Inject the 3D element into hero
-  const hero = document.getElementById('hero');
-  if (!hero) return;
-
-  // Create the 3D scene container
-  const scene = document.createElement('div');
-  scene.className = 'hero-3d-scene';
-  scene.innerHTML = `
-    <div class="cube-wrap">
-      <div class="cube">
-        <div class="cube-face front"></div>
-        <div class="cube-face back"></div>
-        <div class="cube-face left"></div>
-        <div class="cube-face right"></div>
-        <div class="cube-face top"></div>
-        <div class="cube-face bottom"></div>
-      </div>
-    </div>
-    <div class="orb orb1"></div>
-    <div class="orb orb2"></div>
-    <div class="orb orb3"></div>
-    <div class="ring-wrap">
-      <div class="ring ring1"></div>
-      <div class="ring ring2"></div>
-    </div>
-  `;
-  hero.appendChild(scene);
-})();
-
-/* -- 3D TILT on Service Cards -- */
-(function initTilt() {
-  const cards = document.querySelectorAll('.service-card, .video-card, .whatsapp-qr-card');
-  cards.forEach(card => {
-    card.addEventListener('mousemove', e => {
-      const rect = card.getBoundingClientRect();
-      const cx2 = rect.left + rect.width / 2;
-      const cy2 = rect.top + rect.height / 2;
-      const rx = ((e.clientY - cy2) / (rect.height / 2)) * -10;
-      const ry = ((e.clientX - cx2) / (rect.width  / 2)) *  10;
-      card.style.transform = `perspective(600px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-6px) scale(1.02)`;
-      card.style.transition = 'transform .05s ease';
-    });
-    card.addEventListener('mouseleave', () => {
-      card.style.transform = '';
-      card.style.transition = 'transform .5s var(--ease-expo, cubic-bezier(0.19,1,0.22,1))';
-    });
-  });
-})();
-
-/* -- VIDEO LIGHTBOX -- */
+/* VIDEO LIGHTBOX */
 function openVideoLightbox(src) {
-  const lb = document.getElementById('video-lightbox');
-  const vid = document.getElementById('vlb-video');
-  const source = document.getElementById('vlb-source');
+  const lb = document.getElementById("video-lightbox");
+  const vid = document.getElementById("vlb-video");
+  const source = document.getElementById("vlb-source");
+  if (!lb || !vid || !source) return;
   source.src = src;
   vid.load();
   vid.play();
-  lb.classList.add('active');
-  document.body.style.overflow = 'hidden';
+  lb.classList.add("active");
+  document.body.style.overflow = "hidden";
 }
 function closeVideoLightbox() {
-  const lb = document.getElementById('video-lightbox');
-  const vid = document.getElementById('vlb-video');
+  const lb = document.getElementById("video-lightbox");
+  const vid = document.getElementById("vlb-video");
+  if (!lb || !vid) return;
   vid.pause();
   vid.currentTime = 0;
-  lb.classList.remove('active');
-  document.body.style.overflow = 'auto';
+  lb.classList.remove("active");
+  document.body.style.overflow = "auto";
 }
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeVideoLightbox(); closeLightbox(); }
 
-/* ----------------------------------------------------------
-   ASH � 3D ROPE-SWING MASCOT ENGINE v2
-   Uses the clean background-removed PNG: ash3d.png
-   ---------------------------------------------------------- */
+/* THEME TOGGLE */
+const themeBtn = document.getElementById("themeToggle");
+if (themeBtn) {
+  themeBtn.addEventListener("click", function() {
+    const html = document.documentElement;
+    html.dataset.theme = html.dataset.theme === "dark" ? "light" : "dark";
+  });
+}
+
+/* BACK TO TOP */
+const backTop = document.getElementById("back-top");
+if (backTop) {
+  window.addEventListener("scroll", function() {
+    backTop.classList.toggle("visible", window.scrollY > 600);
+  }, { passive: true });
+  backTop.addEventListener("click", function(e) {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
+
+/* KEY DISMISS */
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Escape") { closeVideoLightbox(); closeLightbox(); }
+});
+
+/* ASH 3D MASCOT */
 (function() {
-  /* === CONFIG === */
-  const CHAR_W       = 110;
-  const FALL_SPEED   = isMobile ? 0.055 : 0.038;  // % page per frame
-  const PAUSE_HOLD   = 3200;                       // ms to pause mid-page
-  const BUBBLE_HOLD  = 3500;                       // ms speech visible
+  const FALL_SPEED  = isMobile ? 0.055 : 0.038;
+  const PAUSE_HOLD  = 3200;
+  const BUBBLE_HOLD = 3500;
 
-  /* === SPEECH BANKS (section-aware + touch + idle) === */
   const LINES = {
-    hero:    ["Yo! That's me in the hero section ??","Welcome to my world ??","This took blood, sweat and Photoshop ?","Scroll down� it gets better fr"],
-    story:   ["This is my origin story no cap ??","English Lit grad ? designer. Plot twist ??","I was always overthinking. Turns out it's a skill ??"],
-    service: ["Pick a service. I won't disappoint ??","AI video AND graphic design? Yeah, I do both ??","I don't just deliver. I cook ??"],
-    work:    ["That InLine Times poster? All me bro ??","Every pixel placed with intention fr","Tap any poster to get a closer look ??","This masonry grid alone took me forever ??"],
-    video:   ["Press play!! Don't be shy ??","These cuts are clean clean","Best edits on the right side ??","Pro tip: watch at max volume ??"],
-    ai:      ["AI + me = dangerous combo ??","While you sleep I generate cinemas ??","The future is now and I'm already 3 steps ahead ?"],
-    contact: ["DM me! Seriously ??","I reply faster than your WiFi loads ??","Let's make something people stop and say 'wait WHO made this'"],
-    idle:    ["Still reading? Respect ??","bro appreciate the design a little ??","I see you lurking ??","You good? Need anything?","This rope is getting heavy ngl ??","*checks watch* yep still swinging","Living rent free on your screen ??"],
-    touch:   ["OI hands to yourself ??","Hey that tickles!! ??","Watch the fit bro!! ??","OK OK I see you ??","bro chill ??","You clicked me?? Rude ??"],
-    section_change: ["Oh we're in {section} now ??","Entering {section}�","Nice section right? ??"],
+    hero:    ["Yo! That's me in the hero! ;)","Welcome to my world! On fire fr","This took blood, sweat and Photoshop","Scroll down... it gets better fr"],
+    story:   ["This is my origin story no cap","English Lit grad doing design. Plot twist","I was always overthinking. Turns out its a skill"],
+    service: ["Pick a service. I won't disappoint","AI video AND graphic design? Yeah I do both","I don't just deliver. I cook"],
+    work:    ["That poster? All me bro","Every pixel placed with intention fr","Tap any poster to see it closer"],
+    video:   ["Press play!! Don't be shy","These cuts are clean clean","Best edits on the right side","Best with headphones"],
+    ai:      ["AI plus me equals dangerous combo","While you sleep I generate cinemas","The future is now and I'm 3 steps ahead"],
+    contact: ["DM me! Seriously","I reply faster than your WiFi loads","Let's make something people stop at"],
+    idle:    ["Still reading? Respect","bro appreciate the design","I see you lurking","You good? Need anything?","This rope is getting heavy ngl","Living rent free on your screen"],
+    touch:   ["OI hands to yourself!","Hey that tickles!","Watch the fit bro!!","OK OK I see you","bro chill","You clicked me?? Rude"]
   };
 
   function randLine(pool) { return pool[Math.floor(Math.random() * pool.length)]; }
 
-  function sectionName(key) {
-    const map = {hero:'the Hero',story:'My Story',service:'Services',work:'My Work',video:'Video Highlights',ai:'AI Zone',contact:'Contact'};
-    return map[key] || key;
-  }
-
-  /* === BUILD DOM === */
-  // Rope guide line
-  const ropeLine = document.createElement('div');
-  ropeLine.id = 'ash-rope-line';
+  const ropeLine = document.createElement("div");
+  ropeLine.id = "ash-rope-line";
   document.body.appendChild(ropeLine);
 
-  // Main mascot container
-  const mascot = document.createElement('div');
-  mascot.id = 'ash-mascot';
-  mascot.innerHTML = `
-    <div id="ash-body" class="ash-hidden">
-      <div id="ash-bubble" class="hidden"><span class="ash-name-chip">ASH</span><span id="ash-msg"></span></div>
-      <img id="ash-char" src="assets/images/ash3d.png" alt="Ash the mascot" draggable="false" />
-    </div>
-    <div id="ash-blackhole"></div>
-  `;
+  const mascot = document.createElement("div");
+  mascot.id = "ash-mascot";
+  mascot.innerHTML =
+    '<div id="ash-body" class="ash-hidden">' +
+      '<div id="ash-bubble" class="hidden"><span class="ash-name-chip">ASH </span><span id="ash-msg"></span></div>' +
+      '<img id="ash-char" src="assets/images/ash3d.png" alt="Ash" draggable="false" />' +
+    '</div>' +
+    '<div id="ash-blackhole"></div>';
   document.body.appendChild(mascot);
 
-  const body      = document.getElementById('ash-body');
-  const charEl    = document.getElementById('ash-char');
-  const bubble    = document.getElementById('ash-bubble');
-  const msgEl     = document.getElementById('ash-msg');
-  const hole      = document.getElementById('ash-blackhole');
+  const ashBody   = document.getElementById("ash-body");
+  const ashBubble = document.getElementById("ash-bubble");
+  const ashMsg    = document.getElementById("ash-msg");
+  const ashHole   = document.getElementById("ash-blackhole");
 
-  /* === STATE === */
-  let posY        = -10;      // % of total page height
+  let posY        = -10;
   let running     = false;
   let chatting    = false;
   let rafId       = null;
-  let bubbleTimer = null;
-  let lastSection = '';
+  let bubTimer    = null;
+  let lastSection = "";
+  let nextPauseY  = randPause();
 
-  /* === STATE HELPER === */
+  function randPause() { return 18 + Math.random() * 55; }
+
   function setState(state) {
-    body.className = '';          // clear all
-    if (state !== 'hidden') body.classList.add('ash-state-' + state);
-    else body.classList.add('ash-hidden');
+    ashBody.className = "";
+    if (state === "hidden") { ashBody.classList.add("ash-hidden"); }
+    else { ashBody.classList.add("ash-state-" + state); }
   }
 
-  /* === SPEECH === */
   function say(text, hold) {
-    clearTimeout(bubbleTimer);
-    msgEl.textContent = text;
-    bubble.classList.remove('hidden');
-    bubble.classList.remove('pop');
-    void bubble.offsetWidth;   // reflow to retrigger animation
-    bubble.classList.add('visible','pop');
-    setState('talk');
-    bubbleTimer = setTimeout(() => {
-      bubble.classList.add('hidden');
-      bubble.classList.remove('visible');
+    clearTimeout(bubTimer);
+    ashMsg.textContent = text;
+    ashBubble.classList.remove("hidden");
+    ashBubble.classList.remove("pop");
+    void ashBubble.offsetWidth;
+    ashBubble.classList.add("visible", "pop");
+    bubTimer = setTimeout(function() {
+      ashBubble.classList.add("hidden");
+      ashBubble.classList.remove("visible");
     }, hold || BUBBLE_HOLD);
   }
 
-  /* === RENDER POSITION === */
   function renderPos() {
     const totalH = document.documentElement.scrollHeight;
     const px = totalH * (posY / 100);
-    body.style.transform = `translateY(${px}px)`;
+    ashBody.style.transform = "translateY(" + px + "px)";
   }
 
-  /* === SECTION DETECTOR === */
   function getSection() {
-    const pct = posY;
-    if (pct < 12)  return 'hero';
-    if (pct < 28)  return 'story';
-    if (pct < 45)  return 'service';
-    if (pct < 58)  return 'work';
-    if (pct < 72)  return 'video';
-    if (pct < 85)  return 'ai';
-    return 'contact';
+    if (posY < 12)  return "hero";
+    if (posY < 28)  return "story";
+    if (posY < 45)  return "service";
+    if (posY < 58)  return "work";
+    if (posY < 72)  return "video";
+    if (posY < 85)  return "ai";
+    return "contact";
   }
 
-  /* === PAUSE MID-FALL === */
-  let nextPauseY  = getRandPause();
-  function getRandPause() { return 18 + Math.random() * 55; }
-
-  function pauseAndChat(resumeFn) {
+  function pauseAndChat(cb) {
     chatting = true;
     cancelAnimationFrame(rafId);
-    setState('wave');
+    setState("wave");
     say(randLine(LINES.idle));
-    setTimeout(() => {
+    setTimeout(function() {
       chatting = false;
       nextPauseY = posY + 10 + Math.random() * 30;
-      setState('fall');
-      resumeFn();
+      setState("fall");
+      cb();
     }, PAUSE_HOLD);
   }
 
-  /* === FALL LOOP === */
-  function fall() {
-    running = true;
-    setState('fall');
-
-    function step() {
-      if (chatting) return;
-      posY += FALL_SPEED;
-
-      // Section quip on change
-      const sec = getSection();
-      if (sec !== lastSection) {
-        lastSection = sec;
-        setTimeout(() => {
-          if (!chatting) {
-            const line = randLine(LINES[sec] || LINES.idle);
-            say(line, 3000);
-            setState('talk');
-            setTimeout(() => { if (!chatting) setState('fall'); }, 3200);
-          }
-        }, 400);
-      }
-
-      // Random pause mid-fall
-      if (posY >= nextPauseY && posY < 88) {
-        pauseAndChat(() => { rafId = requestAnimationFrame(step); });
-        return;
-      }
-
-      renderPos();
-
-      if (posY >= 96) {
-        blackHoleSequence();
-        return;
-      }
-      rafId = requestAnimationFrame(step);
+  function fallLoop() {
+    if (chatting) return;
+    posY += FALL_SPEED;
+    const sec = getSection();
+    if (sec !== lastSection) {
+      lastSection = sec;
+      const pool = LINES[sec] || LINES.idle;
+      setTimeout(function() {
+        if (!chatting) {
+          say(randLine(pool), 3000);
+          setState("talk");
+          setTimeout(function() { if (!chatting) setState("fall"); }, 3200);
+        }
+      }, 400);
     }
-    rafId = requestAnimationFrame(step);
+    if (posY >= nextPauseY && posY < 88) {
+      pauseAndChat(function() { rafId = requestAnimationFrame(fallLoop); });
+      return;
+    }
+    renderPos();
+    if (posY >= 96) { blackHoleSequence(); return; }
+    rafId = requestAnimationFrame(fallLoop);
   }
 
-  /* === BLACK HOLE SEQUENCE === */
+  function fall() {
+    running = true;
+    setState("fall");
+    rafId = requestAnimationFrame(fallLoop);
+  }
+
   function blackHoleSequence() {
     running = false;
     chatting = false;
     cancelAnimationFrame(rafId);
-    setState('fall-hole');
-    say("See ya on the other side� ??", 2200);
-
-    // Activate hole
-    setTimeout(() => { hole.classList.add('active'); }, 400);
-
-    // Hide body after animation
-    setTimeout(() => {
-      setState('hidden');
-      hole.classList.remove('active');
-    }, 1400);
-
-    // Respawn after gap
-    setTimeout(() => {
+    setState("fall-hole");
+    say("See ya on the other side... going through the black hole", 2200);
+    setTimeout(function() { ashHole.classList.add("active"); }, 400);
+    setTimeout(function() { setState("hidden"); ashHole.classList.remove("active"); }, 1400);
+    setTimeout(function() {
       posY = -10;
       renderPos();
-      nextPauseY = getRandPause();
-      lastSection = '';
-      setState('spawn');
-      body.classList.remove('ash-hidden');
-      say("RESPAWN! Back on the rope ??", 2500);
-      setTimeout(() => {
-        fall();
-      }, 1200);
+      nextPauseY = randPause();
+      lastSection = "";
+      setState("spawn");
+      ashBody.classList.remove("ash-hidden");
+      say("RESPAWN! Back on the rope!", 2500);
+      setTimeout(function() { fall(); }, 1200);
     }, 4000);
   }
 
-  /* === USER INTERACTION (click / touch) === */
-  body.addEventListener('pointerdown', (e) => {
+  ashBody.addEventListener("pointerdown", function(e) {
     e.stopPropagation();
     if (chatting) return;
     chatting = true;
     cancelAnimationFrame(rafId);
-    const reaction = randLine(LINES.touch);
-    setState('touch');
-    say(reaction, 2500);
-    setTimeout(() => {
+    setState("touch");
+    say(randLine(LINES.touch), 2500);
+    setTimeout(function() {
       chatting = false;
-      setState(running ? 'fall' : 'wave');
-      if (running) {
-        rafId = requestAnimationFrame(function loop() {
-          if (chatting) return;
-          posY += FALL_SPEED;
-          renderPos();
-          if (posY >= 96) { blackHoleSequence(); return; }
-          if (posY >= nextPauseY && posY < 88) {
-            pauseAndChat(() => { rafId = requestAnimationFrame(loop); });
-            return;
-          }
-          rafId = requestAnimationFrame(loop);
-        });
-      }
+      setState(running ? "fall" : "wave");
+      if (running) { rafId = requestAnimationFrame(fallLoop); }
     }, 2700);
   });
 
-  /* === KICK OFF === */
-  setTimeout(() => {
-    posY = -10;
-    renderPos();
-    setState('spawn');
-    body.classList.remove('ash-hidden');
-    say("Yo! I'm Ash ?? Your scroll buddy", 3000);
-    setTimeout(() => { fall(); }, 1800);
-  }, 2200);
-
-  /* === VISIBILITY � pause when tab hidden === */
-  document.addEventListener('visibilitychange', () => {
+  document.addEventListener("visibilitychange", function() {
     if (document.hidden) { cancelAnimationFrame(rafId); }
-    else if (running && !chatting) {
-      rafId = requestAnimationFrame(function loop() {
-        if (chatting || !running) return;
-        posY += FALL_SPEED;
-        renderPos();
-        if (posY >= 96) { blackHoleSequence(); return; }
-        rafId = requestAnimationFrame(loop);
-      });
-    }
+    else if (running && !chatting) { rafId = requestAnimationFrame(fallLoop); }
   });
 
+  setTimeout(function() {
+    posY = -10;
+    renderPos();
+    setState("spawn");
+    ashBody.classList.remove("ash-hidden");
+    say("Yo! I'm Ash - Your scroll buddy!", 3000);
+    setTimeout(function() { fall(); }, 1800);
+  }, 2500);
 })();
-
-/* -- VIDEO LIGHTBOX -- */
-function openVideoLightbox(src) {
-  const lb = document.getElementById('video-lightbox');
-  const vid = document.getElementById('vlb-video');
-  const source = document.getElementById('vlb-source');
-  source.src = src;
-  vid.load();
-  vid.play();
-  lb.classList.add('active');
-  document.body.style.overflow = 'hidden';
-}
-function closeVideoLightbox() {
-  const lb = document.getElementById('video-lightbox');
-  const vid = document.getElementById('vlb-video');
-  vid.pause();
-  vid.currentTime = 0;
-  lb.classList.remove('active');
-  document.body.style.overflow = 'auto';
-}
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeVideoLightbox(); closeLightbox(); }
-});
