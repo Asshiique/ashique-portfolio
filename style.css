@@ -2101,22 +2101,22 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 
 /* Mascot root � absolute on the page, moves with JS translateY */
 #ash-mascot {
-  position: absolute;
-  top: 0;
-  right: 20px;
-  width: 110px;
+  position: fixed;
+  bottom: 55px;
+  right: 10px;
+  width: 120px;
   pointer-events: none;
   z-index: 900;
 }
 
 /* Body wrapper � JS moves this via transform: translateY(npx) */
 #ash-body {
-  position: absolute;
-  top: 0; right: 0;
-  width: 110px;
+  position: relative;
+  width: 120px;
   pointer-events: all;
   cursor: pointer;
   will-change: transform;
+  transition: opacity 0.4s;
 }
 
 /* The actual 3D character image */
@@ -2224,25 +2224,19 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 /* -- ROPE LINE (visual guide) ---------------------------- */
 #ash-rope-line {
   position: fixed;
-  top: 0; right: 71px;
+  top: 0; right: 75px;
   width: 2px;
   height: 100vh;
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    rgba(230,126,34,0.15) 10%,
-    rgba(230,126,34,0.08) 80%,
-    transparent 100%
-  );
+  background: linear-gradient(to bottom, transparent 0%, rgba(230,126,34,0.18) 20%, rgba(230,126,34,0.10) 75%, rgba(230,126,34,0.18) 95%, transparent 100%);
   pointer-events: none;
   z-index: 899;
 }
 
 /* -- SPEECH BUBBLE --------------------------------------- */
 #ash-bubble {
-  position: fixed;
-  bottom: 150px;
-  right: 145px;
+  position: absolute;
+  bottom: 125px;
+  right: 0px;
   min-width: 160px;
   max-width: 210px;
   background: #fffef8;
@@ -2253,10 +2247,7 @@ p, .ch-body-txt, .ch-lead, .service-card p,
   font-size: 0.78rem;
   font-weight: 600;
   line-height: 1.5;
-  box-shadow:
-    0 8px 32px rgba(0,0,0,0.25),
-    0 2px 6px rgba(0,0,0,0.12),
-    inset 0 1px 0 rgba(255,255,255,0.8);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25), 0 2px 6px rgba(0,0,0,0.12);
   pointer-events: none;
   white-space: normal;
   transform-origin: bottom right;
@@ -2311,15 +2302,14 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 /* -- BLACK HOLE ------------------------------------------- */
 #ash-blackhole {
   position: fixed;
-  bottom: 16px;
-  right: 16px;
+  bottom: 50px;
+  right: 14px;
   width: 0; height: 0;
   border-radius: 50%;
   pointer-events: none;
   z-index: 898;
-  transition: width 0.4s, height 0.4s, opacity 0.4s;
+  transition: width 0.5s, height 0.5s, opacity 0.5s;
   opacity: 0;
-  transform: translateX(50%) translateY(50%);
 }
 
 #ash-blackhole.active {
