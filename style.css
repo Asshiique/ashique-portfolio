@@ -2240,9 +2240,9 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 
 /* -- SPEECH BUBBLE --------------------------------------- */
 #ash-bubble {
-  position: absolute;
-  bottom: 130px;
-  right: 115px;
+  position: fixed;
+  bottom: 150px;
+  right: 145px;
   min-width: 160px;
   max-width: 210px;
   background: #fffef8;
@@ -2311,8 +2311,8 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 /* -- BLACK HOLE ------------------------------------------- */
 #ash-blackhole {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  bottom: 16px;
+  right: 16px;
   width: 0; height: 0;
   border-radius: 50%;
   pointer-events: none;
@@ -2358,10 +2358,10 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 
 /* -- RESPONSIVE ------------------------------------------- */
 @media (max-width: 480px) {
-  #ash-mascot { right: 6px; width: 80px; }
-  #ash-char   { width: 80px; }
-  #ash-bubble { min-width: 130px; max-width: 170px; right: 90px; font-size: 0.72rem; }
-  #ash-rope-line { right: 51px; }
+  #ash-body   { right: 4px; bottom: 10px; width: 85px; }
+  #ash-char   { width: 85px; }
+  #ash-bubble { min-width: 130px; max-width: 165px; right: 96px; bottom: 120px; font-size: 0.72rem; }
+  #ash-rope-line { right: 54px; }
 }
 
 /* -- PERFORMANCE CSS ------------------------------------- */
