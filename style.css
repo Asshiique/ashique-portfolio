@@ -1,4 +1,4 @@
-/* ═══════════════════════════════════════════════════════
+﻿/* ═══════════════════════════════════════════════════════
    MUHAMMED ASHIQUE — PORTFOLIO v3
    Cinematic Black × Crimson × Amber — Dark/Light Mode
    ═══════════════════════════════════════════════════════ */
@@ -1422,7 +1422,7 @@ section, nav, footer, .ticker-strip { position: relative; z-index: 1; }
 [data-theme="light"] .hero-scroll-cue span { color: #999 !important; }
 
 /* -----------------------------------------------
-   MOBILE RESPONSIVE � COMPREHENSIVE
+   MOBILE RESPONSIVE � COMPREHENSIVE
    ----------------------------------------------- */
 @media (max-width: 1024px) {
   .story-intro { grid-template-columns: 1fr; text-align: center; gap: 40px; }
@@ -1520,7 +1520,7 @@ section, nav, footer, .ticker-strip { position: relative; z-index: 1; }
 }
 
 /* -----------------------------------------------
-   v5 � REDESIGNED CHAPTERS + TYPOGRAPHY OVERHAUL
+   v5 � REDESIGNED CHAPTERS + TYPOGRAPHY OVERHAUL
    ----------------------------------------------- */
 
 /* Global typography refinement */
@@ -1537,7 +1537,7 @@ h1,h2,h3 { font-family: "Bebas Neue", sans-serif; letter-spacing: .04em; }
 p, .ch-body-txt, .ch-lead, .service-card p,
 .contact-sub, .about-desc, .si-subhook { font-family: "DM Sans", sans-serif; font-size: 1rem; line-height: 1.75; }
 
-/* Expression strip � ashique 8 collage */
+/* Expression strip � ashique 8 collage */
 .expression-strip {
   max-width: 1100px; margin: 0 auto 80px;
   padding: 0 40px;
@@ -1596,7 +1596,7 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 }
 .chapter-block.ch-alt .ch-bg-num { right: auto; left: 20px; }
 
-/* Chapter layout � two-col */
+/* Chapter layout � two-col */
 .ch-layout {
   display: grid;
   grid-template-columns: 1fr 280px;
@@ -1722,7 +1722,7 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 }
 
 /* -----------------------------------------------
-   COOK / FOOTER SECTION � "Did I Cook Well?"
+   COOK / FOOTER SECTION � "Did I Cook Well?"
    ----------------------------------------------- */
 
 .cook-section {
@@ -1896,10 +1896,10 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 }
 
 /* -----------------------------------------------
-   v6 � THOUGHT BUBBLES + HERO WIDE + EXPRESSIONS
+   v6 � THOUGHT BUBBLES + HERO WIDE + EXPRESSIONS
    ----------------------------------------------- */
 
-/* Hero portrait � ashique 1 is landscape/wide so handle differently */
+/* Hero portrait � ashique 1 is landscape/wide so handle differently */
 .hero-portrait-wide {
   object-position: center 20%;
   width: 100%; height: 100%;
@@ -1913,7 +1913,7 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 }
 .thought-photo { width: 100%; }
 
-/* Thought bubbles � sticky note / speech bubble style */
+/* Thought bubbles � sticky note / speech bubble style */
 .thought-bubble {
   position: absolute;
   font-family: "DM Sans", sans-serif;
@@ -1987,7 +1987,7 @@ p, .ch-body-txt, .ch-lead, .service-card p,
   50%      { transform: rotate(-2deg) translateY(-4px); }
 }
 
-/* Story intro � poster-style portrait for ashique 2 */
+/* Story intro � poster-style portrait for ashique 2 */
 .si-portrait-poster {
   object-position: center top !important;
   aspect-ratio: 3/4;
@@ -2095,11 +2095,11 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 /* ------------------------------------------------------
 
 /* ----------------------------------------------------------
-   ASH � 3D ROPE-SWING MASCOT CHARACTER
+   ASH � 3D ROPE-SWING MASCOT CHARACTER
    Full background-removed PNG with CSS 3D body animations
    ---------------------------------------------------------- */
 
-/* Mascot root � absolute on the page, moves with JS translateY */
+/* Mascot root � absolute on the page, moves with JS translateY */
 #ash-mascot {
   position: absolute;
   top: 0;
@@ -2109,7 +2109,7 @@ p, .ch-body-txt, .ch-lead, .service-card p,
   z-index: 900;
 }
 
-/* Body wrapper � JS moves this via transform: translateY(npx) */
+/* Body wrapper � JS moves this via transform: translateY(npx) */
 #ash-body {
   position: absolute;
   top: 0; right: 0;
@@ -2125,7 +2125,7 @@ p, .ch-body-txt, .ch-lead, .service-card p,
   height: auto;
   display: block;
   /* Start with the rope-swing image */
-  content: url('assets/images/ash3d.png');
+  /* src set via JS img element */
   transform-origin: 55px 0px; /* anchor at top-centre (rope grip) */
   filter: drop-shadow(0 12px 32px rgba(0,0,0,.55));
   image-rendering: -webkit-optimize-contrast;
@@ -2148,13 +2148,13 @@ p, .ch-body-txt, .ch-lead, .service-card p,
   100% { transform: rotate(-14deg) translateX(0)    perspective(400px) rotateY(8deg);  }
 }
 
-/* Subtle vertical bob � body weight shifting */
+/* Subtle vertical bob � body weight shifting */
 @keyframes bodyBob {
   0%,100% { margin-top: 0;   }
   50%      { margin-top: 5px; }
 }
 
-/* Scale depth illusion � bigger at bottom of swing (closer), smaller at top */
+/* Scale depth illusion � bigger at bottom of swing (closer), smaller at top */
 @keyframes depthPulse {
   0%,100% { filter: drop-shadow(0 10px 28px rgba(0,0,0,.45)) brightness(0.95); }
   50%      { filter: drop-shadow(0 18px 40px rgba(0,0,0,.65)) brightness(1.05); }
