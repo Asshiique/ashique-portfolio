@@ -432,220 +432,274 @@ function closeVideoLightbox() {
 }
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') { closeVideoLightbox(); closeLightbox(); }
-});
 
-/* ------------------------------------------------------
-   ASH — MASCOT CHARACTER ENGINE
-   A mini 3D Ashique that jumps top?bottom of page,
-   chats with visitors, falls into a black hole, respawns.
-   ------------------------------------------------------ */
-(function initAsh() {
+/* ----------------------------------------------------------
+   ASH — 3D ROPE-SWING MASCOT ENGINE v2
+   Uses the clean background-removed PNG: ash3d.png
+   ---------------------------------------------------------- */
+(function() {
+  /* === CONFIG === */
+  const CHAR_W       = 110;
+  const FALL_SPEED   = isMobile ? 0.055 : 0.038;  // % page per frame
+  const PAUSE_HOLD   = 3200;                       // ms to pause mid-page
+  const BUBBLE_HOLD  = 3500;                       // ms speech visible
 
-  /* -- speeches per section/state -- */
-  const SPEECHES = {
-    hero:    ["Yo! That's me up there ??", "Welcome to my world ??", "Scroll down, it gets better fr fr"],
-    story:   ["This is my origin story lol", "English Lit grad doing design?? Big W ??", "I overthink everything. That's my superpower."],
-    service: ["Pick any service, I got you ??", "AI video? Yeah I literally do that ??", "I don't just design. I cook. You saw the footer ??"],
-    work:    ["That InLine Times poster? All me ??", "Every pixel placed with intention fr", "Tap any poster for a closer look ??"],
-    video:   ["Press play! Don't be shy ??", "These edits go hard ngl", "Best viewed with headphones ??"],
-    ai:      ["AI + creativity = unstoppable ??", "While you sleep, I generate ??", "The future is NOW and I'm already in it"],
-    contact: ["DM me, don't be shy ??", "I reply fast. Faster than your upload speed ??", "Let's cook something people stop and stare at ??"],
-    idle:    ["Still reading? I respect that ??", "This site took blood, sweat and coffee ?", "bro scroll slower, appreciate the design ??", "I see you lurking ??", "You good? Need anything?"],
-    touch:   ["Hey! That tickles ??", "Oi! Hands to yourself ??", "Watch the fit!! ??", "OK OK I see you ??", "bro chill ??"],
+  /* === SPEECH BANKS (section-aware + touch + idle) === */
+  const LINES = {
+    hero:    ["Yo! That's me in the hero section ??","Welcome to my world ??","This took blood, sweat and Photoshop ?","Scroll down… it gets better fr"],
+    story:   ["This is my origin story no cap ??","English Lit grad ? designer. Plot twist ??","I was always overthinking. Turns out it's a skill ??"],
+    service: ["Pick a service. I won't disappoint ??","AI video AND graphic design? Yeah, I do both ??","I don't just deliver. I cook ??"],
+    work:    ["That InLine Times poster? All me bro ??","Every pixel placed with intention fr","Tap any poster to get a closer look ??","This masonry grid alone took me forever ??"],
+    video:   ["Press play!! Don't be shy ??","These cuts are clean clean","Best edits on the right side ??","Pro tip: watch at max volume ??"],
+    ai:      ["AI + me = dangerous combo ??","While you sleep I generate cinemas ??","The future is now and I'm already 3 steps ahead ?"],
+    contact: ["DM me! Seriously ??","I reply faster than your WiFi loads ??","Let's make something people stop and say 'wait WHO made this'"],
+    idle:    ["Still reading? Respect ??","bro appreciate the design a little ??","I see you lurking ??","You good? Need anything?","This rope is getting heavy ngl ??","*checks watch* yep still swinging","Living rent free on your screen ??"],
+    touch:   ["OI hands to yourself ??","Hey that tickles!! ??","Watch the fit bro!! ??","OK OK I see you ??","bro chill ??","You clicked me?? Rude ??"],
+    section_change: ["Oh we're in {section} now ??","Entering {section}…","Nice section right? ??"],
   };
 
-  /* -- DOM scaffold -- */
-  const el = document.createElement('div');
-  el.id = 'ash-mascot';
-  el.innerHTML = `
-    <div id="ash-body">
-      <div id="ash-bubble" class="ash-bubble hidden"></div>
-      <div id="ash-char"></div>
+  function randLine(pool) { return pool[Math.floor(Math.random() * pool.length)]; }
+
+  function sectionName(key) {
+    const map = {hero:'the Hero',story:'My Story',service:'Services',work:'My Work',video:'Video Highlights',ai:'AI Zone',contact:'Contact'};
+    return map[key] || key;
+  }
+
+  /* === BUILD DOM === */
+  // Rope guide line
+  const ropeLine = document.createElement('div');
+  ropeLine.id = 'ash-rope-line';
+  document.body.appendChild(ropeLine);
+
+  // Main mascot container
+  const mascot = document.createElement('div');
+  mascot.id = 'ash-mascot';
+  mascot.innerHTML = `
+    <div id="ash-body" class="ash-hidden">
+      <div id="ash-bubble" class="hidden"><span class="ash-name-chip">ASH</span><span id="ash-msg"></span></div>
+      <img id="ash-char" src="assets/images/ash3d.png" alt="Ash the mascot" draggable="false" />
     </div>
     <div id="ash-blackhole"></div>
   `;
-  document.body.appendChild(el);
+  document.body.appendChild(mascot);
 
-  const body   = document.getElementById('ash-body');
-  const char   = document.getElementById('ash-char');
-  const bubble = document.getElementById('ash-bubble');
-  const hole   = document.getElementById('ash-blackhole');
+  const body      = document.getElementById('ash-body');
+  const charEl    = document.getElementById('ash-char');
+  const bubble    = document.getElementById('ash-bubble');
+  const msgEl     = document.getElementById('ash-msg');
+  const hole      = document.getElementById('ash-blackhole');
 
-  /* -- state -- */
-  let posY = -20;          // % of total page height (0=top, 100=bottom)
-  let falling = false;
-  let chatting = false;
-  let chatTimer = null;
-  let loopTimer = null;
+  /* === STATE === */
+  let posY        = -10;      // % of total page height
+  let running     = false;
+  let chatting    = false;
+  let rafId       = null;
   let bubbleTimer = null;
+  let lastSection = '';
 
-  /* -- section map -- */
-  function getSectionAt(scrollPct) {
-    if (scrollPct < 12)  return 'hero';
-    if (scrollPct < 28)  return 'story';
-    if (scrollPct < 45)  return 'service';
-    if (scrollPct < 58)  return 'work';
-    if (scrollPct < 72)  return 'video';
-    if (scrollPct < 85)  return 'ai';
-    return 'contact';
+  /* === STATE HELPER === */
+  function setState(state) {
+    body.className = '';          // clear all
+    if (state !== 'hidden') body.classList.add('ash-state-' + state);
+    else body.classList.add('ash-hidden');
   }
 
-  /* -- speech bubble -- */
-  function say(text, duration) {
+  /* === SPEECH === */
+  function say(text, hold) {
     clearTimeout(bubbleTimer);
-    bubble.textContent = text;
+    msgEl.textContent = text;
     bubble.classList.remove('hidden');
-    bubble.classList.add('pop');
-    setTimeout(() => bubble.classList.remove('pop'), 10);
-    bubbleTimer = setTimeout(() => bubble.classList.add('hidden'), duration || 3200);
+    bubble.classList.remove('pop');
+    void bubble.offsetWidth;   // reflow to retrigger animation
+    bubble.classList.add('visible','pop');
+    setState('talk');
+    bubbleTimer = setTimeout(() => {
+      bubble.classList.add('hidden');
+      bubble.classList.remove('visible');
+    }, hold || BUBBLE_HOLD);
   }
 
-  function sayRandom(pool) {
-    say(pool[Math.floor(Math.random() * pool.length)]);
-  }
-
-  /* -- character pose -- */
-  const POSES = { fall:'fall', wave:'wave', land:'land', hole:'hole', spawn:'spawn' };
-  function setPose(p) {
-    char.className = 'ash-pose-' + p;
-  }
-
-  /* -- animate fall loop -- */
-  function doFall() {
-    falling = true;
-    setPose(POSES.fall);
-    posY = -8;  // start just above viewport
-    renderPos();
-
-    const totalDoc = document.documentElement.scrollHeight;
-    const speed = isMobile ? 0.045 : 0.032;  // % per frame
-    let lastSection = '';
-    let pauseAt = pickRandomPausePoint();
-
-    function step() {
-      if (!falling) return;
-      posY += speed;
-
-      const scrollPct = posY;
-      const section = getSectionAt(scrollPct);
-
-      // Section-change quip
-      if (section !== lastSection) {
-        lastSection = section;
-        setTimeout(() => {
-          if (!chatting) sayRandom(SPEECHES[section] || SPEECHES.idle);
-        }, 600);
-      }
-
-      // Pause at random points to interact
-      if (Math.abs(posY - pauseAt) < speed * 2 && !chatting) {
-        chatting = true;
-        setPose(POSES.wave);
-        sayRandom(SPEECHES.idle);
-        chatTimer = setTimeout(() => {
-          chatting = false;
-          setPose(POSES.fall);
-          pauseAt = posY + 12 + Math.random() * 20;  // next pause
-          loopTimer = requestAnimationFrame(step);
-        }, 3000);
-        return;
-      }
-
-      renderPos();
-
-      if (posY >= 96) {
-        // Reached bottom — fall into black hole
-        triggerBlackHole();
-        return;
-      }
-
-      loopTimer = requestAnimationFrame(step);
-    }
-    loopTimer = requestAnimationFrame(step);
-  }
-
-  function pickRandomPausePoint() {
-    // Pause somewhere between 15% and 75%
-    return 15 + Math.random() * 60;
-  }
-
-  /* -- render position on page -- */
+  /* === RENDER POSITION === */
   function renderPos() {
     const totalH = document.documentElement.scrollHeight;
     const px = totalH * (posY / 100);
     body.style.transform = `translateY(${px}px)`;
   }
 
-  /* -- black hole sequence -- */
-  function triggerBlackHole() {
-    falling = false;
-    setPose(POSES.hole);
-    say("see ya on the other side... ??", 2500);
-    body.classList.add('falling-into-hole');
-    hole.classList.add('active');
+  /* === SECTION DETECTOR === */
+  function getSection() {
+    const pct = posY;
+    if (pct < 12)  return 'hero';
+    if (pct < 28)  return 'story';
+    if (pct < 45)  return 'service';
+    if (pct < 58)  return 'work';
+    if (pct < 72)  return 'video';
+    if (pct < 85)  return 'ai';
+    return 'contact';
+  }
 
+  /* === PAUSE MID-FALL === */
+  let nextPauseY  = getRandPause();
+  function getRandPause() { return 18 + Math.random() * 55; }
+
+  function pauseAndChat(resumeFn) {
+    chatting = true;
+    cancelAnimationFrame(rafId);
+    setState('wave');
+    say(randLine(LINES.idle));
     setTimeout(() => {
-      body.classList.remove('falling-into-hole');
-      body.classList.add('hidden');
+      chatting = false;
+      nextPauseY = posY + 10 + Math.random() * 30;
+      setState('fall');
+      resumeFn();
+    }, PAUSE_HOLD);
+  }
+
+  /* === FALL LOOP === */
+  function fall() {
+    running = true;
+    setState('fall');
+
+    function step() {
+      if (chatting) return;
+      posY += FALL_SPEED;
+
+      // Section quip on change
+      const sec = getSection();
+      if (sec !== lastSection) {
+        lastSection = sec;
+        setTimeout(() => {
+          if (!chatting) {
+            const line = randLine(LINES[sec] || LINES.idle);
+            say(line, 3000);
+            setState('talk');
+            setTimeout(() => { if (!chatting) setState('fall'); }, 3200);
+          }
+        }, 400);
+      }
+
+      // Random pause mid-fall
+      if (posY >= nextPauseY && posY < 88) {
+        pauseAndChat(() => { rafId = requestAnimationFrame(step); });
+        return;
+      }
+
+      renderPos();
+
+      if (posY >= 96) {
+        blackHoleSequence();
+        return;
+      }
+      rafId = requestAnimationFrame(step);
+    }
+    rafId = requestAnimationFrame(step);
+  }
+
+  /* === BLACK HOLE SEQUENCE === */
+  function blackHoleSequence() {
+    running = false;
+    chatting = false;
+    cancelAnimationFrame(rafId);
+    setState('fall-hole');
+    say("See ya on the other side… ??", 2200);
+
+    // Activate hole
+    setTimeout(() => { hole.classList.add('active'); }, 400);
+
+    // Hide body after animation
+    setTimeout(() => {
+      setState('hidden');
       hole.classList.remove('active');
     }, 1400);
 
+    // Respawn after gap
     setTimeout(() => {
-      body.classList.remove('hidden');
-      body.classList.add('spawning');
-      setPose(POSES.spawn);
-      posY = -8;
+      posY = -10;
       renderPos();
-      say("RESPAWN! Back at it ??", 2000);
+      nextPauseY = getRandPause();
+      lastSection = '';
+      setState('spawn');
+      body.classList.remove('ash-hidden');
+      say("RESPAWN! Back on the rope ??", 2500);
       setTimeout(() => {
-        body.classList.remove('spawning');
-        doFall();
+        fall();
       }, 1200);
-    }, 3800);
+    }, 4000);
   }
 
-  /* -- user touch/click interaction -- */
-  body.addEventListener('click', (e) => {
+  /* === USER INTERACTION (click / touch) === */
+  body.addEventListener('pointerdown', (e) => {
     e.stopPropagation();
     if (chatting) return;
     chatting = true;
-    cancelAnimationFrame(loopTimer);
-    setPose(POSES.wave);
-    sayRandom(SPEECHES.touch);
+    cancelAnimationFrame(rafId);
+    const reaction = randLine(LINES.touch);
+    setState('touch');
+    say(reaction, 2500);
     setTimeout(() => {
       chatting = false;
-      setPose(POSES.fall);
-      if (falling) {
-        loopTimer = requestAnimationFrame(function step() {
-          if (!falling || chatting) return;
-          posY += 0.032;
+      setState(running ? 'fall' : 'wave');
+      if (running) {
+        rafId = requestAnimationFrame(function loop() {
+          if (chatting) return;
+          posY += FALL_SPEED;
           renderPos();
-          if (posY >= 96) { triggerBlackHole(); return; }
-          loopTimer = requestAnimationFrame(step);
+          if (posY >= 96) { blackHoleSequence(); return; }
+          if (posY >= nextPauseY && posY < 88) {
+            pauseAndChat(() => { rafId = requestAnimationFrame(loop); });
+            return;
+          }
+          rafId = requestAnimationFrame(loop);
         });
       }
-    }, 2800);
+    }, 2700);
   });
 
-  /* -- dismiss bubble on scroll stop -- */
-  let scrollDebounce;
-  window.addEventListener('scroll', () => {
-    clearTimeout(scrollDebounce);
-    scrollDebounce = setTimeout(() => {
-      if (!chatting && !bubble.classList.contains('hidden')) {
-        bubble.classList.add('hidden');
-      }
-    }, 4000);
-  }, { passive: true });
-
-  /* -- kick off after a short delay -- */
+  /* === KICK OFF === */
   setTimeout(() => {
-    setPose(POSES.spawn);
-    posY = -8;
+    posY = -10;
     renderPos();
-    body.classList.remove('hidden');
-    say("Yo! I'm Ash ?? Your scroll buddy fr", 3000);
-    setTimeout(doFall, 1600);
-  }, 2400);
+    setState('spawn');
+    body.classList.remove('ash-hidden');
+    say("Yo! I'm Ash ?? Your scroll buddy", 3000);
+    setTimeout(() => { fall(); }, 1800);
+  }, 2200);
+
+  /* === VISIBILITY — pause when tab hidden === */
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { cancelAnimationFrame(rafId); }
+    else if (running && !chatting) {
+      rafId = requestAnimationFrame(function loop() {
+        if (chatting || !running) return;
+        posY += FALL_SPEED;
+        renderPos();
+        if (posY >= 96) { blackHoleSequence(); return; }
+        rafId = requestAnimationFrame(loop);
+      });
+    }
+  });
 
 })();
+
+/* -- VIDEO LIGHTBOX -- */
+function openVideoLightbox(src) {
+  const lb = document.getElementById('video-lightbox');
+  const vid = document.getElementById('vlb-video');
+  const source = document.getElementById('vlb-source');
+  source.src = src;
+  vid.load();
+  vid.play();
+  lb.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeVideoLightbox() {
+  const lb = document.getElementById('video-lightbox');
+  const vid = document.getElementById('vlb-video');
+  vid.pause();
+  vid.currentTime = 0;
+  lb.classList.remove('active');
+  document.body.style.overflow = 'auto';
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeVideoLightbox(); closeLightbox(); }
+});

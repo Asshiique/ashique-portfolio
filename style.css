@@ -2093,155 +2093,283 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 }
 
 /* ------------------------------------------------------
-   ASH MASCOT — Character CSS
-   ------------------------------------------------------ */
 
+/* ----------------------------------------------------------
+   ASH — 3D ROPE-SWING MASCOT CHARACTER
+   Full background-removed PNG with CSS 3D body animations
+   ---------------------------------------------------------- */
+
+/* Mascot root — absolute on the page, moves with JS translateY */
 #ash-mascot {
   position: absolute;
-  top: 0; right: 24px;
-  width: 90px;
+  top: 0;
+  right: 20px;
+  width: 110px;
   pointer-events: none;
-  z-index: 800;
+  z-index: 900;
 }
 
+/* Body wrapper — JS moves this via transform: translateY(npx) */
 #ash-body {
   position: absolute;
   top: 0; right: 0;
-  width: 90px;
+  width: 110px;
   pointer-events: all;
   cursor: pointer;
   will-change: transform;
-  transition: opacity .4s;
 }
-#ash-body.hidden { opacity: 0; pointer-events: none; }
 
-/* The character image — shows only the swinging/falling portion */
+/* The actual 3D character image */
 #ash-char {
-  width: 90px;
-  height: 130px;
-  background: url('assets/images/ash_sprite.png') no-repeat;
-  image-rendering: crisp-edges;
-  filter: drop-shadow(0 8px 24px rgba(0,0,0,.55));
-  transition: background-position .25s;
+  width: 110px;
+  height: auto;
+  display: block;
+  /* Start with the rope-swing image */
+  content: url('assets/images/ash3d.png');
+  transform-origin: 55px 0px; /* anchor at top-centre (rope grip) */
+  filter: drop-shadow(0 12px 32px rgba(0,0,0,.55));
+  image-rendering: -webkit-optimize-contrast;
 }
 
-/* Poses — crop from the sprite sheet regions */
-.ash-pose-fall   { background-size: 280px !important; background-position: -14px -14px !important; }
-.ash-pose-wave   { background-size: 420px !important; background-position: -310px -540px !important; }
-.ash-pose-land   { background-size: 420px !important; background-position: -5px -535px !important; }
-.ash-pose-spawn  { background-size: 280px !important; background-position: -14px -14px !important; animation: ashSpawn .6s ease; }
-.ash-pose-hole   { background-size: 280px !important; background-position: -14px -14px !important; animation: ashSpin .4s linear infinite; }
-
-@keyframes ashSpawn {
-  from { transform: scale(0) rotate(-180deg); opacity: 0; }
-  to   { transform: scale(1) rotate(0deg);    opacity: 1; }
-}
-@keyframes ashSpin {
-  to { transform: rotate(360deg) scale(0.3); }
+/* -- FALL / ROPE SWING ----------------------------------- */
+.ash-state-fall #ash-char {
+  animation:
+    ropeSwing   2.6s ease-in-out infinite,
+    bodyBob     1.3s ease-in-out infinite,
+    depthPulse  2.6s ease-in-out infinite;
 }
 
-/* Falling physics feel */
-.ash-pose-fall {
-  animation: ashWiggle 1.8s ease-in-out infinite;
-}
-@keyframes ashWiggle {
-  0%,100% { transform: rotate(-6deg) translateX(0); }
-  25%      { transform: rotate(4deg)  translateX(3px); }
-  75%      { transform: rotate(-3deg) translateX(-3px); }
-}
-
-/* Falling into black hole */
-#ash-body.falling-into-hole {
-  animation: suckIn .8s ease-in forwards;
-}
-@keyframes suckIn {
-  to { transform: translateY(60px) scale(0.05) rotate(720deg); opacity: 0; }
+/* Lateral swing on the rope like a pendulum */
+@keyframes ropeSwing {
+  0%   { transform: rotate(-14deg) translateX(0)    perspective(400px) rotateY(8deg);  }
+  25%  { transform: rotate(0deg)   translateX(4px)  perspective(400px) rotateY(0deg);  }
+  50%  { transform: rotate(14deg)  translateX(0)    perspective(400px) rotateY(-8deg); }
+  75%  { transform: rotate(0deg)   translateX(-4px) perspective(400px) rotateY(0deg);  }
+  100% { transform: rotate(-14deg) translateX(0)    perspective(400px) rotateY(8deg);  }
 }
 
-/* Spawning at top */
-#ash-body.spawning {
-  animation: burstOut .6s cubic-bezier(.17,.67,.83,.67) forwards;
-}
-@keyframes burstOut {
-  from { transform: scale(0) translateY(-30px); opacity: 0; }
-  to   { transform: scale(1) translateY(0);     opacity: 1; }
+/* Subtle vertical bob — body weight shifting */
+@keyframes bodyBob {
+  0%,100% { margin-top: 0;   }
+  50%      { margin-top: 5px; }
 }
 
-/* -- Speech bubble -- */
-.ash-bubble {
+/* Scale depth illusion — bigger at bottom of swing (closer), smaller at top */
+@keyframes depthPulse {
+  0%,100% { filter: drop-shadow(0 10px 28px rgba(0,0,0,.45)) brightness(0.95); }
+  50%      { filter: drop-shadow(0 18px 40px rgba(0,0,0,.65)) brightness(1.05); }
+}
+
+/* -- IDLE / WAVE ----------------------------------------- */
+.ash-state-wave #ash-char {
+  animation:
+    waveBody    0.6s ease-in-out infinite alternate,
+    depthPulse  2s   ease-in-out infinite;
+}
+
+@keyframes waveBody {
+  from { transform: rotate(-5deg) perspective(400px) rotateY(-10deg) scale(1.02); }
+  to   { transform: rotate(5deg)  perspective(400px) rotateY(10deg)  scale(1.04); }
+}
+
+/* -- TALKING (speech active) ----------------------------- */
+.ash-state-talk #ash-char {
+  animation:
+    talkBob     0.4s ease-in-out infinite alternate,
+    depthPulse  1.8s ease-in-out infinite;
+}
+
+@keyframes talkBob {
+  from { transform: perspective(400px) rotateY(-6deg) translateY(0)   scale(1);    }
+  to   { transform: perspective(400px) rotateY(6deg)  translateY(-3px) scale(1.03); }
+}
+
+/* -- FALLING INTO BLACK HOLE ----------------------------- */
+.ash-state-fall-hole #ash-char {
+  animation: suckInto 1.1s ease-in forwards;
+}
+
+@keyframes suckInto {
+  0%   { transform: scale(1)    rotate(0deg)   translateY(0);   opacity: 1; }
+  40%  { transform: scale(0.7)  rotate(180deg) translateY(20px); opacity: 0.9; }
+  70%  { transform: scale(0.3)  rotate(540deg) translateY(50px); opacity: 0.5; }
+  100% { transform: scale(0.05) rotate(900deg) translateY(80px); opacity: 0; }
+}
+
+/* -- SPAWNING -------------------------------------------- */
+.ash-state-spawn #ash-char {
+  animation: popIn 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes popIn {
+  0%   { transform: scale(0)    rotate(-180deg) translateY(-40px); opacity: 0; }
+  60%  { transform: scale(1.12) rotate(8deg)   translateY(4px);   opacity: 1; }
+  80%  { transform: scale(0.96) rotate(-3deg)  translateY(0);     opacity: 1; }
+  100% { transform: scale(1)    rotate(0deg)   translateY(0);     opacity: 1; }
+}
+
+/* -- TOUCHED --------------------------------------------- */
+.ash-state-touch #ash-char {
+  animation: touchReact 0.5s ease-out;
+}
+
+@keyframes touchReact {
+  0%   { transform: scale(1)    rotate(0deg);   }
+  20%  { transform: scale(1.2)  rotate(-15deg); }
+  50%  { transform: scale(0.95) rotate(12deg);  }
+  75%  { transform: scale(1.05) rotate(-5deg);  }
+  100% { transform: scale(1)    rotate(0deg);   }
+}
+
+/* -- ROPE LINE (visual guide) ---------------------------- */
+#ash-rope-line {
+  position: fixed;
+  top: 0; right: 71px;
+  width: 2px;
+  height: 100vh;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(230,126,34,0.15) 10%,
+    rgba(230,126,34,0.08) 80%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 899;
+}
+
+/* -- SPEECH BUBBLE --------------------------------------- */
+#ash-bubble {
   position: absolute;
-  bottom: 138px; right: 0px;
-  min-width: 160px; max-width: 220px;
-  background: #fff;
-  color: #111;
-  border-radius: 14px 14px 4px 14px;
-  padding: 9px 14px;
+  bottom: 130px;
+  right: 115px;
+  min-width: 160px;
+  max-width: 210px;
+  background: #fffef8;
+  color: #1a1208;
+  border-radius: 16px 16px 4px 16px;
+  padding: 10px 14px;
   font-family: "DM Sans", sans-serif;
-  font-size: .78rem; font-weight: 600; line-height: 1.45;
-  box-shadow: 0 8px 32px rgba(0,0,0,.22), 0 2px 8px rgba(0,0,0,.1);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.5;
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.25),
+    0 2px 6px rgba(0,0,0,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.8);
   pointer-events: none;
   white-space: normal;
-  transition: opacity .3s, transform .3s;
   transform-origin: bottom right;
+  transition: opacity 0.3s, transform 0.3s;
+  border: 1.5px solid rgba(230,126,34,0.2);
 }
-.ash-bubble::after {
+
+/* Bubble tail */
+#ash-bubble::after {
   content: '';
   position: absolute;
-  bottom: -8px; right: 18px;
+  bottom: -9px; right: 18px;
   width: 0; height: 0;
-  border-left: 8px solid transparent;
-  border-top: 8px solid #fff;
-}
-.ash-bubble.hidden { opacity: 0; transform: scale(0.85); pointer-events: none; }
-.ash-bubble.pop    { animation: bubblePop .25s cubic-bezier(.17,.67,.83,.67); }
-@keyframes bubblePop {
-  0%   { transform: scale(0.7); opacity: 0; }
-  60%  { transform: scale(1.08); }
-  100% { transform: scale(1);    opacity: 1; }
+  border-left: 9px solid transparent;
+  border-top: 9px solid #fffef8;
+  filter: drop-shadow(0 2px 1px rgba(0,0,0,0.08));
 }
 
-/* -- Black hole at bottom -- */
+#ash-bubble.hidden {
+  opacity: 0;
+  transform: scale(0.8) translateY(8px);
+  pointer-events: none;
+}
+
+#ash-bubble.visible {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+#ash-bubble.pop {
+  animation: bubblePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes bubblePop {
+  0%   { transform: scale(0.6) translateY(10px); opacity: 0; }
+  65%  { transform: scale(1.06) translateY(-2px); opacity: 1; }
+  100% { transform: scale(1) translateY(0);       opacity: 1; }
+}
+
+/* Name chip in bubble */
+#ash-bubble .ash-name-chip {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #e67e22;
+  margin-bottom: 4px;
+  opacity: 0.9;
+}
+
+/* -- BLACK HOLE ------------------------------------------- */
 #ash-blackhole {
   position: fixed;
-  bottom: -80px; right: 40px;
-  width: 60px; height: 60px;
+  bottom: 24px;
+  right: 24px;
+  width: 0; height: 0;
   border-radius: 50%;
-  background: radial-gradient(circle, #000 30%, #4a0080 60%, transparent 80%);
-  box-shadow: 0 0 30px 10px rgba(100,0,200,.4), inset 0 0 20px rgba(0,0,0,1);
   pointer-events: none;
-  opacity: 0; transform: scale(0);
-  transition: opacity .5s, transform .5s;
-  z-index: 799;
+  z-index: 898;
+  transition: width 0.4s, height 0.4s, opacity 0.4s;
+  opacity: 0;
+  transform: translateX(50%) translateY(50%);
 }
+
 #ash-blackhole.active {
-  opacity: 1; transform: scale(1);
-  animation: holePulse 1s ease-in-out infinite;
-  bottom: 20px;
+  width: 80px; height: 80px;
+  opacity: 1;
+  transform: translateX(0) translateY(0);
+  background: radial-gradient(
+    circle,
+    #000 0%,
+    #1a0030 35%,
+    #3d0070 55%,
+    rgba(100,0,200,0.4) 70%,
+    transparent 85%
+  );
+  box-shadow:
+    0 0 40px 15px rgba(120,0,220,0.5),
+    0 0 80px 30px rgba(80,0,160,0.25),
+    inset 0 0 30px rgba(0,0,0,1);
+  animation: holeSpin 2s linear infinite, holePulse 1.2s ease-in-out infinite;
 }
+
+@keyframes holeSpin {
+  to { transform: rotate(360deg); }
+}
+
 @keyframes holePulse {
-  0%,100% { box-shadow: 0 0 30px 10px rgba(100,0,200,.4), inset 0 0 20px #000; }
-  50%      { box-shadow: 0 0 50px 20px rgba(150,0,255,.6), inset 0 0 30px #000; }
+  0%,100% { box-shadow: 0 0 40px 15px rgba(120,0,220,.5), inset 0 0 30px #000; }
+  50%      { box-shadow: 0 0 70px 25px rgba(180,0,255,.7), inset 0 0 40px #000; }
 }
 
-/* Mobile: hide on very small or slow */
-@media (max-width: 400px) { #ash-mascot { display: none; } }
+/* -- HIDDEN STATE ----------------------------------------- */
+#ash-body.ash-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
 
-/* ------------------------------------------------------
-   PERFORMANCE CSS
-   ------------------------------------------------------ */
+/* -- RESPONSIVE ------------------------------------------- */
+@media (max-width: 480px) {
+  #ash-mascot { right: 6px; width: 80px; }
+  #ash-char   { width: 80px; }
+  #ash-bubble { min-width: 130px; max-width: 170px; right: 90px; font-size: 0.72rem; }
+  #ash-rope-line { right: 51px; }
+}
 
-/* Lazy render off-screen content */
+/* -- PERFORMANCE CSS ------------------------------------- */
 #services, #work, #videos, #ai, #contact, footer {
   content-visibility: auto;
   contain-intrinsic-size: 0 600px;
 }
-
-/* Preloader faster transition */
-#preloader.hidden {
-  transition-duration: .35s !important;
-}
-
-/* Reduce heavy animation on mobile */
+#preloader.hidden { transition-duration: .35s !important; }
 @media (max-width: 768px) {
   .glitch::before, .glitch::after { display: none; }
   .hero-bg-word { display: none; }
@@ -2249,6 +2377,4 @@ p, .ch-body-txt, .ch-lead, .service-card p,
   .tb1, .tb4 { left: 2px !important; right: auto; }
   .tb2, .tb3 { right: 2px !important; left: auto; }
 }
-
-/* Preload="none" fallback indicator */
 .vid-preview { background: #0a0a0a; }
