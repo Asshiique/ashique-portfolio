@@ -2619,3 +2619,32 @@ p, .ch-body-txt, .ch-lead, .service-card p,
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
+/* === ASH CANVAS (Three.js 3D) === */
+#ash-canvas {
+  display: block;
+  width: 130px;
+  height: 310px;
+  pointer-events: none;
+  filter: drop-shadow(0 16px 40px rgba(0,0,0,0.6));
+}
+/* Fallback PNG (shown while 3D loads or on error) */
+#ash-char-fb {
+  width: 120px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  filter: drop-shadow(0 12px 32px rgba(0,0,0,0.55));
+  transform-origin: 50% 0%;
+}
+/* Adjust mascot container height for taller 3D model */
+#ash-mascot  { width: 140px; }
+#ash-body    { width: 140px; }
+@media (max-width: 768px) {
+  #ash-canvas { width: 100px; height: 238px; }
+  #ash-mascot, #ash-body { width: 108px; }
+}
+@media (max-width: 480px) {
+  #ash-canvas { width: 80px; height: 190px; }
+  #ash-mascot, #ash-body { width: 88px; bottom: 28px; }
+  #ash-bubble { right: 96px; bottom: 110px; }
+}

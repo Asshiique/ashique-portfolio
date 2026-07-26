@@ -415,66 +415,53 @@ document.addEventListener("keydown", function(e) {
     setTimeout(setup, 500);
   }
 })();
-/* ASH MASCOT ENGINE v3 - Physics + Emotions + Pseudo-3D */
+/* ASH MASCOT ENGINE v4 - Three.js 3D + Physics + Emotions */
 (function() {
   'use strict';
 
-  /* === CONFIG === */
   var CFG = {
-    IDLE_TIMEOUT:     10000,  /* ms before sleeping */
-    FAST_SCROLL:      12,     /* px/frame = dizzy */
-    ROPE_STIFFNESS:   0.055,
-    ROPE_DAMPING:     0.87,
-    CURSOR_LERP:      0.04,   /* head tracking speed */
-    MAX_ROT_Y:        15,     /* max horizontal tilt */
-    MAX_ROT_X:        9,      /* max vertical tilt */
-    SPEAK_COOLDOWN:   5500,
+    IDLE_TIMEOUT:   10000,
+    FAST_SCROLL:    12,
+    ROPE_STIFFNESS: 0.055,
+    ROPE_DAMPING:   0.87,
+    CURSOR_LERP:    0.04,
+    SPEAK_COOLDOWN: 5500,
   };
 
-  /* === SPEECH === */
   var SPEECH = {
-    hero:    ["That's literally me up there!", "Welcome to the world of Ashique", "Scroll down, it gets way better"],
-    story:   ["This is my origin story fr", "English Lit to design. Plot twist", "Every scar is a chapter"],
-    service: ["Pick a service. I won't let you down", "I don't just deliver. I cook", "AI + design? Yeah I do both"],
-    work:    ["Every pixel placed with intention", "Tap to see it bigger", "These took real hours bro"],
-    video:   ["Press play! Don't be shy", "These cuts go hard ngl", "Best with headphones"],
-    ai:      ["AI plus me equals dangerous", "The future is now", "3 steps ahead, always"],
-    contact: ["YO! We made it to contact!!", "DM me I reply fast", "Let's make something great"],
-    idle:    ["Still here? Respect", "I see you...", "bro...", "Take your time I'm not going anywhere"],
+    hero:    ["That's literally me up there!", "Welcome to my world", "Scroll down, gets way better"],
+    story:   ["My origin story fr", "English Lit to design. Plot twist", "Every scar is a chapter"],
+    service: ["Pick a service. I won't disappoint", "I don't just deliver. I cook"],
+    work:    ["Every pixel with intention", "Tap to see bigger", "These took real hours bro"],
+    video:   ["Press play! Don't be shy", "These cuts go hard ngl"],
+    ai:      ["AI plus me equals dangerous", "3 steps ahead always"],
+    contact: ["YO! We made it to contact!!", "DM me I reply fast"],
+    idle:    ["Still here? Respect", "I see you...", "bro...", "Take your time"],
     touch:   ["OI hands!", "Hey that tickles!", "bro CHILL", "You clicked me?? Rude"],
     dizzy:   ["bro SLOW DOWN", "I am getting dizzy!!", "my head..."],
     sleep:   ["*snoring*", "zzzzz...", "...hm? oh hey!"],
     wakeup:  ["WHOA! I'm awake!", "Oh hey! Was just resting", "Back! What did I miss?"],
   };
 
-  /* === EMOTIONS === */
   var EMO = {
-    idle:     "😎",
-    sleeping: "💤",
-    dizzy:    "😵",
-    waving:   "👋",
-    proud:    "🔥",
-    excited:  "🎉",
-    thinking: "🤔",
-    happy:    "😄",
-    shocked:  "😲",
+    idle:"😎", sleeping:"💤", dizzy:"😵", waving:"👋",
+    proud:"🔥", excited:"🎉", thinking:"🤔", happy:"😄", shocked:"😲",
   };
 
-  /* === STATE === */
-  var emotion      = "idle";
-  var lastSection  = "";
-  var isScrolling  = false;
-  var inHole       = false;
-  var lastSpoke    = 0;
-  var scrollSpeed  = 0;
-  var lastScrollY  = window.scrollY;
-  var rafId        = null;
+  /* State */
+  var emotion     = "idle";
+  var lastSection = "";
+  var isScrolling = false;
+  var inHole      = false;
+  var lastSpoke   = 0;
+  var scrollSpeed = 0;
+  var lastScrollY = window.scrollY;
 
   /* Rope physics */
-  var ropeAngle    = 0;
-  var ropeVel      = 0;
+  var ropeAngle = 0;
+  var ropeVel   = 0;
 
-  /* Pseudo-3D cursor tracking */
+  /* 3D rotation targets (cursor driven) */
   var tgtRotX = 0, tgtRotY = 0;
   var curRotX = 0, curRotY = 0;
   var cursorX = window.innerWidth  / 2;
@@ -484,29 +471,113 @@ document.addEventListener("keydown", function(e) {
   var scrollTimer   = null;
   var inactiveTimer = null;
   var bubTimer      = null;
+  var rafId         = null;
+
+  /* Three.js objects */
+  var threeScene, threeCamera, threeRenderer, ashModel, threeReady = false;
 
   /* === BUILD DOM === */
   var ropeLine = document.createElement("div");
-  ropeLine.id = "ash-rope-line";
+  ropeLine.id  = "ash-rope-line";
   document.body.appendChild(ropeLine);
 
   var wrap = document.createElement("div");
-  wrap.id = "ash-mascot";
+  wrap.id  = "ash-mascot";
   wrap.innerHTML =
     '<div id="ash-body" class="ash-hidden">' +
       '<div id="ash-bubble" class="hidden"><span class="ash-name-chip">ASH </span><span id="ash-msg"></span></div>' +
       '<div id="ash-emo-badge"></div>' +
-      '<img id="ash-char" src="assets/images/ash3d.png" alt="Ash" draggable="false" />' +
+      '<canvas id="ash-canvas" width="130" height="310"></canvas>' +
+      '<img id="ash-char-fb" src="assets/images/ash3d.png" alt="Ash" draggable="false" style="display:none;width:120px;" />' +
     '</div>' +
     '<div id="ash-blackhole"></div>';
   document.body.appendChild(wrap);
 
-  var ashBody   = document.getElementById("ash-body");
-  var ashBubble = document.getElementById("ash-bubble");
-  var ashMsg    = document.getElementById("ash-msg");
-  var ashHole   = document.getElementById("ash-blackhole");
-  var ashChar   = document.getElementById("ash-char");
-  var emoBadge  = document.getElementById("ash-emo-badge");
+  var ashBody  = document.getElementById("ash-body");
+  var ashBub   = document.getElementById("ash-bubble");
+  var ashMsg   = document.getElementById("ash-msg");
+  var ashHole  = document.getElementById("ash-blackhole");
+  var ashCanvas= document.getElementById("ash-canvas");
+  var ashFb    = document.getElementById("ash-char-fb");
+  var emoBadge = document.getElementById("ash-emo-badge");
+
+  /* === THREE.JS SETUP === */
+  function initThree() {
+    if (typeof THREE === "undefined") { useFallback(); return; }
+
+    try {
+      threeScene    = new THREE.Scene();
+      threeCamera   = new THREE.PerspectiveCamera(32, 130/310, 0.01, 100);
+      threeCamera.position.set(0, 0, 3.8);
+
+      threeRenderer = new THREE.WebGLRenderer({ canvas: ashCanvas, alpha: true, antialias: true });
+      threeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      threeRenderer.setSize(130, 310);
+      threeRenderer.setClearColor(0x000000, 0);
+      threeRenderer.shadowMap.enabled = false;
+
+      /* Lighting — portfolio orange + blue rim */
+      var ambient  = new THREE.AmbientLight(0xffffff, 0.35);
+      var keyLight = new THREE.DirectionalLight(0xff6820, 2.8);
+      keyLight.position.set(1.2, 1.5, 2.5);
+      var rimLight = new THREE.DirectionalLight(0x4488ff, 1.4);
+      rimLight.position.set(-2, 0.5, -1.5);
+      var fillLight= new THREE.DirectionalLight(0xffeedd, 0.6);
+      fillLight.position.set(0, -1, 1);
+      threeScene.add(ambient, keyLight, rimLight, fillLight);
+
+      /* Load GLB */
+      var loader = new THREE.GLTFLoader();
+      loader.load(
+        "assets/images/ash_mesh.glb",
+        function(gltf) {
+          ashModel = gltf.scene;
+
+          /* Compute normals + apply material */
+          ashModel.traverse(function(child) {
+            if (child.isMesh) {
+              child.geometry.computeVertexNormals();
+              child.material = new THREE.MeshStandardMaterial({
+                color:     0xeeeeee,
+                roughness: 0.45,
+                metalness: 0.08,
+              });
+              child.castShadow    = false;
+              child.receiveShadow = false;
+            }
+          });
+
+          /* Center model */
+          var box    = new THREE.Box3().setFromObject(ashModel);
+          var center = box.getCenter(new THREE.Vector3());
+          var size   = box.getSize(new THREE.Vector3());
+          ashModel.position.sub(center);
+
+          /* Scale to fit canvas (height ~1.96 units) */
+          var scale = 1.7 / Math.max(size.x, size.y, size.z);
+          ashModel.scale.setScalar(scale);
+
+          threeScene.add(ashModel);
+          threeReady = true;
+          ashCanvas.style.display = "block";
+          ashFb.style.display = "none";
+        },
+        undefined,
+        function(err) {
+          console.warn("ASH GLB load failed:", err);
+          useFallback();
+        }
+      );
+    } catch(e) {
+      useFallback();
+    }
+  }
+
+  function useFallback() {
+    ashCanvas.style.display = "none";
+    ashFb.style.display = "block";
+    threeReady = false;
+  }
 
   /* === HELPERS === */
   function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
@@ -527,20 +598,16 @@ document.addEventListener("keydown", function(e) {
     lastSpoke = now;
     clearTimeout(bubTimer);
     ashMsg.textContent = text;
-    ashBubble.classList.remove("hidden", "pop");
-    void ashBubble.offsetWidth;
-    ashBubble.classList.add("visible", "pop");
+    ashBub.classList.remove("hidden", "pop");
+    void ashBub.offsetWidth;
+    ashBub.classList.add("visible", "pop");
     bubTimer = setTimeout(function() {
-      ashBubble.classList.add("hidden");
-      ashBubble.classList.remove("visible");
+      ashBub.classList.add("hidden");
+      ashBub.classList.remove("visible");
     }, hold || 3500);
   }
 
-  function forceSpeak(text, hold) {
-    /* bypasses cooldown */
-    lastSpoke = 0;
-    say(text, hold);
-  }
+  function forceSpeak(text, hold) { lastSpoke = 0; say(text, hold); }
 
   function setState(state) {
     ashBody.className = "";
@@ -553,189 +620,143 @@ document.addEventListener("keydown", function(e) {
   }
 
   function getSection() {
-    var pct = getScrollPct();
-    if (pct < 10)  return "hero";
-    if (pct < 25)  return "story";
-    if (pct < 42)  return "service";
-    if (pct < 58)  return "work";
-    if (pct < 72)  return "video";
-    if (pct < 85)  return "ai";
+    var p = getScrollPct();
+    if (p < 10) return "hero";
+    if (p < 25) return "story";
+    if (p < 42) return "service";
+    if (p < 58) return "work";
+    if (p < 72) return "video";
+    if (p < 85) return "ai";
     return "contact";
   }
 
   /* === ANIMATION LOOP === */
   function animate() {
     /* Rope spring physics */
-    var target = isScrolling ? Math.max(-18, Math.min(18, scrollSpeed * 0.5)) : 0;
-    var spring = (target - ropeAngle) * CFG.ROPE_STIFFNESS;
-    ropeVel = (ropeVel + spring) * CFG.ROPE_DAMPING;
+    var target = isScrolling ? Math.max(-20, Math.min(20, scrollSpeed * 0.6)) : 0;
+    ropeVel = (ropeVel + (target - ropeAngle) * CFG.ROPE_STIFFNESS) * CFG.ROPE_DAMPING;
     ropeAngle += ropeVel;
 
-    /* Pseudo-3D cursor head tracking */
+    /* Cursor head tracking */
     var cx = window.innerWidth  / 2;
     var cy = window.innerHeight / 2;
-    var dx = (cursorX - cx) / Math.max(1, cx);
-    var dy = (cursorY - cy) / Math.max(1, cy);
-    tgtRotY = dx * CFG.MAX_ROT_Y;
-    tgtRotX = -dy * CFG.MAX_ROT_X * 0.5;
+    tgtRotY = ((cursorX - cx) / Math.max(1, cx))  *  22;
+    tgtRotX = ((cursorY - cy) / Math.max(1, cy))  * -10;
     curRotX += (tgtRotX - curRotX) * CFG.CURSOR_LERP;
     curRotY += (tgtRotY - curRotY) * CFG.CURSOR_LERP;
 
-    /* Apply transform — rope swing + head tracking combined */
-    if (ashChar) {
-      ashChar.style.transform =
-        "perspective(500px)" +
-        " rotateX(" + curRotX.toFixed(2) + "deg)" +
-        " rotateY(" + curRotY.toFixed(2) + "deg)" +
-        " rotateZ(" + ropeAngle.toFixed(2) + "deg)";
+    /* Drive Three.js model */
+    if (threeReady && ashModel) {
+      ashModel.rotation.y = (curRotY + ropeAngle * 0.6) * Math.PI / 180;
+      ashModel.rotation.x =  curRotX                   * Math.PI / 180;
+      ashModel.rotation.z =  ropeAngle                 * Math.PI / 180 * 0.25;
+      threeRenderer.render(threeScene, threeCamera);
+    } else if (!threeReady) {
+      /* Fallback PNG - CSS transform */
+      if (ashFb && ashFb.style.display !== "none") {
+        ashFb.style.transform =
+          "perspective(500px)" +
+          " rotateX(" + curRotX.toFixed(1) + "deg)" +
+          " rotateY(" + curRotY.toFixed(1) + "deg)" +
+          " rotateZ(" + ropeAngle.toFixed(1) + "deg)";
+      }
     }
 
     rafId = requestAnimationFrame(animate);
   }
 
-  /* === SCROLL HANDLER === */
+  /* === SCROLL === */
+  var scrollTimer2 = null;
   window.addEventListener("scroll", function() {
     if (inHole) return;
-
-    var sy   = window.scrollY;
+    var sy = window.scrollY;
     scrollSpeed = sy - lastScrollY;
     lastScrollY = sy;
-    isScrolling  = true;
+    isScrolling = true;
 
-    /* Wake from sleep */
-    if (emotion === "sleeping") {
-      setEmo("happy");
-      setState("wave");
-      forceSpeak(rand(SPEECH.wakeup), 2500);
-    }
+    if (emotion === "sleeping") { setEmo("happy"); setState("wave"); forceSpeak(rand(SPEECH.wakeup), 2500); }
+    if (Math.abs(scrollSpeed) > CFG.FAST_SCROLL && emotion !== "dizzy") { setEmo("dizzy"); say(rand(SPEECH.dizzy)); }
+    else if (emotion === "dizzy" && Math.abs(scrollSpeed) <= CFG.FAST_SCROLL) { setEmo("idle"); }
 
-    /* Fast scroll = dizzy */
-    var spd = Math.abs(scrollSpeed);
-    if (spd > CFG.FAST_SCROLL) {
-      if (emotion !== "dizzy") {
-        setEmo("dizzy");
-        say(rand(SPEECH.dizzy));
-      }
-    } else if (emotion === "dizzy") {
-      setEmo("idle");
-    }
+    ropeVel += scrollSpeed * 0.15;
 
-    /* Rope kick */
-    ropeVel += scrollSpeed * 0.12;
+    if (getScrollPct() >= 95) { triggerBlackHole(); return; }
 
-    /* Black hole at bottom */
-    if (getScrollPct() >= 95) {
-      triggerBlackHole();
-      return;
-    }
-
-    /* Section quip */
     var sec = getSection();
     if (sec !== lastSection) {
       lastSection = sec;
-      var sectionEmos = { hero:"waving", story:"thinking", service:"idle", work:"proud", video:"happy", ai:"excited", contact:"excited" };
-      setEmo(sectionEmos[sec] || "idle");
+      var sEmo = { hero:"waving", story:"thinking", service:"idle", work:"proud", video:"happy", ai:"excited", contact:"excited" };
+      setEmo(sEmo[sec] || "idle");
       setTimeout(function() { say(rand(SPEECH[sec] || SPEECH.idle)); }, 700);
     }
 
     setState("fall");
-
-    /* Reset inactive */
     clearTimeout(inactiveTimer);
-    clearTimeout(scrollTimer);
-    scrollTimer = setTimeout(function() {
+    clearTimeout(scrollTimer2);
+    scrollTimer2 = setTimeout(function() {
       isScrolling = false;
       setState("wave");
       if (emotion === "dizzy") setEmo("idle");
-      /* Idle sleep countdown */
       inactiveTimer = setTimeout(function() {
-        setEmo("sleeping");
-        setState("sleep");
-        forceSpeak(rand(SPEECH.sleep), 4000);
+        setEmo("sleeping"); setState("sleep"); forceSpeak(rand(SPEECH.sleep), 4000);
       }, CFG.IDLE_TIMEOUT);
     }, 900);
-
   }, { passive: true });
 
-  /* === CURSOR TRACKING === */
+  /* === CURSOR === */
   document.addEventListener("mousemove", function(e) {
-    cursorX = e.clientX;
-    cursorY = e.clientY;
+    cursorX = e.clientX; cursorY = e.clientY;
     if (emotion === "sleeping") {
-      setEmo("happy");
-      setState("wave");
-      forceSpeak(rand(SPEECH.wakeup), 2500);
+      setEmo("happy"); setState("wave"); forceSpeak(rand(SPEECH.wakeup), 2500);
       clearTimeout(inactiveTimer);
-      inactiveTimer = setTimeout(function() {
-        setEmo("sleeping");
-        setState("sleep");
-      }, CFG.IDLE_TIMEOUT);
+      inactiveTimer = setTimeout(function() { setEmo("sleeping"); setState("sleep"); }, CFG.IDLE_TIMEOUT);
     }
   });
 
-  /* === TOUCH / CLICK === */
+  /* === TOUCH === */
   ashBody.addEventListener("pointerdown", function(e) {
     e.stopPropagation();
     if (inHole) return;
     var wasSleeping = emotion === "sleeping";
-    setState("touch");
-    setEmo(wasSleeping ? "shocked" : "idle");
-    ropeVel += (Math.random() > 0.5 ? 4 : -4); /* random rope bounce */
+    setState("touch"); setEmo(wasSleeping ? "shocked" : "idle");
+    ropeVel += (Math.random() > 0.5 ? 5 : -5);
     forceSpeak(wasSleeping ? rand(SPEECH.wakeup) : rand(SPEECH.touch), 2500);
-    setTimeout(function() {
-      setState(isScrolling ? "fall" : "wave");
-    }, 2700);
+    setTimeout(function() { setState(isScrolling ? "fall" : "wave"); }, 2700);
   });
 
   /* === BLACK HOLE === */
   function triggerBlackHole() {
     if (inHole) return;
-    inHole = true;
-    setEmo("excited");
-    setState("fall-hole");
+    inHole = true; setEmo("excited"); setState("fall-hole");
     forceSpeak(rand(SPEECH.contact), 2000);
     setTimeout(function() { ashHole.classList.add("active"); }, 300);
+    setTimeout(function() { setState("hidden"); ashHole.classList.remove("active"); }, 1200);
     setTimeout(function() {
-      setState("hidden");
-      ashHole.classList.remove("active");
-    }, 1200);
-    setTimeout(function() {
-      inHole = false;
-      setEmo("happy");
-      setState("spawn");
+      inHole = false; setEmo("happy"); setState("spawn");
       ashBody.classList.remove("ash-hidden");
-      forceSpeak("Back from the void! Starting over!", 2500);
+      forceSpeak("Back from the void!", 2000);
       setTimeout(function() { setState("wave"); }, 900);
     }, 4500);
   }
 
-  /* === TAB VISIBILITY === */
+  /* === VISIBILITY === */
   document.addEventListener("visibilitychange", function() {
-    if (document.hidden) {
-      cancelAnimationFrame(rafId);
-      rafId = null;
-    } else if (!rafId) {
-      animate();
-    }
+    if (document.hidden) { cancelAnimationFrame(rafId); rafId = null; }
+    else if (!rafId) animate();
   });
 
   /* === KICK OFF === */
   setTimeout(function() {
-    setState("spawn");
-    ashBody.classList.remove("ash-hidden");
+    initThree();
+    setState("spawn"); ashBody.classList.remove("ash-hidden");
     setEmo("waving");
-    forceSpeak("Yo! I'm Ash, your scroll buddy!", 3500);
+    forceSpeak("Yo! I'm Ash, your 3D scroll buddy!", 3500);
     setTimeout(function() {
-      setState("wave");
-      setEmo("idle");
+      setState("wave"); setEmo("idle");
       lastSection = getSection();
       animate();
-      /* Start inactive countdown */
-      inactiveTimer = setTimeout(function() {
-        setEmo("sleeping");
-        setState("sleep");
-      }, CFG.IDLE_TIMEOUT);
-    }, 2000);
-  }, 2200);
+      inactiveTimer = setTimeout(function() { setEmo("sleeping"); setState("sleep"); }, CFG.IDLE_TIMEOUT);
+    }, 2200);
+  }, 2500);
 
 })();
