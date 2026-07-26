@@ -542,13 +542,7 @@
           </video>
           <div class="ai-vid-overlay"><span class="ai-chip">AI Generated</span><h4>AI Highlight #3</h4></div>
         </div>
-      
-        <div class="ai-vid-card ai-3d-vid-card" id="aiv-3d">
-          <video autoplay muted loop playsinline class="ai-vid ai-vid-bg-remove">
-            <source src="assets/videos/ai_3d_video.mp4" type="video/mp4" />
-          </video>
-          <div class="ai-vid-overlay"><span class="ai-chip ai-chip-3d">3D + AI</span><h4>AI 3D Creation</h4></div>
-        </div></div>
+      </div>
       <div class="ai-art-label-row">
         <span class="aal-line"></span><span class="aal-text">AI Art Direction</span><span class="aal-line"></span>
       </div>
@@ -722,6 +716,13 @@
 
   <script src="script.js"></script>
 
+  <!-- Floating AI 3D Video Avatar (bottom-left, visible in AI section) -->
+  <div id="ai3d-avatar" class="ai3d-avatar-hidden">
+    <video id="ai3d-video" autoplay muted loop playsinline>
+      <source src="assets/videos/ai_3d_video.mp4" type="video/mp4" />
+    </video>
+    <div class="ai3d-label">AI 3D</div>
+  </div>
   <!-- Three.js for Spider-Man 3D viewer -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>

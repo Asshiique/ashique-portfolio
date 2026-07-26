@@ -2767,3 +2767,45 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 @media (max-width: 480px) {
   #spideyCanvas { width: 180px; height: 240px; }
 }
+/* ===== FLOATING AI 3D VIDEO AVATAR ===== */
+#ai3d-avatar {
+  position: fixed;
+  bottom: 60px;
+  left: 12px;
+  width: 110px;
+  z-index: 998;
+  pointer-events: none;
+  transition: opacity 0.6s, transform 0.6s;
+  transform: translateY(20px);
+  opacity: 0;
+}
+#ai3d-avatar.ai3d-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+#ai3d-avatar.ai3d-avatar-hidden {
+  opacity: 0;
+  transform: translateY(30px);
+  pointer-events: none;
+}
+#ai3d-video {
+  display: block;
+  width: 110px;
+  height: auto;
+  /* Remove any remaining background */
+  mix-blend-mode: screen;
+  filter: drop-shadow(0 12px 30px rgba(0,0,0,0.5));
+}
+.ai3d-label {
+  text-align: center;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  margin-top: 4px;
+}
+@media (max-width: 480px) {
+  #ai3d-avatar { width: 80px; left: 6px; bottom: 40px; }
+  #ai3d-video  { width: 80px; }
+}

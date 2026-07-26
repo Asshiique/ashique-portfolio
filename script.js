@@ -708,3 +708,25 @@ document.addEventListener("keydown", function(e) {
   }, 2500);
 
 })();
+
+/* ===== FLOATING AI 3D AVATAR — show only in AI section ===== */
+(function () {
+  var avatar  = document.getElementById('ai3d-avatar');
+  var aiSec   = document.getElementById('ai');
+  if (!avatar || !aiSec) return;
+
+  function checkAISection() {
+    var rect    = aiSec.getBoundingClientRect();
+    var inView  = rect.top < window.innerHeight * 0.85 && rect.bottom > window.innerHeight * 0.15;
+    if (inView) {
+      avatar.classList.remove('ai3d-avatar-hidden');
+      avatar.classList.add('ai3d-visible');
+    } else {
+      avatar.classList.remove('ai3d-visible');
+      avatar.classList.add('ai3d-avatar-hidden');
+    }
+  }
+
+  window.addEventListener('scroll', checkAISection, { passive: true });
+  checkAISection();
+})();
