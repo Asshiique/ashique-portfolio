@@ -12,6 +12,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;900&family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+    <!-- Google model-viewer for 3D GLB -->
+    <script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
 </head>
 <body>
 
@@ -443,6 +445,38 @@
         <span class="vtb-serif">&amp; Motion</span>
         <span class="vtb-outline">HIGHLIGHTS</span>
       </div>
+      <div class="spidey-mv-row reveal" id="spideyWrap">
+        <!-- Spider-Man 3D -->
+        <div class="spidey-mv-card">
+          <div class="spidey-mv-label">
+            <span class="spidey-chip">3D Model</span>
+            <p class="spidey-mv-caption">Drag to spin &bull; Pinch to zoom</p>
+          </div>
+          <model-viewer
+            id="spideyViewer"
+            src="assets/images/spiderman.glb"
+            alt="Spider-Man 3D"
+            auto-rotate
+            camera-controls
+            autoplay
+            shadow-intensity="0.5"
+            exposure="1.2"
+            style="width:100%;height:340px;background:transparent;border-radius:16px;--progress-bar-color:#e63946;">
+          </model-viewer>
+        </div>
+        <!-- AI 3D Video -->
+        <div class="ai3d-vid-card">
+          <div class="spidey-mv-label">
+            <span class="spidey-chip ai-chip-3d">AI 3D Creation</span>
+            <p class="spidey-mv-caption">AI-generated 3D motion</p>
+          </div>
+          <div class="ai3d-vid-wrap">
+            <video autoplay muted loop playsinline class="ai3d-inline-vid">
+              <source src="assets/videos/ai_3d_video.mp4" type="video/mp4" />
+            </video>
+          </div>
+        </div>
+      </div>
       <div class="video-grid">
         <!-- Featured highlight edit -->
         <div class="video-card featured-video" id="vid1">
@@ -550,18 +584,6 @@
         <div class="ai-art-item" id="art1"><img src="assets/images/ai_art1.png" alt="AI Art 1" loading="lazy" /></div>
         <div class="ai-art-item" id="art2"><img src="assets/images/ai_art2.png" alt="AI Art 2" loading="lazy" /></div>
         <div class="ai-art-item" id="art3"><img src="assets/images/ai_art3.png" alt="AI Art 3" loading="lazy" /></div>
-      <!-- Spider-Man 3D Showcase -->
-      <div class="spidey-showcase reveal" id="spideyShowcase">
-        <div class="spidey-label">
-          <span class="spidey-chip">3D Model</span>
-          <p class="spidey-caption">Interactive 3D — drag to rotate</p>
-        </div>
-        <div class="spidey-canvas-wrap">
-          <canvas id="spideyCanvas"></canvas>
-          <div class="spidey-hint">&#x1F5B1; Drag &#x2022; Scroll to zoom</div>
-        </div>
-      </div>
-
         <div class="ai-art-item" id="art4"><img src="assets/images/ai_art4.png" alt="AI Art 4" loading="lazy" /></div>
         <div class="ai-art-item" id="art5"><img src="assets/images/ai_art5.png" alt="AI Art 5" loading="lazy" /></div>
         <div class="ai-art-item" id="art6"><img src="assets/images/ai_art6.png" alt="AI Art 6" loading="lazy" /></div>
@@ -716,16 +738,5 @@
 
   <script src="script.js"></script>
 
-  <!-- Floating AI 3D Video Avatar (bottom-left, visible in AI section) -->
-  <div id="ai3d-avatar" class="ai3d-avatar-hidden">
-    <video id="ai3d-video" autoplay muted loop playsinline>
-      <source src="assets/videos/ai_3d_video.mp4" type="video/mp4" />
-    </video>
-    <div class="ai3d-label">AI 3D</div>
-  </div>
-  <!-- Three.js for Spider-Man 3D viewer -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-  <script src="spidey3d.js"></script>
 </body>
 </html>
