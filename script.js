@@ -422,9 +422,9 @@ document.addEventListener("keydown", function(e) {
   var CFG = {
     IDLE_TIMEOUT:   10000,
     FAST_SCROLL:    12,
-    ROPE_STIFFNESS: 0.055,
-    ROPE_DAMPING:   0.87,
-    CURSOR_LERP:    0.04,
+    ROPE_STIFFNESS: 0.035,
+    ROPE_DAMPING:   0.90,
+    CURSOR_LERP:    0.022,
     SPEAK_COOLDOWN: 5500,
   };
 
@@ -486,8 +486,7 @@ document.addEventListener("keydown", function(e) {
         '<span class="ash-name-chip">ASH </span>' +
         '<span id="ash-msg"></span>' +
       '</div>' +
-      '<div id="ash-emo-badge"></div>' +
-      '<img id="ash-char" src="assets/images/ash_fullbody.png" alt="Ash" draggable="false" />' +
+      '<img id="ash-char" src="assets/images/ash3d.png" alt="Ash" draggable="false" />' +
     '</div>' +
     '<div id="ash-blackhole"></div>';
   document.body.appendChild(wrap);
@@ -496,18 +495,14 @@ document.addEventListener("keydown", function(e) {
   var ashBub   = document.getElementById("ash-bubble");
   var ashMsg   = document.getElementById("ash-msg");
   var ashHole  = document.getElementById("ash-blackhole");
-  var emoBadge = document.getElementById("ash-emo-badge");
+  var pendingEmo = "";
 
   /* === HELPERS === */
   function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
   function setEmo(em) {
-    emotion = em;
-    if (!EMO[em]) return;
-    emoBadge.textContent = EMO[em];
-    emoBadge.className   = "ash-emo-badge ash-emo-" + em;
-    emoBadge.classList.add("pop");
-    setTimeout(function() { emoBadge.classList.remove("pop"); }, 400);
+    emotion    = em;
+    pendingEmo = EMO[em] || "";
   }
 
   function say(text, hold) {
@@ -515,7 +510,7 @@ document.addEventListener("keydown", function(e) {
     if (now - lastSpoke < CFG.SPEAK_COOLDOWN) return;
     lastSpoke = now;
     clearTimeout(bubTimer);
-    ashMsg.textContent = text;
+    ashMsg.textContent = (pendingEmo ? pendingEmo + " " : "") + text;
     ashBub.classList.remove("hidden", "pop");
     void ashBub.offsetWidth;
     ashBub.classList.add("visible", "pop");
@@ -562,8 +557,8 @@ document.addEventListener("keydown", function(e) {
     /* Cursor head tracking */
     var cx  = window.innerWidth  / 2;
     var cy  = window.innerHeight / 2;
-    tgtRotY = ((cursorX - cx) / Math.max(1, cx)) *  20;
-    tgtRotX = ((cursorY - cy) / Math.max(1, cy)) * -8;
+    tgtRotY = ((cursorX - cx) / Math.max(1, cx)) *  8;
+    tgtRotX = ((cursorY - cy) / Math.max(1, cy)) * -4;
     curRotX += (tgtRotX - curRotX) * CFG.CURSOR_LERP;
     curRotY += (tgtRotY - curRotY) * CFG.CURSOR_LERP;
 
@@ -572,9 +567,9 @@ document.addEventListener("keydown", function(e) {
     if (ashChar && emotion !== "sleeping" && emotion !== "dizzy") {
       ashChar.style.transform =
         "perspective(600px)" +
-        " rotateY(" + (curRotY + ropeAngle * 0.35).toFixed(2) + "deg)" +
+        " rotateY(" + (curRotY + ropeAngle * 0.20).toFixed(2) + "deg)" +
         " rotateX(" + curRotX.toFixed(2)                      + "deg)" +
-        " rotateZ(" + (ropeAngle * 0.18).toFixed(2)           + "deg)";
+        " rotateZ(" + (ropeAngle * 0.10).toFixed(2)           + "deg)";
     }
 
     rafId = requestAnimationFrame(animate);
@@ -603,7 +598,7 @@ document.addEventListener("keydown", function(e) {
     }
 
     /* Rope kick */
-    ropeVel += scrollSpeed * 0.14;
+    ropeVel += scrollSpeed * 0.07;
 
     /* Black hole at 95%+ */
     if (getScrollPct() >= 95) { triggerBlackHole(); return; }
@@ -655,7 +650,7 @@ document.addEventListener("keydown", function(e) {
     var wasSleeping = (emotion === "sleeping");
     setState("touch");
     setEmo(wasSleeping ? "shocked" : "idle");
-    ropeVel += (Math.random() > 0.5 ? 5 : -5);
+    ropeVel += (Math.random() > 0.5 ? 2 : -2);
     forceSpeak(wasSleeping ? rand(SPEECH.wakeup) : rand(SPEECH.touch), 2500);
     setTimeout(function() {
       setState(isScrolling ? "fall" : "wave");

@@ -2505,23 +2505,7 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 }
 /* ===== ASH MASCOT v3 — EMOTIONS + PHYSICS + PSEUDO-3D ===== */
 
-/* Emotion badge — floats top-left of character */
-#ash-emo-badge {
-  position: absolute;
-  top: -8px;
-  left: -10px;
-  font-size: 1.3rem;
-  line-height: 1;
-  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
-  pointer-events: none;
-  transition: transform 0.2s;
-  z-index: 5;
-}
-#ash-emo-badge.pop {
-  animation: emoPop 0.35s cubic-bezier(0.36,0.07,0.19,0.97);
-}
-@keyframes emoPop {
-  0%   { transform: scale(0.5) rotate(-20deg); }
+
   60%  { transform: scale(1.4) rotate(8deg); }
   100% { transform: scale(1) rotate(0deg); }
 }
@@ -2607,11 +2591,7 @@ p, .ch-body-txt, .ch-lead, .service-card p,
   100% { transform: perspective(500px) scale(1) rotateY(0); }
 }
 
-/* Emotion-specific badge colors */
-.ash-emo-sleeping { filter: brightness(0.7); }
-.ash-emo-excited  { animation: excitedPulse 0.5s ease-in-out infinite alternate; }
-@keyframes excitedPulse {
-  from { transform: scale(1); }
+
   to   { transform: scale(1.3) rotate(10deg); }
 }
 .ash-emo-dizzy { animation: dizzySpin 0.8s linear infinite; }
@@ -2651,12 +2631,12 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 /* === ASH REAL PHOTO CHARACTER (replaces Three.js canvas) === */
 #ash-char {
   display: block;
-  width: 115px;
+  width: 120px;
   height: auto;
   pointer-events: none;
-  transform-origin: 50% 0%;
+  transform-origin: 30% 0%;  /* grip point — top-left where hands hold rope */
   will-change: transform;
-  filter: drop-shadow(0 20px 50px rgba(0,0,0,0.65));
+  filter: drop-shadow(0 16px 40px rgba(0,0,0,0.55));
 }
 /* Override canvas sizing */
 #ash-mascot { width: 130px !important; }
@@ -2670,7 +2650,7 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 .ash-state-spawn #ash-char { animation: ashSpawn 0.7s cubic-bezier(0.34,1.56,0.64,1) forwards !important; }
 
 @keyframes ashBob   { 0%,100%{margin-top:0}   50%{margin-top:-5px} }
-@keyframes ashFloat { 0%,100%{margin-top:0}   50%{margin-top:-9px} }
+@keyframes ashFloat { 0%,100%{margin-top:0}   50%{margin-top:-5px} }
 @keyframes ashSleep { 0%,100%{transform:perspective(600px) rotateZ(-8deg)} 50%{transform:perspective(600px) rotateZ(-14deg) translateY(5px)} }
 @keyframes ashBounce{ 0%{transform:perspective(600px) scale(1)} 25%{transform:perspective(600px) scale(1.25) rotateZ(-18deg)} 50%{transform:perspective(600px) scale(0.9) rotateZ(12deg)} 75%{transform:perspective(600px) scale(1.1) rotateZ(-6deg)} 100%{transform:perspective(600px) scale(1)} }
 @keyframes ashSpawn { 0%{transform:perspective(600px) scale(0) rotateY(180deg);opacity:0} 60%{transform:perspective(600px) scale(1.12) rotateY(-12deg);opacity:1} 100%{transform:perspective(600px) scale(1) rotateY(0)} }
