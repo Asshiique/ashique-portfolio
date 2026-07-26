@@ -2347,11 +2347,20 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 }
 
 /* -- RESPONSIVE ------------------------------------------- */
+@media (max-width: 768px) {
+  /* ASH — smaller but still visible on tablets */
+  #ash-mascot { width: 100px; bottom: 45px; right: 8px; }
+  #ash-char   { width: 100px; }
+  #ash-bubble { min-width: 140px; max-width: 185px; right: 108px; bottom: 115px; font-size: 0.74rem; }
+  #ash-rope-line { right: 65px; }
+}
 @media (max-width: 480px) {
-  #ash-body   { right: 4px; bottom: 10px; width: 85px; }
-  #ash-char   { width: 85px; }
-  #ash-bubble { min-width: 130px; max-width: 165px; right: 96px; bottom: 120px; font-size: 0.72rem; }
-  #ash-rope-line { right: 54px; }
+  /* ASH — compact on phones, still visible bottom-right */
+  #ash-mascot { width: 82px; bottom: 30px; right: 4px; }
+  #ash-char   { width: 82px; }
+  #ash-bubble { min-width: 120px; max-width: 160px; right: 90px; bottom: 100px; font-size: 0.7rem; padding: 7px 10px; }
+  #ash-rope-line { right: 52px; width: 1px; }
+  #ash-blackhole { right: 10px; bottom: 28px; }
 }
 
 /* -- PERFORMANCE CSS ------------------------------------- */
@@ -2377,4 +2386,38 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 }
 @keyframes revealFallback {
   to { opacity: 1; transform: translateY(0); }
+}
+/* ===== STORY PHOTO SLIDESHOW ===== */
+#aboutImg {
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+.thumb-img {
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s, border-color 0.2s;
+  border: 2px solid transparent;
+  border-radius: 8px;
+}
+.thumb-img:hover  { opacity: 0.85; transform: scale(1.06); }
+.thumb-img.active {
+  border-color: var(--clr-red2);
+  opacity: 1;
+  transform: scale(1.08);
+  box-shadow: 0 4px 16px rgba(192,57,43,0.35);
+}
+/* Slideshow progress dot indicators */
+.slideshow-dots {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 10px;
+}
+.slideshow-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  transition: background 0.3s, transform 0.3s;
+}
+.slideshow-dot.active {
+  background: var(--clr-red2);
+  transform: scale(1.4);
 }

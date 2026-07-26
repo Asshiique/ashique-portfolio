@@ -194,13 +194,76 @@ if (glitchEl) {
   }, 4000);
 }
 
-/* ABOUT IMAGE SWITCHER */
-function switchAboutImg(thumb, src) {
+/* ABOUT IMAGE SLIDESHOW */
+var slideshowTimer = null;
+var slideshowPaused = false;
+
+function switchAboutImg(thumb, src, userClick) {
   const mainImg = document.getElementById("aboutImg");
-  if (mainImg) mainImg.src = src;
+  if (!mainImg) return;
+  /* Fade out */
+  mainImg.style.opacity = "0";
+  mainImg.style.transform = "scale(1.03)";
+  setTimeout(function() {
+    mainImg.src = src;
+    mainImg.style.opacity = "1";
+    mainImg.style.transform = "scale(1)";
+  }, 280);
   document.querySelectorAll(".thumb-img").forEach(function(t) { t.classList.remove("active"); });
-  thumb.classList.add("active");
+  if (thumb) thumb.classList.add("active");
+  /* If user clicked, pause auto-slide for 8s */
+  if (userClick) {
+    slideshowPaused = true;
+    clearTimeout(slideshowTimer);
+    slideshowTimer = setTimeout(function() {
+      slideshowPaused = false;
+      startSlideshow();
+    }, 8000);
+  }
 }
+
+function startSlideshow() {
+  const thumbs = document.querySelectorAll(".thumb-img");
+  if (thumbs.length < 2) return;
+  var currentIdx = 0;
+  /* Find current active */
+  thumbs.forEach(function(t, i) { if (t.classList.contains("active")) currentIdx = i; });
+
+  function nextSlide() {
+    if (slideshowPaused) return;
+    currentIdx = (currentIdx + 1) % thumbs.length;
+    const next = thumbs[currentIdx];
+    switchAboutImg(next, next.src, false);
+    slideshowTimer = setTimeout(nextSlide, 3500);
+  }
+  clearTimeout(slideshowTimer);
+  slideshowTimer = setTimeout(nextSlide, 3500);
+}
+
+/* Init slideshow after page loads */
+document.addEventListener("DOMContentLoaded", function() {
+  setTimeout(function() {
+    /* Add CSS transition to main portrait for smooth swap */
+    const mainImg = document.getElementById("aboutImg");
+    if (mainImg) {
+      mainImg.style.transition = "opacity 0.28s ease, transform 0.28s ease";
+    }
+    /* Update onclick handlers to pass userClick=true */
+    document.querySelectorAll(".thumb-img").forEach(function(t) {
+      t.onclick = function() { switchAboutImg(t, t.src, true); };
+    });
+    /* Pause on hover over the portrait area */
+    const wrap = document.querySelector(".si-left, .story-intro, .about-grid");
+    if (wrap) {
+      wrap.addEventListener("mouseenter", function() { slideshowPaused = true; });
+      wrap.addEventListener("mouseleave", function() {
+        slideshowPaused = false;
+        startSlideshow();
+      });
+    }
+    startSlideshow();
+  }, 1500);
+});
 
 /* VIDEO TOGGLE */
 function toggleVideo(vidId, btnId) {
