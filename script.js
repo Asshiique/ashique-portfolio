@@ -415,7 +415,7 @@ document.addEventListener("keydown", function(e) {
     setTimeout(setup, 500);
   }
 })();
-/* ASH MASCOT ENGINE v4 - Three.js 3D + Physics + Emotions */
+/* ASH MASCOT ENGINE - Photo + CSS Pseudo-3D + Physics + Emotions */
 (function() {
   'use strict';
 
@@ -436,7 +436,7 @@ document.addEventListener("keydown", function(e) {
     video:   ["Press play! Don't be shy", "These cuts go hard ngl"],
     ai:      ["AI plus me equals dangerous", "3 steps ahead always"],
     contact: ["YO! We made it to contact!!", "DM me I reply fast"],
-    idle:    ["Still here? Respect", "I see you...", "bro...", "Take your time"],
+    idle:    ["Still here? Respect", "I see you...", "Take your time"],
     touch:   ["OI hands!", "Hey that tickles!", "bro CHILL", "You clicked me?? Rude"],
     dizzy:   ["bro SLOW DOWN", "I am getting dizzy!!", "my head..."],
     sleep:   ["*snoring*", "zzzzz...", "...hm? oh hey!"],
@@ -448,7 +448,7 @@ document.addEventListener("keydown", function(e) {
     proud:"🔥", excited:"🎉", thinking:"🤔", happy:"😄", shocked:"😲",
   };
 
-  /* State */
+  /* === STATE === */
   var emotion     = "idle";
   var lastSection = "";
   var isScrolling = false;
@@ -456,12 +456,13 @@ document.addEventListener("keydown", function(e) {
   var lastSpoke   = 0;
   var scrollSpeed = 0;
   var lastScrollY = window.scrollY;
+  var rafId       = null;
 
   /* Rope physics */
   var ropeAngle = 0;
   var ropeVel   = 0;
 
-  /* 3D rotation targets (cursor driven) */
+  /* Cursor pseudo-3D */
   var tgtRotX = 0, tgtRotY = 0;
   var curRotX = 0, curRotY = 0;
   var cursorX = window.innerWidth  / 2;
@@ -471,20 +472,22 @@ document.addEventListener("keydown", function(e) {
   var scrollTimer   = null;
   var inactiveTimer = null;
   var bubTimer      = null;
-  var rafId         = null;
 
   /* === BUILD DOM === */
-  var ropeLine = document.createElement("div");
-  ropeLine.id  = "ash-rope-line";
+  var ropeLine  = document.createElement("div");
+  ropeLine.id   = "ash-rope-line";
   document.body.appendChild(ropeLine);
 
-  var wrap = document.createElement("div");
-  wrap.id  = "ash-mascot";
+  var wrap  = document.createElement("div");
+  wrap.id   = "ash-mascot";
   wrap.innerHTML =
     '<div id="ash-body" class="ash-hidden">' +
-      '<div id="ash-bubble" class="hidden"><span class="ash-name-chip">ASH </span><span id="ash-msg"></span></div>' +
+      '<div id="ash-bubble" class="hidden">' +
+        '<span class="ash-name-chip">ASH </span>' +
+        '<span id="ash-msg"></span>' +
+      '</div>' +
       '<div id="ash-emo-badge"></div>' +
-      '<img id="ash-char" src="assets/images/ash_fullbody.png" alt="Ash" draggable="false" /> +
+      '<img id="ash-char" src="assets/images/ash_fullbody.png" alt="Ash" draggable="false" />' +
     '</div>' +
     '<div id="ash-blackhole"></div>';
   document.body.appendChild(wrap);
@@ -495,95 +498,16 @@ document.addEventListener("keydown", function(e) {
   var ashHole  = document.getElementById("ash-blackhole");
   var emoBadge = document.getElementById("ash-emo-badge");
 
-  /* === THREE.JS SETUP === */
-  function initThree() {
-    if (typeof THREE === "undefined") { useFallback(); return; }
-
-    try {
-      threeScene    = new THREE.Scene();
-      threeCamera   = new THREE.PerspectiveCamera(32, 130/310, 0.01, 100);
-      threeCamera.position.set(0, 0, 3.8);
-
-      threeRenderer = new THREE.WebGLRenderer({ canvas: ashCanvas, alpha: true, antialias: true });
-      threeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      threeRenderer.setSize(130, 310);
-      threeRenderer.setClearColor(0x000000, 0);
-      threeRenderer.shadowMap.enabled = false;
-
-      /* Lighting — portfolio orange + blue rim */
-      var ambient  = new THREE.AmbientLight(0xffffff, 0.35);
-      var keyLight = new THREE.DirectionalLight(0xff6820, 2.8);
-      keyLight.position.set(1.2, 1.5, 2.5);
-      var rimLight = new THREE.DirectionalLight(0x4488ff, 1.4);
-      rimLight.position.set(-2, 0.5, -1.5);
-      var fillLight= new THREE.DirectionalLight(0xffeedd, 0.6);
-      fillLight.position.set(0, -1, 1);
-      threeScene.add(ambient, keyLight, rimLight, fillLight);
-
-      /* Load GLB */
-      var loader = new THREE.GLTFLoader();
-      loader.load(
-        "assets/images/ash_mesh.glb",
-        function(gltf) {
-          ashModel = gltf.scene;
-
-          /* Compute normals + apply material */
-          ashModel.traverse(function(child) {
-            if (child.isMesh) {
-              child.geometry.computeVertexNormals();
-              child.material = new THREE.MeshStandardMaterial({
-                color:     0xeeeeee,
-                roughness: 0.45,
-                metalness: 0.08,
-              });
-              child.castShadow    = false;
-              child.receiveShadow = false;
-            }
-          });
-
-          /* Center model */
-          var box    = new THREE.Box3().setFromObject(ashModel);
-          var center = box.getCenter(new THREE.Vector3());
-          var size   = box.getSize(new THREE.Vector3());
-          ashModel.position.sub(center);
-
-          /* Scale to fit canvas (height ~1.96 units) */
-          var scale = 1.7 / Math.max(size.x, size.y, size.z);
-          ashModel.scale.setScalar(scale);
-
-          threeScene.add(ashModel);
-          threeReady = true;
-          ashCanvas.style.display = "block";
-          ashFb.style.display = "none";
-        },
-        undefined,
-        function(err) {
-          console.warn("ASH GLB load failed:", err);
-          useFallback();
-        }
-      );
-    } catch(e) {
-      useFallback();
-    }
-  }
-
-  function useFallback() {
-    ashCanvas.style.display = "none";
-    ashFb.style.display = "block";
-    threeReady = false;
-  }
-
   /* === HELPERS === */
   function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
   function setEmo(em) {
     emotion = em;
-    if (EMO[em]) {
-      emoBadge.textContent = EMO[em];
-      emoBadge.className = "ash-emo-badge ash-emo-" + em;
-      emoBadge.classList.add("pop");
-      setTimeout(function() { emoBadge.classList.remove("pop"); }, 400);
-    }
+    if (!EMO[em]) return;
+    emoBadge.textContent = EMO[em];
+    emoBadge.className   = "ash-emo-badge ash-emo-" + em;
+    emoBadge.classList.add("pop");
+    setTimeout(function() { emoBadge.classList.remove("pop"); }, 400);
   }
 
   function say(text, hold) {
@@ -605,12 +529,16 @@ document.addEventListener("keydown", function(e) {
 
   function setState(state) {
     ashBody.className = "";
-    if (state === "hidden") ashBody.classList.add("ash-hidden");
-    else ashBody.classList.add("ash-state-" + state);
+    if (state === "hidden") {
+      ashBody.classList.add("ash-hidden");
+    } else {
+      ashBody.classList.add("ash-state-" + state);
+    }
   }
 
   function getScrollPct() {
-    return (window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight)) * 100;
+    var total = document.documentElement.scrollHeight - window.innerHeight;
+    return total > 0 ? (window.scrollY / total) * 100 : 0;
   }
 
   function getSection() {
@@ -624,50 +552,63 @@ document.addEventListener("keydown", function(e) {
     return "contact";
   }
 
-  /* === ANIMATION LOOP === */
+  /* === ANIMATION LOOP (rAF) === */
   function animate() {
     /* Rope spring physics */
     var target = isScrolling ? Math.max(-20, Math.min(20, scrollSpeed * 0.6)) : 0;
-    ropeVel = (ropeVel + (target - ropeAngle) * CFG.ROPE_STIFFNESS) * CFG.ROPE_DAMPING;
+    ropeVel    = (ropeVel + (target - ropeAngle) * CFG.ROPE_STIFFNESS) * CFG.ROPE_DAMPING;
     ropeAngle += ropeVel;
 
     /* Cursor head tracking */
-    var cx = window.innerWidth  / 2;
-    var cy = window.innerHeight / 2;
-    tgtRotY = ((cursorX - cx) / Math.max(1, cx))  *  22;
-    tgtRotX = ((cursorY - cy) / Math.max(1, cy))  * -10;
+    var cx  = window.innerWidth  / 2;
+    var cy  = window.innerHeight / 2;
+    tgtRotY = ((cursorX - cx) / Math.max(1, cx)) *  20;
+    tgtRotX = ((cursorY - cy) / Math.max(1, cy)) * -8;
     curRotX += (tgtRotX - curRotX) * CFG.CURSOR_LERP;
     curRotY += (tgtRotY - curRotY) * CFG.CURSOR_LERP;
 
-        /* CSS Pseudo-3D on the real photo */
-    var ashChar = document.getElementById('ash-char');
-    if (ashChar) {
+    /* Apply to the character image */
+    var ashChar = document.getElementById("ash-char");
+    if (ashChar && emotion !== "sleeping" && emotion !== "dizzy") {
       ashChar.style.transform =
-        'perspective(600px)' +
-        ' rotateY(' + (curRotY + ropeAngle * 0.4).toFixed(2) + 'deg)' +
-        ' rotateX(' + curRotX.toFixed(2) + 'deg)' +
-        ' rotateZ(' + (ropeAngle * 0.2).toFixed(2) + 'deg)';
+        "perspective(600px)" +
+        " rotateY(" + (curRotY + ropeAngle * 0.35).toFixed(2) + "deg)" +
+        " rotateX(" + curRotX.toFixed(2)                      + "deg)" +
+        " rotateZ(" + (ropeAngle * 0.18).toFixed(2)           + "deg)";
     }
-        rafId = requestAnimationFrame(animate);
+
+    rafId = requestAnimationFrame(animate);
   }
 
-  /* === SCROLL === */
-  var scrollTimer2 = null;
+  /* === SCROLL HANDLER === */
   window.addEventListener("scroll", function() {
     if (inHole) return;
-    var sy = window.scrollY;
-    scrollSpeed = sy - lastScrollY;
-    lastScrollY = sy;
-    isScrolling = true;
+    var sy   = window.scrollY;
+    scrollSpeed  = sy - lastScrollY;
+    lastScrollY  = sy;
+    isScrolling  = true;
 
-    if (emotion === "sleeping") { setEmo("happy"); setState("wave"); forceSpeak(rand(SPEECH.wakeup), 2500); }
-    if (Math.abs(scrollSpeed) > CFG.FAST_SCROLL && emotion !== "dizzy") { setEmo("dizzy"); say(rand(SPEECH.dizzy)); }
-    else if (emotion === "dizzy" && Math.abs(scrollSpeed) <= CFG.FAST_SCROLL) { setEmo("idle"); }
+    /* Wake from sleep on scroll */
+    if (emotion === "sleeping") {
+      setEmo("happy");
+      setState("wave");
+      forceSpeak(rand(SPEECH.wakeup), 2500);
+    }
 
-    ropeVel += scrollSpeed * 0.15;
+    /* Fast scroll = dizzy */
+    if (Math.abs(scrollSpeed) > CFG.FAST_SCROLL) {
+      if (emotion !== "dizzy") { setEmo("dizzy"); say(rand(SPEECH.dizzy)); }
+    } else if (emotion === "dizzy") {
+      setEmo("idle");
+    }
 
+    /* Rope kick */
+    ropeVel += scrollSpeed * 0.14;
+
+    /* Black hole at 95%+ */
     if (getScrollPct() >= 95) { triggerBlackHole(); return; }
 
+    /* Section change */
     var sec = getSection();
     if (sec !== lastSection) {
       lastSection = sec;
@@ -678,70 +619,96 @@ document.addEventListener("keydown", function(e) {
 
     setState("fall");
     clearTimeout(inactiveTimer);
-    clearTimeout(scrollTimer2);
-    scrollTimer2 = setTimeout(function() {
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(function() {
       isScrolling = false;
       setState("wave");
       if (emotion === "dizzy") setEmo("idle");
       inactiveTimer = setTimeout(function() {
-        setEmo("sleeping"); setState("sleep"); forceSpeak(rand(SPEECH.sleep), 4000);
+        setEmo("sleeping");
+        setState("sleep");
+        forceSpeak(rand(SPEECH.sleep), 4000);
       }, CFG.IDLE_TIMEOUT);
     }, 900);
   }, { passive: true });
 
-  /* === CURSOR === */
+  /* === CURSOR TRACKING === */
   document.addEventListener("mousemove", function(e) {
-    cursorX = e.clientX; cursorY = e.clientY;
+    cursorX = e.clientX;
+    cursorY = e.clientY;
     if (emotion === "sleeping") {
-      setEmo("happy"); setState("wave"); forceSpeak(rand(SPEECH.wakeup), 2500);
+      setEmo("happy");
+      setState("wave");
+      forceSpeak(rand(SPEECH.wakeup), 2500);
       clearTimeout(inactiveTimer);
-      inactiveTimer = setTimeout(function() { setEmo("sleeping"); setState("sleep"); }, CFG.IDLE_TIMEOUT);
+      inactiveTimer = setTimeout(function() {
+        setEmo("sleeping");
+        setState("sleep");
+      }, CFG.IDLE_TIMEOUT);
     }
   });
 
-  /* === TOUCH === */
+  /* === TOUCH / TAP === */
   ashBody.addEventListener("pointerdown", function(e) {
     e.stopPropagation();
     if (inHole) return;
-    var wasSleeping = emotion === "sleeping";
-    setState("touch"); setEmo(wasSleeping ? "shocked" : "idle");
+    var wasSleeping = (emotion === "sleeping");
+    setState("touch");
+    setEmo(wasSleeping ? "shocked" : "idle");
     ropeVel += (Math.random() > 0.5 ? 5 : -5);
     forceSpeak(wasSleeping ? rand(SPEECH.wakeup) : rand(SPEECH.touch), 2500);
-    setTimeout(function() { setState(isScrolling ? "fall" : "wave"); }, 2700);
+    setTimeout(function() {
+      setState(isScrolling ? "fall" : "wave");
+    }, 2700);
   });
 
   /* === BLACK HOLE === */
   function triggerBlackHole() {
     if (inHole) return;
-    inHole = true; setEmo("excited"); setState("fall-hole");
+    inHole = true;
+    setEmo("excited");
+    setState("fall-hole");
     forceSpeak(rand(SPEECH.contact), 2000);
     setTimeout(function() { ashHole.classList.add("active"); }, 300);
-    setTimeout(function() { setState("hidden"); ashHole.classList.remove("active"); }, 1200);
     setTimeout(function() {
-      inHole = false; setEmo("happy"); setState("spawn");
+      setState("hidden");
+      ashHole.classList.remove("active");
+    }, 1200);
+    setTimeout(function() {
+      inHole = false;
+      setEmo("happy");
+      setState("spawn");
       ashBody.classList.remove("ash-hidden");
       forceSpeak("Back from the void!", 2000);
       setTimeout(function() { setState("wave"); }, 900);
     }, 4500);
   }
 
-  /* === VISIBILITY === */
+  /* === VISIBILITY (pause rAF when tab hidden) === */
   document.addEventListener("visibilitychange", function() {
-    if (document.hidden) { cancelAnimationFrame(rafId); rafId = null; }
-    else if (!rafId) animate();
+    if (document.hidden) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    } else if (!rafId) {
+      animate();
+    }
   });
 
   /* === KICK OFF === */
   setTimeout(function() {
-    initThree();
-    setState("spawn"); ashBody.classList.remove("ash-hidden");
+    setState("spawn");
+    ashBody.classList.remove("ash-hidden");
     setEmo("waving");
-    forceSpeak("Yo! I'm Ash, your 3D scroll buddy!", 3500);
+    forceSpeak("Yo! I'm Ash, your scroll buddy!", 3500);
     setTimeout(function() {
-      setState("wave"); setEmo("idle");
+      setState("wave");
+      setEmo("idle");
       lastSection = getSection();
       animate();
-      inactiveTimer = setTimeout(function() { setEmo("sleeping"); setState("sleep"); }, CFG.IDLE_TIMEOUT);
+      inactiveTimer = setTimeout(function() {
+        setEmo("sleeping");
+        setState("sleep");
+      }, CFG.IDLE_TIMEOUT);
     }, 2200);
   }, 2500);
 
