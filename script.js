@@ -473,9 +473,6 @@ document.addEventListener("keydown", function(e) {
   var bubTimer      = null;
   var rafId         = null;
 
-  /* Three.js objects */
-  var threeScene, threeCamera, threeRenderer, ashModel, threeReady = false;
-
   /* === BUILD DOM === */
   var ropeLine = document.createElement("div");
   ropeLine.id  = "ash-rope-line";
@@ -487,8 +484,7 @@ document.addEventListener("keydown", function(e) {
     '<div id="ash-body" class="ash-hidden">' +
       '<div id="ash-bubble" class="hidden"><span class="ash-name-chip">ASH </span><span id="ash-msg"></span></div>' +
       '<div id="ash-emo-badge"></div>' +
-      '<canvas id="ash-canvas" width="130" height="310"></canvas>' +
-      '<img id="ash-char-fb" src="assets/images/ash3d.png" alt="Ash" draggable="false" style="display:none;width:120px;" />' +
+      '<img id="ash-char" src="assets/images/ash_fullbody.png" alt="Ash" draggable="false" /> +
     '</div>' +
     '<div id="ash-blackhole"></div>';
   document.body.appendChild(wrap);
@@ -497,8 +493,6 @@ document.addEventListener("keydown", function(e) {
   var ashBub   = document.getElementById("ash-bubble");
   var ashMsg   = document.getElementById("ash-msg");
   var ashHole  = document.getElementById("ash-blackhole");
-  var ashCanvas= document.getElementById("ash-canvas");
-  var ashFb    = document.getElementById("ash-char-fb");
   var emoBadge = document.getElementById("ash-emo-badge");
 
   /* === THREE.JS SETUP === */
@@ -645,24 +639,16 @@ document.addEventListener("keydown", function(e) {
     curRotX += (tgtRotX - curRotX) * CFG.CURSOR_LERP;
     curRotY += (tgtRotY - curRotY) * CFG.CURSOR_LERP;
 
-    /* Drive Three.js model */
-    if (threeReady && ashModel) {
-      ashModel.rotation.y = (curRotY + ropeAngle * 0.6) * Math.PI / 180;
-      ashModel.rotation.x =  curRotX                   * Math.PI / 180;
-      ashModel.rotation.z =  ropeAngle                 * Math.PI / 180 * 0.25;
-      threeRenderer.render(threeScene, threeCamera);
-    } else if (!threeReady) {
-      /* Fallback PNG - CSS transform */
-      if (ashFb && ashFb.style.display !== "none") {
-        ashFb.style.transform =
-          "perspective(500px)" +
-          " rotateX(" + curRotX.toFixed(1) + "deg)" +
-          " rotateY(" + curRotY.toFixed(1) + "deg)" +
-          " rotateZ(" + ropeAngle.toFixed(1) + "deg)";
-      }
+        /* CSS Pseudo-3D on the real photo */
+    var ashChar = document.getElementById('ash-char');
+    if (ashChar) {
+      ashChar.style.transform =
+        'perspective(600px)' +
+        ' rotateY(' + (curRotY + ropeAngle * 0.4).toFixed(2) + 'deg)' +
+        ' rotateX(' + curRotX.toFixed(2) + 'deg)' +
+        ' rotateZ(' + (ropeAngle * 0.2).toFixed(2) + 'deg)';
     }
-
-    rafId = requestAnimationFrame(animate);
+        rafId = requestAnimationFrame(animate);
   }
 
   /* === SCROLL === */
