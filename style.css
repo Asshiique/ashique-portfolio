@@ -2668,105 +2668,6 @@ p, .ch-body-txt, .ch-lead, .service-card p,
   #ash-mascot { width: 80px !important; bottom: 28px !important; right: 4px !important; }
   #ash-body   { width: 80px !important; }
 }
-/* ===== AI 3D VIDEO — background removal ===== */
-.ai-vid-bg-remove {
-  mix-blend-mode: screen;   /* removes dark/black backgrounds */
-  filter: contrast(1.15) saturate(1.2);
-}
-.ai-3d-vid-card {
-  border: 1.5px solid rgba(230,126,34,0.35);
-  position: relative;
-  overflow: hidden;
-}
-.ai-chip-3d {
-  background: linear-gradient(135deg, #e67e22, #c0392b) !important;
-  color: #fff !important;
-}
-
-/* ===== SPIDER-MAN 3D VIEWER ===== */
-.spidey-showcase {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 40px;
-  margin-top: 56px;
-  padding: 40px;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 24px;
-  position: relative;
-  overflow: hidden;
-}
-.spidey-showcase::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at 70% 50%, rgba(230,30,30,0.07) 0%, transparent 70%);
-  pointer-events: none;
-}
-.spidey-label {
-  flex: 0 0 auto;
-  text-align: left;
-}
-.spidey-chip {
-  display: inline-block;
-  background: linear-gradient(135deg, #c0392b, #922b21);
-  color: #fff;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 4px 12px;
-  border-radius: 20px;
-  margin-bottom: 10px;
-}
-.spidey-caption {
-  color: rgba(255,255,255,0.45);
-  font-size: 0.82rem;
-  margin: 0;
-  line-height: 1.5;
-  max-width: 180px;
-}
-.spidey-canvas-wrap {
-  position: relative;
-  border-radius: 16px;
-  overflow: hidden;
-  background: rgba(0,0,0,0.3);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(192,57,43,0.2);
-  cursor: grab;
-}
-.spidey-canvas-wrap:active { cursor: grabbing; }
-#spideyCanvas {
-  display: block;
-  width: 280px;
-  height: 380px;
-  border-radius: 16px;
-}
-.spidey-hint {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0,0,0,0.55);
-  color: rgba(255,255,255,0.6);
-  font-size: 0.68rem;
-  padding: 4px 10px;
-  border-radius: 20px;
-  pointer-events: none;
-  white-space: nowrap;
-  transition: opacity 0.5s;
-}
-.spidey-hint.hidden { opacity: 0; }
-
-@media (max-width: 768px) {
-  .spidey-showcase { flex-direction: column; gap: 20px; padding: 24px 16px; margin-top: 32px; }
-  #spideyCanvas { width: 220px; height: 300px; }
-  .spidey-label { text-align: center; }
-  .spidey-caption { max-width: 100%; }
-}
-@media (max-width: 480px) {
-  #spideyCanvas { width: 180px; height: 240px; }
-}
 /* ===== FLOATING AI 3D VIDEO AVATAR ===== */
 #ai3d-avatar {
   position: fixed;
@@ -2811,43 +2712,56 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 }
 
 
-/* ===== VIDEO LEFT COLUMN (Spider-Man + AI 3D) ===== */
-.video-left-col {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
 
-/* Spider-Man model-viewer — no box, transparent background */
-.spidey-float {
-  display: block;
-  width: 100%;
+/* ===== 3D SHOWCASE SECTION (after videos) ===== */
+.spidey-section {
+  padding: 60px 0;
+}
+.spidey-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+.spidey-box {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 24px;
+  overflow: hidden;
+}
+.spidey-box-label {
+  margin-bottom: 14px;
+}
+.spidey-box-label p {
+  color: rgba(255,255,255,0.4);
+  font-size: 0.78rem;
+  margin: 6px 0 0;
+}
+.spidey-chip {
+  display: inline-block;
+  background: linear-gradient(135deg,#c0392b,#922b21);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+.ai3d-box-wrap {
   height: 340px;
-  background: transparent !important;
-  --poster-color: transparent;
-  --progress-bar-color: #e63946;
-  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 12px;
 }
-
-/* AI 3D Video — small, centered, transparent background */
-.ai3d-float {
-  display: block;
-  width: 130px;
-  height: auto;
-  margin: 8px auto 0;
-  mix-blend-mode: multiply;
-  filter: contrast(1.1) saturate(1.1);
+.ai3d-box-vid {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
-
-/* Hide old broken card elements */
-.spidey-mv-row, .spidey-mv-card, .ai3d-vid-card,
-.ai3d-vid-wrap, .ai3d-inline-vid { display: none !important; }
-
-@media (max-width: 900px) {
-  .spidey-float { height: 260px; }
-  .ai3d-float   { width: 100px; }
-}
-@media (max-width: 480px) {
-  .spidey-float { height: 200px; }
-  .ai3d-float   { width: 80px; }
+@media (max-width: 768px) {
+  .spidey-row { grid-template-columns: 1fr; }
+  .ai3d-box-wrap { height: 260px; }
 }
