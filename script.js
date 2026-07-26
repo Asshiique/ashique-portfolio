@@ -353,6 +353,68 @@ document.addEventListener("keydown", function(e) {
   if (e.key === "Escape") { closeVideoLightbox(); closeLightbox(); }
 });
 
+/* CHAPTER 05 — EXPRESSION SLIDESHOW */
+(function initCh5Slideshow() {
+  var slides, dots, current, timer, paused;
+
+  function setup() {
+    var wrap = document.getElementById("ch5Slideshow");
+    if (!wrap) return;
+    slides  = wrap.querySelectorAll(".ch-expr-slide");
+    dots    = wrap.querySelectorAll(".ch-expr-dot");
+    current = 0;
+    paused  = false;
+
+    /* Dot click */
+    dots.forEach(function(dot, i) {
+      dot.addEventListener("click", function() {
+        goTo(i);
+        paused = true;
+        clearTimeout(timer);
+        timer = setTimeout(function() { paused = false; autoPlay(); }, 8000);
+      });
+    });
+
+    /* Pause on hover */
+    wrap.addEventListener("mouseenter", function() { paused = true; clearTimeout(timer); });
+    wrap.addEventListener("mouseleave", function() { paused = false; autoPlay(); });
+
+    /* Touch swipe */
+    var touchStartX = 0;
+    wrap.addEventListener("touchstart", function(e) { touchStartX = e.touches[0].clientX; }, { passive: true });
+    wrap.addEventListener("touchend", function(e) {
+      var diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 40) { goTo(diff > 0 ? (current + 1) % slides.length : (current - 1 + slides.length) % slides.length); }
+    });
+
+    autoPlay();
+  }
+
+  function goTo(idx) {
+    slides[current].classList.remove("active");
+    dots[current].classList.remove("active");
+    slides[current].classList.add("exit");
+    setTimeout(function() { slides[current < slides.length ? current : 0].classList.remove("exit"); }, 550);
+    current = idx;
+    slides[current].classList.add("active");
+    dots[current].classList.add("active");
+  }
+
+  function autoPlay() {
+    clearTimeout(timer);
+    timer = setTimeout(function() {
+      if (!paused) { goTo((current + 1) % slides.length); }
+      autoPlay();
+    }, 3500);
+  }
+
+  /* Wait for DOM */
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setup);
+  } else {
+    setTimeout(setup, 500);
+  }
+})();
 /* ASH 3D MASCOT - scroll-linked companion */
 (function() {
 
