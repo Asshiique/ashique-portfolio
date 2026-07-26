@@ -2810,72 +2810,44 @@ p, .ch-body-txt, .ch-lead, .service-card p,
   #ai3d-video  { width: 80px; }
 }
 
-/* ===== VIDEO GRID — LEFT COLUMN LAYOUT ===== */
-.video-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  align-items: start;
-}
+
+/* ===== VIDEO LEFT COLUMN (Spider-Man + AI 3D) ===== */
 .video-left-col {
   display: flex;
   flex-direction: column;
   gap: 0;
 }
 
-/* Spider-Man model-viewer — floats freely, no box */
+/* Spider-Man model-viewer — no box, transparent background */
 .spidey-float {
   display: block;
   width: 100%;
-  height: 360px;
+  height: 340px;
   background: transparent !important;
   --poster-color: transparent;
   --progress-bar-color: #e63946;
-  border-radius: 0;
-  margin-top: 12px;
+  margin-top: 16px;
 }
 
-/* AI 3D Video — small, transparent, no background */
+/* AI 3D Video — small, centered, transparent background */
 .ai3d-float {
   display: block;
-  width: 140px;
+  width: 130px;
   height: auto;
-  margin: 4px auto 0;
-  /* Remove grey/white background from video */
+  margin: 8px auto 0;
   mix-blend-mode: multiply;
-  filter: contrast(1.1) saturate(1.15);
+  filter: contrast(1.1) saturate(1.1);
 }
 
-/* Remove old card styles that added backgrounds */
-.spidey-mv-row,
-.spidey-mv-card,
-.ai3d-vid-card {
-  display: none !important;
-}
-.ai3d-vid-wrap,
-.ai3d-inline-vid {
-  display: none !important;
-}
-
-/* chip label for spider-man section */
-.spidey-chip {
-  display: inline-block;
-  background: linear-gradient(135deg, #c0392b, #922b21);
-  color: #fff;
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 4px 12px;
-  border-radius: 20px;
-}
+/* Hide old broken card elements */
+.spidey-mv-row, .spidey-mv-card, .ai3d-vid-card,
+.ai3d-vid-wrap, .ai3d-inline-vid { display: none !important; }
 
 @media (max-width: 900px) {
-  .video-grid { grid-template-columns: 1fr; }
-  .spidey-float { height: 280px; }
-  .ai3d-float { width: 110px; }
+  .spidey-float { height: 260px; }
+  .ai3d-float   { width: 100px; }
 }
 @media (max-width: 480px) {
-  .spidey-float { height: 220px; }
-  .ai3d-float { width: 90px; }
+  .spidey-float { height: 200px; }
+  .ai3d-float   { width: 80px; }
 }
