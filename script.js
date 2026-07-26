@@ -1,4 +1,4 @@
-﻿/* ASHIQUE PORTFOLIO - Main JavaScript */
+/* ASHIQUE PORTFOLIO - Main JavaScript */
 
 /* PERFORMANCE: mobile detection */
 const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent)
@@ -415,56 +415,145 @@ document.addEventListener("keydown", function(e) {
     setTimeout(setup, 500);
   }
 })();
-/* ASH 3D MASCOT - scroll-linked companion */
+/* ASH MASCOT ENGINE v3 - Physics + Emotions + Pseudo-3D */
 (function() {
+  'use strict';
 
-  /* ---- Speech banks per section ---- */
-  var LINES = {
-    hero:    ["Yo! That's literally me up there 😎", "Welcome to my world fr", "This took blood, sweat and Photoshop ✨", "Scroll down... it gets better"],
-    story:   ["This is my origin story no cap", "English Lit grad doing design. Plot twist 😤", "I was always overthinking. Turns out it's a skill"],
-    service: ["Pick a service. I won't disappoint", "AI video AND graphic design? Yeah I do both", "I don't just deliver. I cook 🍳"],
-    work:    ["That poster? All me bro 🗞", "Every pixel placed with intention fr", "Tap any poster to see it bigger 👀"],
-    video:   ["Press play!! Don't be shy 🎬", "These cuts go hard ngl", "Best with headphones on 🎧"],
-    ai:      ["AI plus me equals dangerous combo 🚀", "While you sleep I generate cinemas", "The future is now and I'm 3 steps ahead"],
-    contact: ["DM me! I reply fast 💬", "I reply faster than your WiFi loads 😭", "Let's make something people stop scrolling for"],
-    idle:    ["Still here? Respect 🫡", "Take your time, I'm not going anywhere", "I see you exploring 👀", "You good? Need anything?", "This rope is getting heavy ngl 😅"],
-    touch:   ["OI hands to yourself! 😂", "Hey that tickles! 🤣", "Watch the fit bro!! 😤", "OK OK I see you 👀", "You clicked me?? Rude 😭"]
+  /* === CONFIG === */
+  var CFG = {
+    IDLE_TIMEOUT:     10000,  /* ms before sleeping */
+    FAST_SCROLL:      12,     /* px/frame = dizzy */
+    ROPE_STIFFNESS:   0.055,
+    ROPE_DAMPING:     0.87,
+    CURSOR_LERP:      0.04,   /* head tracking speed */
+    MAX_ROT_Y:        15,     /* max horizontal tilt */
+    MAX_ROT_X:        9,      /* max vertical tilt */
+    SPEAK_COOLDOWN:   5500,
   };
 
-  function randLine(pool) { return pool[Math.floor(Math.random() * pool.length)]; }
+  /* === SPEECH === */
+  var SPEECH = {
+    hero:    ["That's literally me up there!", "Welcome to the world of Ashique", "Scroll down, it gets way better"],
+    story:   ["This is my origin story fr", "English Lit to design. Plot twist", "Every scar is a chapter"],
+    service: ["Pick a service. I won't let you down", "I don't just deliver. I cook", "AI + design? Yeah I do both"],
+    work:    ["Every pixel placed with intention", "Tap to see it bigger", "These took real hours bro"],
+    video:   ["Press play! Don't be shy", "These cuts go hard ngl", "Best with headphones"],
+    ai:      ["AI plus me equals dangerous", "The future is now", "3 steps ahead, always"],
+    contact: ["YO! We made it to contact!!", "DM me I reply fast", "Let's make something great"],
+    idle:    ["Still here? Respect", "I see you...", "bro...", "Take your time I'm not going anywhere"],
+    touch:   ["OI hands!", "Hey that tickles!", "bro CHILL", "You clicked me?? Rude"],
+    dizzy:   ["bro SLOW DOWN", "I am getting dizzy!!", "my head..."],
+    sleep:   ["*snoring*", "zzzzz...", "...hm? oh hey!"],
+    wakeup:  ["WHOA! I'm awake!", "Oh hey! Was just resting", "Back! What did I miss?"],
+  };
 
-  /* ---- Build DOM ---- */
+  /* === EMOTIONS === */
+  var EMO = {
+    idle:     "😎",
+    sleeping: "💤",
+    dizzy:    "😵",
+    waving:   "👋",
+    proud:    "🔥",
+    excited:  "🎉",
+    thinking: "🤔",
+    happy:    "😄",
+    shocked:  "😲",
+  };
+
+  /* === STATE === */
+  var emotion      = "idle";
+  var lastSection  = "";
+  var isScrolling  = false;
+  var inHole       = false;
+  var lastSpoke    = 0;
+  var scrollSpeed  = 0;
+  var lastScrollY  = window.scrollY;
+  var rafId        = null;
+
+  /* Rope physics */
+  var ropeAngle    = 0;
+  var ropeVel      = 0;
+
+  /* Pseudo-3D cursor tracking */
+  var tgtRotX = 0, tgtRotY = 0;
+  var curRotX = 0, curRotY = 0;
+  var cursorX = window.innerWidth  / 2;
+  var cursorY = window.innerHeight / 2;
+
+  /* Timers */
+  var scrollTimer   = null;
+  var inactiveTimer = null;
+  var bubTimer      = null;
+
+  /* === BUILD DOM === */
   var ropeLine = document.createElement("div");
   ropeLine.id = "ash-rope-line";
   document.body.appendChild(ropeLine);
 
-  var mascot = document.createElement("div");
-  mascot.id = "ash-mascot";
-  mascot.innerHTML =
+  var wrap = document.createElement("div");
+  wrap.id = "ash-mascot";
+  wrap.innerHTML =
     '<div id="ash-body" class="ash-hidden">' +
       '<div id="ash-bubble" class="hidden"><span class="ash-name-chip">ASH </span><span id="ash-msg"></span></div>' +
+      '<div id="ash-emo-badge"></div>' +
       '<img id="ash-char" src="assets/images/ash3d.png" alt="Ash" draggable="false" />' +
     '</div>' +
     '<div id="ash-blackhole"></div>';
-  document.body.appendChild(mascot);
+  document.body.appendChild(wrap);
 
   var ashBody   = document.getElementById("ash-body");
   var ashBubble = document.getElementById("ash-bubble");
   var ashMsg    = document.getElementById("ash-msg");
   var ashHole   = document.getElementById("ash-blackhole");
+  var ashChar   = document.getElementById("ash-char");
+  var emoBadge  = document.getElementById("ash-emo-badge");
 
-  /* ---- State ---- */
-  var lastSection  = "";
-  var bubTimer     = null;
-  var scrollTimer  = null;
-  var inHole       = false;
-  var chatting     = false;
-  var lastSpokenAt = 0;
-  var MIN_SPEAK_GAP = 6000; // ms between unsolicited speeches
+  /* === HELPERS === */
+  function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-  /* ---- Section detector from scroll % ---- */
+  function setEmo(em) {
+    emotion = em;
+    if (EMO[em]) {
+      emoBadge.textContent = EMO[em];
+      emoBadge.className = "ash-emo-badge ash-emo-" + em;
+      emoBadge.classList.add("pop");
+      setTimeout(function() { emoBadge.classList.remove("pop"); }, 400);
+    }
+  }
+
+  function say(text, hold) {
+    var now = Date.now();
+    if (now - lastSpoke < CFG.SPEAK_COOLDOWN) return;
+    lastSpoke = now;
+    clearTimeout(bubTimer);
+    ashMsg.textContent = text;
+    ashBubble.classList.remove("hidden", "pop");
+    void ashBubble.offsetWidth;
+    ashBubble.classList.add("visible", "pop");
+    bubTimer = setTimeout(function() {
+      ashBubble.classList.add("hidden");
+      ashBubble.classList.remove("visible");
+    }, hold || 3500);
+  }
+
+  function forceSpeak(text, hold) {
+    /* bypasses cooldown */
+    lastSpoke = 0;
+    say(text, hold);
+  }
+
+  function setState(state) {
+    ashBody.className = "";
+    if (state === "hidden") ashBody.classList.add("ash-hidden");
+    else ashBody.classList.add("ash-state-" + state);
+  }
+
+  function getScrollPct() {
+    return (window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight)) * 100;
+  }
+
   function getSection() {
-    var pct = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+    var pct = getScrollPct();
     if (pct < 10)  return "hero";
     if (pct < 25)  return "story";
     if (pct < 42)  return "service";
@@ -474,37 +563,137 @@ document.addEventListener("keydown", function(e) {
     return "contact";
   }
 
-  function getScrollPct() {
-    return (window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight)) * 100;
+  /* === ANIMATION LOOP === */
+  function animate() {
+    /* Rope spring physics */
+    var target = isScrolling ? Math.max(-18, Math.min(18, scrollSpeed * 0.5)) : 0;
+    var spring = (target - ropeAngle) * CFG.ROPE_STIFFNESS;
+    ropeVel = (ropeVel + spring) * CFG.ROPE_DAMPING;
+    ropeAngle += ropeVel;
+
+    /* Pseudo-3D cursor head tracking */
+    var cx = window.innerWidth  / 2;
+    var cy = window.innerHeight / 2;
+    var dx = (cursorX - cx) / Math.max(1, cx);
+    var dy = (cursorY - cy) / Math.max(1, cy);
+    tgtRotY = dx * CFG.MAX_ROT_Y;
+    tgtRotX = -dy * CFG.MAX_ROT_X * 0.5;
+    curRotX += (tgtRotX - curRotX) * CFG.CURSOR_LERP;
+    curRotY += (tgtRotY - curRotY) * CFG.CURSOR_LERP;
+
+    /* Apply transform — rope swing + head tracking combined */
+    if (ashChar) {
+      ashChar.style.transform =
+        "perspective(500px)" +
+        " rotateX(" + curRotX.toFixed(2) + "deg)" +
+        " rotateY(" + curRotY.toFixed(2) + "deg)" +
+        " rotateZ(" + ropeAngle.toFixed(2) + "deg)";
+    }
+
+    rafId = requestAnimationFrame(animate);
   }
 
-  /* ---- Speech ---- */
-  function say(text, hold) {
-    clearTimeout(bubTimer);
-    ashMsg.textContent = text;
-    ashBubble.classList.remove("hidden", "pop");
-    void ashBubble.offsetWidth;
-    ashBubble.classList.add("visible", "pop");
-    lastSpokenAt = Date.now();
-    bubTimer = setTimeout(function() {
-      ashBubble.classList.add("hidden");
-      ashBubble.classList.remove("visible");
-    }, hold || 3500);
-  }
+  /* === SCROLL HANDLER === */
+  window.addEventListener("scroll", function() {
+    if (inHole) return;
 
-  /* ---- Pose helper ---- */
-  function setState(state) {
-    ashBody.className = "";
-    if (state === "hidden") { ashBody.classList.add("ash-hidden"); }
-    else { ashBody.classList.add("ash-state-" + state); }
-  }
+    var sy   = window.scrollY;
+    scrollSpeed = sy - lastScrollY;
+    lastScrollY = sy;
+    isScrolling  = true;
 
-  /* ---- Black hole at bottom ---- */
+    /* Wake from sleep */
+    if (emotion === "sleeping") {
+      setEmo("happy");
+      setState("wave");
+      forceSpeak(rand(SPEECH.wakeup), 2500);
+    }
+
+    /* Fast scroll = dizzy */
+    var spd = Math.abs(scrollSpeed);
+    if (spd > CFG.FAST_SCROLL) {
+      if (emotion !== "dizzy") {
+        setEmo("dizzy");
+        say(rand(SPEECH.dizzy));
+      }
+    } else if (emotion === "dizzy") {
+      setEmo("idle");
+    }
+
+    /* Rope kick */
+    ropeVel += scrollSpeed * 0.12;
+
+    /* Black hole at bottom */
+    if (getScrollPct() >= 95) {
+      triggerBlackHole();
+      return;
+    }
+
+    /* Section quip */
+    var sec = getSection();
+    if (sec !== lastSection) {
+      lastSection = sec;
+      var sectionEmos = { hero:"waving", story:"thinking", service:"idle", work:"proud", video:"happy", ai:"excited", contact:"excited" };
+      setEmo(sectionEmos[sec] || "idle");
+      setTimeout(function() { say(rand(SPEECH[sec] || SPEECH.idle)); }, 700);
+    }
+
+    setState("fall");
+
+    /* Reset inactive */
+    clearTimeout(inactiveTimer);
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(function() {
+      isScrolling = false;
+      setState("wave");
+      if (emotion === "dizzy") setEmo("idle");
+      /* Idle sleep countdown */
+      inactiveTimer = setTimeout(function() {
+        setEmo("sleeping");
+        setState("sleep");
+        forceSpeak(rand(SPEECH.sleep), 4000);
+      }, CFG.IDLE_TIMEOUT);
+    }, 900);
+
+  }, { passive: true });
+
+  /* === CURSOR TRACKING === */
+  document.addEventListener("mousemove", function(e) {
+    cursorX = e.clientX;
+    cursorY = e.clientY;
+    if (emotion === "sleeping") {
+      setEmo("happy");
+      setState("wave");
+      forceSpeak(rand(SPEECH.wakeup), 2500);
+      clearTimeout(inactiveTimer);
+      inactiveTimer = setTimeout(function() {
+        setEmo("sleeping");
+        setState("sleep");
+      }, CFG.IDLE_TIMEOUT);
+    }
+  });
+
+  /* === TOUCH / CLICK === */
+  ashBody.addEventListener("pointerdown", function(e) {
+    e.stopPropagation();
+    if (inHole) return;
+    var wasSleeping = emotion === "sleeping";
+    setState("touch");
+    setEmo(wasSleeping ? "shocked" : "idle");
+    ropeVel += (Math.random() > 0.5 ? 4 : -4); /* random rope bounce */
+    forceSpeak(wasSleeping ? rand(SPEECH.wakeup) : rand(SPEECH.touch), 2500);
+    setTimeout(function() {
+      setState(isScrolling ? "fall" : "wave");
+    }, 2700);
+  });
+
+  /* === BLACK HOLE === */
   function triggerBlackHole() {
     if (inHole) return;
     inHole = true;
+    setEmo("excited");
     setState("fall-hole");
-    say("Going through the black hole... 🌀", 2000);
+    forceSpeak(rand(SPEECH.contact), 2000);
     setTimeout(function() { ashHole.classList.add("active"); }, 300);
     setTimeout(function() {
       setState("hidden");
@@ -512,101 +701,41 @@ document.addEventListener("keydown", function(e) {
     }, 1200);
     setTimeout(function() {
       inHole = false;
+      setEmo("happy");
       setState("spawn");
       ashBody.classList.remove("ash-hidden");
-      say("Back from the void! Let's go again 🔄", 2500);
-      setTimeout(function() { setState("wave"); }, 800);
-    }, 3800);
+      forceSpeak("Back from the void! Starting over!", 2500);
+      setTimeout(function() { setState("wave"); }, 900);
+    }, 4500);
   }
 
-  /* ---- MAIN SCROLL HANDLER ---- */
-  var isScrolling = false;
-
-  window.addEventListener("scroll", function() {
-    if (inHole || ashBody.classList.contains("ash-hidden")) return;
-
-    var pct = getScrollPct();
-
-    /* Trigger black hole near bottom */
-    if (pct >= 95) {
-      triggerBlackHole();
-      return;
+  /* === TAB VISIBILITY === */
+  document.addEventListener("visibilitychange", function() {
+    if (document.hidden) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    } else if (!rafId) {
+      animate();
     }
-
-    /* Show rope-swing while scrolling */
-    if (!chatting) { setState("fall"); }
-    isScrolling = true;
-
-    /* Section change check */
-    var sec = getSection();
-    if (sec !== lastSection) {
-      lastSection = sec;
-      /* Speak about new section after brief delay */
-      setTimeout(function() {
-        var now = Date.now();
-        if (!chatting && now - lastSpokenAt > MIN_SPEAK_GAP) {
-          chatting = true;
-          setState("talk");
-          say(randLine(LINES[sec] || LINES.idle), 3000);
-          setTimeout(function() {
-            chatting = false;
-            setState(isScrolling ? "fall" : "wave");
-          }, 3200);
-        }
-      }, 500);
-    }
-
-    /* Debounced "stopped scrolling" — switch to wave + idle chat */
-    clearTimeout(scrollTimer);
-    scrollTimer = setTimeout(function() {
-      isScrolling = false;
-      if (inHole || chatting) return;
-      setState("wave");
-      /* Random idle quip when user pauses */
-      var now = Date.now();
-      if (now - lastSpokenAt > MIN_SPEAK_GAP) {
-        chatting = true;
-        setState("talk");
-        say(randLine(LINES.idle), 3000);
-        setTimeout(function() {
-          chatting = false;
-          setState("wave");
-        }, 3200);
-      }
-    }, 1200);
-
-  }, { passive: true });
-
-  /* ---- Touch / click interaction ---- */
-  ashBody.addEventListener("pointerdown", function(e) {
-    e.stopPropagation();
-    if (inHole) return;
-    var wasChatting = chatting;
-    chatting = true;
-    setState("touch");
-    say(randLine(LINES.touch), 2500);
-    setTimeout(function() {
-      chatting = false;
-      setState(isScrolling ? "fall" : "wave");
-    }, 2700);
   });
 
-  /* ---- Kick off: appear after preloader ---- */
+  /* === KICK OFF === */
   setTimeout(function() {
     setState("spawn");
     ashBody.classList.remove("ash-hidden");
-    say("Yo! I'm Ash 👋 Scroll and I'll follow you!", 3500);
+    setEmo("waving");
+    forceSpeak("Yo! I'm Ash, your scroll buddy!", 3500);
     setTimeout(function() {
       setState("wave");
+      setEmo("idle");
       lastSection = getSection();
-    }, 1800);
-  }, 2000);
-
-  /* ---- Pause when tab hidden ---- */
-  document.addEventListener("visibilitychange", function() {
-    if (!document.hidden && !inHole && !chatting) {
-      setState(isScrolling ? "fall" : "wave");
-    }
-  });
+      animate();
+      /* Start inactive countdown */
+      inactiveTimer = setTimeout(function() {
+        setEmo("sleeping");
+        setState("sleep");
+      }, CFG.IDLE_TIMEOUT);
+    }, 2000);
+  }, 2200);
 
 })();
