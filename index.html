@@ -542,7 +542,13 @@
           </video>
           <div class="ai-vid-overlay"><span class="ai-chip">AI Generated</span><h4>AI Highlight #3</h4></div>
         </div>
-      </div>
+      
+        <div class="ai-vid-card ai-3d-vid-card" id="aiv-3d">
+          <video autoplay muted loop playsinline class="ai-vid ai-vid-bg-remove">
+            <source src="assets/videos/ai_3d_video.mp4" type="video/mp4" />
+          </video>
+          <div class="ai-vid-overlay"><span class="ai-chip ai-chip-3d">3D + AI</span><h4>AI 3D Creation</h4></div>
+        </div></div>
       <div class="ai-art-label-row">
         <span class="aal-line"></span><span class="aal-text">AI Art Direction</span><span class="aal-line"></span>
       </div>
@@ -550,6 +556,18 @@
         <div class="ai-art-item" id="art1"><img src="assets/images/ai_art1.png" alt="AI Art 1" loading="lazy" /></div>
         <div class="ai-art-item" id="art2"><img src="assets/images/ai_art2.png" alt="AI Art 2" loading="lazy" /></div>
         <div class="ai-art-item" id="art3"><img src="assets/images/ai_art3.png" alt="AI Art 3" loading="lazy" /></div>
+      <!-- Spider-Man 3D Showcase -->
+      <div class="spidey-showcase reveal" id="spideyShowcase">
+        <div class="spidey-label">
+          <span class="spidey-chip">3D Model</span>
+          <p class="spidey-caption">Interactive 3D — drag to rotate</p>
+        </div>
+        <div class="spidey-canvas-wrap">
+          <canvas id="spideyCanvas"></canvas>
+          <div class="spidey-hint">&#x1F5B1; Drag &#x2022; Scroll to zoom</div>
+        </div>
+      </div>
+
         <div class="ai-art-item" id="art4"><img src="assets/images/ai_art4.png" alt="AI Art 4" loading="lazy" /></div>
         <div class="ai-art-item" id="art5"><img src="assets/images/ai_art5.png" alt="AI Art 5" loading="lazy" /></div>
         <div class="ai-art-item" id="art6"><img src="assets/images/ai_art6.png" alt="AI Art 6" loading="lazy" /></div>
@@ -704,5 +722,9 @@
 
   <script src="script.js"></script>
 
+  <!-- Three.js for Spider-Man 3D viewer -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="spidey3d.js"></script>
 </body>
 </html>
