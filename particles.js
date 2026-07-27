@@ -65,8 +65,9 @@
   }
 
   function spawn() {
-    particles = Array.from({ length: 85 }, makeParticle);
-    shapes    = Array.from({ length: 7 },  makeShape);
+    var isMobile = W < 768;
+    particles = Array.from({ length: isMobile ? 35 : 85 }, makeParticle);
+    shapes    = Array.from({ length: isMobile ? 2  : 7  }, makeShape);
   }
 
   /* ─── Draw one shape ─── */
@@ -191,7 +192,8 @@
       if (p.x < 0 || p.x > W) p.vx *= -1;
       if (p.y < 0 || p.y > H) p.vy *= -1;
 
-      var pa = p.a * (0.65 + 0.35 * Math.sin(time * 0.012 + p.phase));
+      var isMob = W < 768;
+    var pa = p.a * (isMob ? 0.5 : 0.65 + 0.35 * Math.sin(time * 0.012 + p.phase));
 
       /* Glow halo for larger nodes */
       if (p.r > 1.8) {

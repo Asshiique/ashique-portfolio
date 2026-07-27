@@ -3306,3 +3306,26 @@ html, body {
 @media (max-width: 480px) {
   .btn-outline-red { width: 100%; justify-content: center; }
 }
+/* ===== MOBILE — Kill overwhelming glow ===== */
+@media (max-width: 768px) {
+  /* Section pseudo-element glows — completely off on mobile */
+  #hero::before, #ch02::before, #ch03::before,
+  #ch04::before, #ai::before, #contact::before,
+  #videos::before { display: none !important; }
+
+  /* Video section orbs — much smaller and dimmer */
+  .vid-orb1 { width: 120px !important; height: 120px !important; opacity: 0.4 !important; filter: blur(40px) !important; }
+  .vid-orb2 { width: 100px !important; height: 100px !important; opacity: 0.3 !important; filter: blur(35px) !important; }
+  .vid-orb3 { display: none !important; }
+
+  /* Section backgrounds slightly more opaque so content pops */
+  section { background: rgba(8,8,8,0.75) !important; }
+
+  /* Canvas itself — lower global alpha on small screens via opacity */
+  #particleCanvas { opacity: 0.55 !important; }
+}
+
+@media (max-width: 480px) {
+  #particleCanvas { opacity: 0.35 !important; }
+  .vid-orb1, .vid-orb2 { display: none !important; }
+}
