@@ -39,7 +39,7 @@
       vy: (Math.random() - 0.5) * 0.4,
       r: 0.8 + Math.random() * 2.2,
       c: c,
-      a: 0.2 + Math.random() * 0.5,
+      a: 0.12 + Math.random() * 0.28,
       phase: Math.random() * Math.PI * 2
     };
   }
@@ -59,7 +59,7 @@
       vy: (Math.random() - 0.5) * 0.22,
       tiltX: (Math.random() - 0.5),
       tiltV: (Math.random() - 0.5) * 0.005,
-      a: 0.08 + Math.random() * 0.18,
+      a: 0.04 + Math.random() * 0.09,
       c: COLORS[Math.floor(Math.random() * COLORS.length)]
     };
   }
@@ -136,8 +136,8 @@
     var gx = W * (0.2 + 0.15 * Math.sin(t));
     var gy = H * (0.4 + 0.2 * Math.cos(t * 0.7));
     var gr = ctx.createRadialGradient(gx, gy, 0, gx, gy, W * 0.45);
-    gr.addColorStop(0,   'rgba(230,57,43,0.07)');
-    gr.addColorStop(0.5, 'rgba(180,40,20,0.03)');
+    gr.addColorStop(0,   'rgba(230,57,43,0.032)');
+    gr.addColorStop(0.5, 'rgba(180,40,20,0.014)');
     gr.addColorStop(1,   'rgba(0,0,0,0)');
     ctx.fillStyle = gr; ctx.fillRect(0,0,W,H);
 
@@ -145,7 +145,7 @@
     var gx2 = W * (0.75 + 0.12 * Math.cos(t * 0.8));
     var gy2 = H * (0.3  + 0.15 * Math.sin(t * 1.1));
     var gr2 = ctx.createRadialGradient(gx2, gy2, 0, gx2, gy2, W * 0.3);
-    gr2.addColorStop(0,   'rgba(80,120,255,0.05)');
+    gr2.addColorStop(0,   'rgba(80,120,255,0.022)');
     gr2.addColorStop(1,   'rgba(0,0,0,0)');
     ctx.fillStyle = gr2; ctx.fillRect(0,0,W,H);
 
@@ -153,7 +153,7 @@
     var gx3 = W * (0.5 + 0.2 * Math.sin(t * 1.3));
     var gy3 = H * (0.8 + 0.1 * Math.cos(t));
     var gr3 = ctx.createRadialGradient(gx3, gy3, 0, gx3, gy3, W * 0.35);
-    gr3.addColorStop(0,   'rgba(255,110,30,0.05)');
+    gr3.addColorStop(0,   'rgba(255,110,30,0.022)');
     gr3.addColorStop(1,   'rgba(0,0,0,0)');
     ctx.fillStyle = gr3; ctx.fillRect(0,0,W,H);
   }
@@ -196,7 +196,7 @@
       /* Glow halo for larger nodes */
       if (p.r > 1.8) {
         var halo = ctx.createRadialGradient(p.x,p.y,0, p.x,p.y, p.r*4);
-        halo.addColorStop(0, 'rgba('+p.c[0]+','+p.c[1]+','+p.c[2]+','+(pa*0.6)+')');
+        halo.addColorStop(0, 'rgba('+p.c[0]+','+p.c[1]+','+p.c[2]+','+(pa*0.3)+')');
         halo.addColorStop(1, 'rgba('+p.c[0]+','+p.c[1]+','+p.c[2]+',0)');
         ctx.beginPath(); ctx.arc(p.x,p.y,p.r*4,0,Math.PI*2);
         ctx.fillStyle = halo; ctx.fill();
@@ -232,11 +232,11 @@
         if (spd > 1.5) { p.vx /= spd/1.5; p.vy /= spd/1.5; }
         /* Orange glow on affected particles */
         ctx.beginPath(); ctx.arc(p.x,p.y,p.r*3,0,Math.PI*2);
-        ctx.fillStyle = 'rgba(230,80,30,'+(mf*0.4)+')';
+        ctx.fillStyle = 'rgba(230,80,30,'+(mf*0.10)+')';
         ctx.fill();
         /* Line to cursor */
         ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(mouse.x,mouse.y);
-        ctx.strokeStyle = 'rgba(230,80,30,'+(mf*0.2)+')';
+        ctx.strokeStyle = 'rgba(230,80,30,'+(mf*0.10)+')';
         ctx.lineWidth = 0.8; ctx.stroke();
       }
     }

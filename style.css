@@ -8,7 +8,7 @@
   --clr-bg:       #070707;
   --clr-surface:  #101010;
   --clr-surface2: #161616;
-  --clr-border:   rgba(255,255,255,0.07);
+  --clr-border:   rgba(255,255,255,0.03);
   --clr-red:      #b03020;
   --clr-red2:     #e63c2c;
   --clr-amber:    #d4720a;
@@ -2969,7 +2969,7 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 .gbg-ring, .gbg-geo, .gbg-line, .gbg-grid { position: fixed; pointer-events: none; z-index: -1; }
 
 /* Sections transparent so fixed canvas shows through */
-section { background: transparent !important; }
+section { background: rgba(8,8,8,0.55) !important; }
 /* Keep cards/panels opaque for readability */
 .video-card, .service-card, .work-card, .contact-form,
 .ai-vid-card, .ai-art-item, .spidey-section .spidey-box,
@@ -2984,7 +2984,7 @@ nav, header { background: rgba(8,8,8,0.85) !important; backdrop-filter: blur(12p
 /* ─── Floating Rings ─── */
 .gbg-ring {
   border-radius: 50%;
-  border: 1px solid rgba(230,57,43,0.14);
+  border: 1px solid rgba(230,57,43,0.06);
   animation: gbgRingSpin 30s linear infinite;
 }
 .gbg-ring::after {
@@ -2992,12 +2992,12 @@ nav, header { background: rgba(8,8,8,0.85) !important; backdrop-filter: blur(12p
   position: absolute;
   inset: 18px;
   border-radius: 50%;
-  border: 1px solid rgba(255,100,40,0.07);
+  border: 1px solid rgba(255,100,40,0.03);
   animation: gbgRingSpin 18s linear infinite reverse;
 }
 .gbg-ring1 { width: 480px; height: 480px; top: 8vh;  left: -140px; animation-duration: 35s; }
-.gbg-ring2 { width: 340px; height: 340px; top: 52vh; right: -90px; animation-duration: 26s; border-color: rgba(200,50,20,0.10); }
-.gbg-ring3 { width: 220px; height: 220px; top: 28vh; left: 42%;    animation-duration: 20s; border-color: rgba(255,140,50,0.08); }
+.gbg-ring2 { width: 340px; height: 340px; top: 52vh; right: -90px; animation-duration: 26s; border-color: rgba(200,50,20,0.04); }
+.gbg-ring3 { width: 220px; height: 220px; top: 28vh; left: 42%;    animation-duration: 20s; border-color: rgba(255,140,50,0.03); }
 @keyframes gbgRingSpin {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
@@ -3007,22 +3007,22 @@ nav, header { background: rgba(8,8,8,0.85) !important; backdrop-filter: blur(12p
 .gbg-geo1 {
   width: 110px; height: 110px;
   top: 22vh; left: 4%;
-  border: 1px solid rgba(230,57,43,0.15);
+  border: 1px solid rgba(230,57,43,0.03);
   transform: rotate(45deg);
   animation: geo1float 12s ease-in-out infinite alternate;
 }
 .gbg-geo2 {
   width: 75px; height: 75px;
   top: 68vh; right: 6%;
-  border: 1px solid rgba(200,70,20,0.12);
+  border: 1px solid rgba(200,70,20,0.05);
   clip-path: polygon(50% 0%,0% 100%,100% 100%);
-  background: rgba(230,57,43,0.04);
+  background: rgba(230,57,43,0.02);
   animation: geo2float 16s ease-in-out infinite alternate;
 }
 .gbg-geo3 {
   width: 55px; height: 55px;
   top: 44vh; right: 20%;
-  border: 1px solid rgba(255,120,40,0.10);
+  border: 1px solid rgba(255,120,40,0.04);
   border-radius: 8px;
   animation: geo3float 10s ease-in-out infinite alternate;
 }
@@ -3042,7 +3042,7 @@ nav, header { background: rgba(8,8,8,0.85) !important; backdrop-filter: blur(12p
 /* ─── Diagonal glow lines ─── */
 .gbg-line {
   height: 1px;
-  background: linear-gradient(90deg, transparent 0%, rgba(230,57,43,0.30) 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, rgba(230,57,43,0.14) 50%, transparent 100%);
   animation: gbgLinePulse 7s ease-in-out infinite;
 }
 .gbg-line1 { width: 420px; top: 14vh; left: -60px;  transform: rotate(-14deg); animation-delay: 0s;   }
@@ -3057,7 +3057,7 @@ nav, header { background: rgba(8,8,8,0.85) !important; backdrop-filter: blur(12p
 .gbg-grid {
   inset: 0;
   background-image:
-    radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px);
+    radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px);
   background-size: 48px 48px;
   animation: gbgGridMove 20s linear infinite;
 }
@@ -3074,9 +3074,9 @@ nav, header { background: rgba(8,8,8,0.85) !important; backdrop-filter: blur(12p
   pointer-events: none;
   z-index: 0;
 }
-#hero::before    { background: radial-gradient(ellipse at 75% 50%, rgba(230,57,43,0.09) 0%, transparent 55%); }
-#ch02::before    { background: radial-gradient(ellipse at 10% 50%, rgba(230,57,43,0.07) 0%, transparent 50%); }
-#ch03::before    { background: radial-gradient(ellipse at 90% 40%, rgba(200,60,20,0.07) 0%, transparent 50%); }
-#ai::before      { background: radial-gradient(ellipse at 70% 50%, rgba(80,140,255,0.06) 0%, transparent 50%); }
-#contact::before { background: radial-gradient(ellipse at 50% 80%, rgba(230,57,43,0.09) 0%, transparent 55%); }
-#videos::before  { background: radial-gradient(ellipse at 20% 50%, rgba(230,57,43,0.08) 0%, transparent 55%); }
+#hero::before    { background: radial-gradient(ellipse at 75% 50%, rgba(230,57,43,0.04) 0%, transparent 55%); }
+#ch02::before    { background: radial-gradient(ellipse at 10% 50%, rgba(230,57,43,0.03) 0%, transparent 50%); }
+#ch03::before    { background: radial-gradient(ellipse at 90% 40%, rgba(200,60,20,0.03) 0%, transparent 50%); }
+#ai::before      { background: radial-gradient(ellipse at 70% 50%, rgba(80,140,255,0.025) 0%, transparent 50%); }
+#contact::before { background: radial-gradient(ellipse at 50% 80%, rgba(230,57,43,0.04) 0%, transparent 55%); }
+#videos::before  { background: radial-gradient(ellipse at 20% 50%, rgba(230,57,43,0.035) 0%, transparent 55%); }
