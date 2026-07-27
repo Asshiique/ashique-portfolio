@@ -15,6 +15,22 @@
     <script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
 </head>
 <body>
+  <!-- Global animated background layer -->
+  <div id="global-bg" aria-hidden="true">
+    <canvas id="particleCanvas"></canvas>
+    <!-- Section zone decorations -->
+    <div class="gbg-ring gbg-ring1"></div>
+    <div class="gbg-ring gbg-ring2"></div>
+    <div class="gbg-ring gbg-ring3"></div>
+    <div class="gbg-geo gbg-geo1"></div>
+    <div class="gbg-geo gbg-geo2"></div>
+    <div class="gbg-geo gbg-geo3"></div>
+    <div class="gbg-line gbg-line1"></div>
+    <div class="gbg-line gbg-line2"></div>
+    <div class="gbg-line gbg-line3"></div>
+    <div class="gbg-grid"></div>
+  </div>
+
 
   <div id="cursor" class="cursor"></div>
   <div id="cursor-follower" class="cursor-follower"></div>
@@ -776,6 +792,8 @@
   </div>
 
   <script src="script.js"></script>
+  <script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+  <script src="particles.js"></script>
 
 </body>
 </html>
