@@ -2765,3 +2765,34 @@ p, .ch-body-txt, .ch-lead, .service-card p,
   .spidey-row { grid-template-columns: 1fr; }
   .ai3d-box-wrap { height: 260px; }
 }
+/* ===== VIDEO SECTION — Background & Grid Fill ===== */
+#videos {
+  position: relative;
+  background:
+    radial-gradient(ellipse at 15% 50%, rgba(230,57,43,0.08) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 30%, rgba(180,30,20,0.05) 0%, transparent 50%),
+    var(--clr-bg);
+}
+#videos::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse at 20% 70%, rgba(230,80,30,0.06) 0%, transparent 45%);
+  pointer-events: none;
+  z-index: 0;
+}
+#videos .container { position: relative; z-index: 1; }
+
+/* Right-col spans both grid rows so hl6 fills the left gap */
+.video-right-col {
+  grid-row: 1 / span 2;
+}
+
+/* hl6 card — matches featured-video style */
+.vid-hl6 {
+  margin-top: 18px;
+}
+.vid-hl6 .video-thumb-wrap {
+  aspect-ratio: 16/9;
+}
