@@ -3282,3 +3282,27 @@ html, body {
   .chapter-block { padding: 24px 14px !important; }
   .ch-headline { font-size: clamp(1.4rem, 8vw, 2rem) !important; }
 }
+/* My Works — outlined red button */
+.btn-outline-red {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 13px 32px;
+  border: 1.5px solid var(--clr-red2, #e63946);
+  border-radius: 99px;
+  font-size: .86rem; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--clr-red2, #e63946);
+  transition: background .3s, color .3s, transform .2s;
+  text-decoration: none;
+}
+.btn-outline-red svg { width: 16px; height: 16px; transition: transform .3s; }
+.btn-outline-red:hover {
+  background: var(--clr-red2, #e63946);
+  color: #fff;
+  transform: translateY(-2px);
+}
+.btn-outline-red:hover svg { transform: translateX(4px); }
+
+/* Mobile: stack buttons full width on very small screens */
+@media (max-width: 480px) {
+  .btn-outline-red { width: 100%; justify-content: center; }
+}
