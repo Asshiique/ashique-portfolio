@@ -3216,3 +3216,69 @@ html, body {
   .ai3d-box-wrap { height: 180px !important; }
   .vid-title-block { margin-bottom: 20px; }
 }
+/* ============================================================
+   CHAPTER LAYOUT MOBILE FIX — images on top of text fix
+   ============================================================ */
+@media (max-width: 768px) {
+
+  /* Collapse ALL chapter grids to single column */
+  .ch-layout,
+  .chapter-block.ch-alt .ch-layout {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+
+  /* Chapter block outer padding */
+  .chapter-block {
+    padding: 32px 18px !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Text comes first, image below */
+  .ch-text-col  { order: 1 !important; }
+  .ch-visual-col { order: 2 !important; width: 100% !important; min-height: unset !important; }
+
+  /* Slideshow: fix absolute positioning that causes overflow/overlap */
+  .ch-expr-slideshow {
+    position: relative !important;
+    min-height: 280px !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+  }
+
+  /* Individual slides */
+  .ch-expr-slide {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+  }
+  .ch-expr-slide img, .ch-expr-img {
+    width: 100% !important;
+    max-width: 240px !important;
+    height: auto !important;
+    display: block;
+    margin: 0 auto;
+  }
+
+  /* ch-bg-num (large background number) — shrink on mobile */
+  .ch-bg-num {
+    font-size: 8rem !important;
+    opacity: 0.04 !important;
+  }
+
+  /* Chapter headline */
+  .ch-headline { font-size: clamp(1.6rem, 7vw, 2.4rem) !important; }
+  .ch-headline-lg { font-size: clamp(1.8rem, 8vw, 2.8rem) !important; }
+  .ch-body-txt { font-size: 0.88rem !important; line-height: 1.6 !important; }
+  .ch-punchline { font-size: 0.9rem !important; }
+
+  /* Visual col posters */
+  .ch-visual-poster { min-height: 200px !important; }
+  .about-portrait-frame { width: 180px !important; height: 250px !important; }
+}
+
+@media (max-width: 480px) {
+  .ch-expr-slideshow { min-height: 240px !important; }
+  .chapter-block { padding: 24px 14px !important; }
+  .ch-headline { font-size: clamp(1.4rem, 8vw, 2rem) !important; }
+}
