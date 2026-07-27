@@ -437,6 +437,20 @@
 
   <!-- ═══════ VIDEOS ═══════ -->
   <section id="videos">
+    <!-- Animated BG orbs -->
+    <div class="vid-bg-orb vid-orb1"></div>
+    <div class="vid-bg-orb vid-orb2"></div>
+    <div class="vid-bg-orb vid-orb3"></div>
+    <!-- CSS 3D floating elements -->
+    <div class="vid-3d-wrap" aria-hidden="true">
+      <div class="vid-frame vid-frame1"></div>
+      <div class="vid-frame vid-frame2"></div>
+      <div class="vid-ring"></div>
+      <div class="vid-line vid-line1"></div>
+      <div class="vid-line vid-line2"></div>
+    </div>
+    <!-- Scanline sweep -->
+    <div class="vid-scanline"></div>
     <div class="container">
       <p class="section-tag">— MOTION WORK</p>
       <div class="vid-title-block">
@@ -514,7 +528,7 @@
         <!-- Highlight Edit #6 — fills the blank left space in the grid -->
         <div class="video-card vid-hl6" id="vid-hl6">
           <div class="video-thumb-wrap">
-            <video loop preload="none" class="vid-preview" id="vidHL6">
+            <video autoplay muted loop playsinline class="vid-preview vid-hl6-autoplay" id="vidHL6">
               <source src="assets/videos/hl_edit6.mp4" type="video/mp4" />
             </video>
             <div class="video-play-btn" id="vidHL6Btn" onclick="toggleVideo('vidHL6','vidHL6Btn')">
