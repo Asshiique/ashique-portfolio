@@ -3080,3 +3080,139 @@ nav, header { background: rgba(8,8,8,0.85) !important; backdrop-filter: blur(12p
 #ai::before      { background: radial-gradient(ellipse at 70% 50%, rgba(80,140,255,0.025) 0%, transparent 50%); }
 #contact::before { background: radial-gradient(ellipse at 50% 80%, rgba(230,57,43,0.04) 0%, transparent 55%); }
 #videos::before  { background: radial-gradient(ellipse at 20% 50%, rgba(230,57,43,0.035) 0%, transparent 55%); }
+
+/* ============================================================
+   COMPREHENSIVE MOBILE FIX — 768px and below
+   ============================================================ */
+
+/* Prevent horizontal scroll globally */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Hide CSS decorative elements that cause overflow on mobile */
+@media (max-width: 768px) {
+  .gbg-ring, .gbg-geo, .gbg-line { display: none !important; }
+  .gbg-grid { display: none !important; }
+  .vid-3d-wrap, .vid-scanline { display: none !important; }
+  .vid-bg-orb { filter: blur(50px); width: 200px !important; height: 200px !important; }
+
+  /* ─── Navbar ─── */
+  #navbar { padding: 14px 20px !important; gap: 16px; }
+  #navbar.scrolled { padding: 12px 20px !important; }
+  .logo { font-size: 1.2rem; }
+
+  /* ─── Hero ─── */
+  #hero {
+    grid-template-columns: 1fr !important;
+    padding: 100px 20px 60px !important;
+    gap: 30px;
+    text-align: center;
+  }
+  .hero-portrait-wrap { display: none !important; }
+  .hero-content { align-items: center; }
+  .hero-eyebrow { justify-content: center; }
+  .hero-name-block { text-align: center; }
+  .hn-ashique, .hn-muhammed { font-size: clamp(2.4rem, 10vw, 4rem) !important; letter-spacing: 0.05em !important; }
+  .hero-sub { font-size: 0.9rem; max-width: 90vw; margin: 0 auto; }
+  .hero-actions { justify-content: center; flex-wrap: wrap; gap: 12px; }
+  .hero-stats { justify-content: center; flex-wrap: wrap; gap: 16px 24px; }
+  .hero-float-tag { display: none; }
+  .hero-scroll-cue { display: none; }
+  .hero-bg-word { font-size: 25vw !important; }
+  .hero-descriptor { text-align: center; }
+
+  /* ─── Story/About ─── */
+  .about-grid { grid-template-columns: 1fr !important; gap: 30px; }
+  .about-visual { min-height: 280px !important; order: -1; }
+  .about-portrait-frame { width: 200px !important; height: 280px !important; margin: 0 auto; }
+  .about-vertical-text { display: none !important; }
+  .chapter-block { padding: 40px 20px !important; }
+  .ch-inner { grid-template-columns: 1fr !important; gap: 24px; }
+  .ch-visual-col { min-height: 200px; }
+  .cook-section { flex-direction: column !important; gap: 20px; }
+  .cook-photo-col { width: 100% !important; }
+  .cook-text-col { width: 100% !important; }
+  .si-inner { flex-direction: column !important; gap: 20px; }
+  .si-img-col { width: 100% !important; }
+  .si-text-col { width: 100% !important; }
+  .chapters-wrap { gap: 0; }
+
+  /* ─── Services ─── */
+  .services-grid { grid-template-columns: 1fr !important; gap: 16px; }
+  .service-card { padding: 24px 20px !important; }
+
+  /* ─── Work ─── */
+  .work-masonry { columns: 1 !important; gap: 14px; }
+  .work-header { flex-direction: column !important; align-items: flex-start !important; gap: 16px; }
+  .work-filter-bar { flex-wrap: wrap; gap: 8px; }
+  .filter-btn { font-size: 0.7rem; padding: 6px 12px !important; }
+
+  /* ─── Videos ─── */
+  .video-grid { grid-template-columns: 1fr !important; gap: 16px; }
+  .video-right-col { flex-direction: column !important; grid-row: auto !important; }
+  .vid-hl6 { margin-top: 0 !important; min-height: 200px !important; }
+  .vid-hl6 .video-thumb-wrap { min-height: 200px !important; }
+  .vid-title-block { flex-direction: column !important; align-items: flex-start !important; gap: 4px; margin-bottom: 30px; }
+  .vtb-display { font-size: clamp(2.5rem, 12vw, 5rem) !important; }
+  .vtb-serif  { font-size: clamp(1.5rem, 7vw,  3rem) !important; }
+  .vtb-outline { font-size: clamp(2rem, 10vw, 4rem) !important; }
+
+  /* ─── AI Section ─── */
+  .ai-video-row { grid-template-columns: 1fr !important; gap: 14px; }
+  .ai-art-grid  { grid-template-columns: repeat(2,1fr) !important; gap: 10px; }
+  .ai-title-block { gap: 8px; }
+  .aitb-main { font-size: clamp(2rem, 10vw, 4rem) !important; }
+
+  /* ─── 3D Showcase (Spider-Man section) ─── */
+  .spidey-row { grid-template-columns: 1fr !important; gap: 16px; }
+  .spidey-box { padding: 16px !important; }
+  .spidey-box model-viewer { height: 260px !important; }
+  .ai3d-box-wrap { height: 220px !important; }
+  .spidey-section { padding: 30px 0 !important; }
+
+  /* ─── Contact ─── */
+  .contact-wrap { grid-template-columns: 1fr !important; gap: 30px; }
+  .contact-form { padding: 24px 18px !important; }
+  .social-row { gap: 12px; flex-wrap: wrap; }
+
+  /* ─── ASH Mascot — smaller on mobile ─── */
+  #ash-wrap { bottom: 8px !important; right: 8px !important; }
+  #ash-char  { width: 70px !important; }
+  #ash-speech {
+    max-width: 160px !important;
+    font-size: 0.65rem !important;
+    padding: 8px 10px !important;
+    bottom: 88px !important;
+    right: 6px !important;
+  }
+
+  /* ─── Section padding ─── */
+  section { padding: 60px 0 !important; }
+  .section-tag { font-size: 0.65rem; }
+  .container { padding: 0 20px !important; }
+
+  /* ─── Video lightbox ─── */
+  .vlb-video { width: 95vw !important; }
+
+  /* ─── Typography global mobile ─── */
+  h1 { font-size: clamp(2rem, 9vw, 3.5rem) !important; }
+  h2 { font-size: clamp(1.6rem, 7vw, 2.8rem) !important; }
+  h3 { font-size: clamp(1.2rem, 5vw, 2rem) !important; }
+}
+
+/* ─── Extra small (< 480px) ─── */
+@media (max-width: 480px) {
+  #navbar { padding: 12px 16px !important; }
+  .hn-ashique { font-size: clamp(2rem, 12vw, 3rem) !important; }
+  .hero-actions .btn { width: 100%; text-align: center; justify-content: center; }
+  .ai-art-grid { grid-template-columns: repeat(2,1fr) !important; }
+  .work-masonry { columns: 1 !important; }
+  #ash-char { width: 60px !important; }
+  #ash-speech { max-width: 140px !important; font-size: 0.6rem !important; }
+  .contact-form input, .contact-form textarea { font-size: 0.85rem !important; }
+  .spidey-box model-viewer { height: 220px !important; }
+  .ai3d-box-wrap { height: 180px !important; }
+  .vid-title-block { margin-bottom: 20px; }
+}
