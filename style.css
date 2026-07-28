@@ -3419,3 +3419,66 @@ html, body {
   section { background: rgba(8,8,8,0.75) !important; }
 }
 @media (max-width: 480px) { #particleCanvas { opacity: 0.35 !important; } }
+/* ============================================================
+   LIGHT MODE — override dark !important rules
+   ============================================================ */
+[data-theme="light"] body {
+  background: var(--clr-bg) !important;
+  color: var(--clr-text) !important;
+}
+[data-theme="light"] section {
+  background: transparent !important;
+}
+[data-theme="light"] nav,
+[data-theme="light"] header,
+[data-theme="light"] #navbar {
+  background: rgba(244,241,238,0.88) !important;
+  backdrop-filter: blur(16px) !important;
+  border-bottom: 1px solid rgba(0,0,0,0.07) !important;
+}
+[data-theme="light"] #navbar.scrolled {
+  background: rgba(244,241,238,0.97) !important;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.08) !important;
+}
+
+/* Particle canvas — very faint in light mode */
+[data-theme="light"] #particleCanvas { opacity: 0.08 !important; }
+[data-theme="light"] #global-bg { opacity: 0.12 !important; }
+
+/* Section glows — off in light mode */
+[data-theme="light"] #hero::before,
+[data-theme="light"] #ch02::before,
+[data-theme="light"] #ch03::before,
+[data-theme="light"] #ch04::before,
+[data-theme="light"] #ai::before,
+[data-theme="light"] #contact::before,
+[data-theme="light"] #videos::before { display: none !important; }
+
+/* Cards stay white */
+[data-theme="light"] .video-card,
+[data-theme="light"] .service-card,
+[data-theme="light"] .work-card,
+[data-theme="light"] .contact-form,
+[data-theme="light"] .ai-vid-card,
+[data-theme="light"] .chapter-block {
+  background: #ffffff !important;
+  backdrop-filter: none !important;
+}
+
+/* Mobile section override for light mode */
+@media (max-width: 768px) {
+  [data-theme="light"] section {
+    background: transparent !important;
+  }
+}
+
+/* Rope line — hidden in light mode (doesn't suit light bg) */
+[data-theme="light"] .ash-rope-line { opacity: 0.2 !important; }
+
+/* Mobile menu light */
+[data-theme="light"] .mobile-menu {
+  background: rgba(244,241,238,0.98) !important;
+}
+[data-theme="light"] .hamburger span {
+  background: #111 !important;
+}
