@@ -3482,3 +3482,24 @@ html, body {
 [data-theme="light"] .hamburger span {
   background: #111 !important;
 }
+/* ============================================================
+   CHAPTER 3 & 4 POSTER — show full image on mobile
+   Only overrides poster variant, not portrait ch-photo
+   ============================================================ */
+@media (max-width: 900px) {
+  /* Portrait photos stay at 220px (fine cropped) */
+  /* Poster images (ch03 EBS, ch04 Faculty Required) — show full */
+  .ch-photo.ch-photo-poster {
+    height: auto !important;
+    width: 100% !important;
+    max-height: none !important;
+    object-fit: contain !important;
+    border-radius: 12px;
+  }
+  /* Make the poster visual col height auto so it expands */
+  .ch-visual-poster {
+    height: auto !important;
+    min-height: unset !important;
+    overflow: visible;
+  }
+}
