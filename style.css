@@ -205,7 +205,7 @@ section { padding: 120px 0; position: relative; }
   display: grid; grid-template-columns: 1.1fr 0.9fr;
   align-items: center;
   padding: 130px 60px 80px;
-  position: relative; overflow: hidden; gap: 20px;
+  position: relative; overflow: hidden; gap: 0;
 }
 .hero-bg-img {
   position: absolute; inset: 0;
@@ -385,7 +385,7 @@ section { padding: 120px 0; position: relative; }
 
 /* Scroll cue */
 .hero-scroll-cue {
-  position: absolute; bottom: 36px; left: 60px;
+  position: absolute; bottom: 36px; right: 60px; left: auto;
   display: flex; flex-direction: column; align-items: center; gap: 10px;
   animation: fadeUp .8s 3.2s ease both;
 }
@@ -2105,6 +2105,7 @@ p, .ch-body-txt, .ch-lead, .service-card p,
   bottom: 55px;
   right: 10px;
   width: 120px;
+  overflow: visible;
   pointer-events: none;
   z-index: 900;
 }
@@ -2235,10 +2236,11 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 /* -- SPEECH BUBBLE --------------------------------------- */
 #ash-bubble {
   position: absolute;
-  bottom: 125px;
-  right: 0px;
-  min-width: 130px;
-  max-width: 170px;
+  bottom: 115px;
+  right: -10px;
+  left: auto;
+  min-width: 140px;
+  max-width: 165px;
   background: #fffef8;
   color: #1a1208;
   border-radius: 14px 14px 4px 14px;
