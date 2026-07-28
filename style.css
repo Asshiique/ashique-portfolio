@@ -3576,3 +3576,74 @@ html, body {
     border-top-width: 7px !important;
   }
 }
+/* ============================================================
+   REVERT — restore chapter block and ALL image behaviour
+   to original (overflow:hidden, no forced full-width)
+   ============================================================ */
+@media (max-width: 768px) {
+
+  /* Restore chapter-block overflow — DO NOT let images escape */
+  .chapter-block {
+    overflow: hidden !important;
+  }
+
+  /* Restore ch-expr-slide to original absolute fade */
+  .ch-expr-slide {
+    position: absolute !important;
+    display: block !important;
+    opacity: 0 !important;
+    transform: scale(0.92) translateY(16px) !important;
+    transition: opacity 0.55s ease, transform 0.55s ease !important;
+  }
+  .ch-expr-slide.active {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Restore ch-expr-img to contained sizing */
+  .ch-expr-img {
+    width: auto !important;
+    max-width: 100% !important;
+    height: auto !important;
+    object-fit: contain !important;
+    border-radius: 16px !important;
+    display: block;
+    margin: 0 auto;
+  }
+
+  /* Restore ch-photo (portrait images ch02 etc.) */
+  .ch-photo {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: unset !important;
+    object-fit: cover !important;
+    border-radius: unset !important;
+  }
+
+  /* Restore ch-photo-poster — contained, no overflow */
+  .ch-photo-poster {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100% !important;
+    object-fit: contain !important;
+    border-radius: 0 !important;
+    display: block;
+  }
+
+  /* Restore work masonry images */
+  .work-card img,
+  .work-masonry img {
+    width: 100% !important;
+    height: auto !important;
+    object-fit: cover !important;
+    max-height: 280px !important;
+  }
+
+  /* Restore story/about portrait */
+  .about-portrait-frame img,
+  .about-visual img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+}
