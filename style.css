@@ -1,9 +1,9 @@
-/* ═══════════════════════════════════════════════════════
-   MUHAMMED ASHIQUE — PORTFOLIO v3
-   Cinematic Black × Crimson × Amber — Dark/Light Mode
-   ═══════════════════════════════════════════════════════ */
+/* ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+   MUHAMMED ASHIQUE ΓÇö PORTFOLIO v3
+   Cinematic Black ├ù Crimson ├ù Amber ΓÇö Dark/Light Mode
+   ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ */
 
-/* ── DARK MODE (default) ── */
+/* ΓöÇΓöÇ DARK MODE (default) ΓöÇΓöÇ */
 :root, [data-theme="dark"] {
   --clr-bg:       #070707;
   --clr-surface:  #101010;
@@ -26,7 +26,7 @@
   --tr:           0.4s var(--ease-expo);
 }
 
-/* ── LIGHT MODE ── */
+/* ΓöÇΓöÇ LIGHT MODE ΓöÇΓöÇ */
 [data-theme="light"] {
   --clr-bg:       #f4f1ee;
   --clr-surface:  #ffffff;
@@ -43,7 +43,7 @@
   --clr-dim:      #999999;
 }
 
-/* ── RESET ── */
+/* ΓöÇΓöÇ RESET ΓöÇΓöÇ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body { background: var(--clr-bg); color: var(--clr-text); font-family: var(--ff-body); overflow-x: hidden; cursor: none; }
@@ -54,7 +54,7 @@ button { cursor: none; border: none; background: none; font-family: inherit; }
 ::-webkit-scrollbar-track { background: var(--clr-bg); }
 ::-webkit-scrollbar-thumb { background: var(--clr-red2); border-radius: 99px; }
 
-/* ── CURSOR ── */
+/* ΓöÇΓöÇ CURSOR ΓöÇΓöÇ */
 .cursor {
   position: fixed; z-index: 9999; pointer-events: none;
   width: 8px; height: 8px; border-radius: 50%;
@@ -72,7 +72,7 @@ button { cursor: none; border: none; background: none; font-family: inherit; }
 .cursor.hover { width: 18px; height: 18px; background: var(--clr-amber2); }
 .cursor-follower.hover { width: 50px; height: 50px; border-color: var(--clr-amber2); opacity: .45; }
 
-/* ── PRELOADER ── */
+/* ΓöÇΓöÇ PRELOADER ΓöÇΓöÇ */
 #preloader {
   position: fixed; inset: 0; z-index: 10000;
   background: var(--clr-bg);
@@ -120,7 +120,7 @@ button { cursor: none; border: none; background: none; font-family: inherit; }
 @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
 @keyframes slideUp { from { transform:translateY(110%); opacity:0; } to { transform:translateY(0); opacity:1; } }
 
-/* ── NAVBAR ── */
+/* ΓöÇΓöÇ NAVBAR ΓöÇΓöÇ */
 #navbar {
   position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
   display: flex; align-items: center; gap: 32px;
@@ -173,13 +173,13 @@ button { cursor: none; border: none; background: none; font-family: inherit; }
 .mobile-menu ul a { font-family: var(--ff-display); font-size: clamp(2.5rem,8vw,4rem); letter-spacing: .08em; color: var(--clr-text); transition: color .3s; }
 .mobile-menu ul a:hover { color: var(--clr-red2); }
 
-/* ── CONTAINER ── */
+/* ΓöÇΓöÇ CONTAINER ΓöÇΓöÇ */
 .container { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
 section { padding: 120px 0; position: relative; }
 .section-tag { font-size: .72rem; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: var(--clr-red2); margin-bottom: 16px; display: block; }
 .text-accent { background: var(--grad-fire); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 
-/* ── BUTTONS ── */
+/* ΓöÇΓöÇ BUTTONS ΓöÇΓöÇ */
 .btn-primary {
   display: inline-flex; align-items: center; gap: 10px;
   padding: 14px 32px; background: var(--grad-fire); border-radius: 99px;
@@ -197,15 +197,15 @@ section { padding: 120px 0; position: relative; }
 }
 .btn-ghost:hover { border-color: var(--clr-red2); background: rgba(192,57,43,.08); transform: translateY(-3px); }
 
-/* ═══════════════════════════════════════════════
+/* ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
    HERO
-═══════════════════════════════════════════════ */
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ */
 #hero {
   min-height: 100vh;
   display: grid; grid-template-columns: 1.1fr 0.9fr;
   align-items: center;
   padding: 130px 60px 80px;
-  position: relative; overflow: hidden; gap: 0;
+  position: relative; overflow: hidden; gap: 20px;
 }
 .hero-bg-img {
   position: absolute; inset: 0;
@@ -385,7 +385,7 @@ section { padding: 120px 0; position: relative; }
 
 /* Scroll cue */
 .hero-scroll-cue {
-  position: absolute; bottom: 36px; right: 60px; left: auto;
+  position: absolute; bottom: 36px; left: 60px;
   display: flex; flex-direction: column; align-items: center; gap: 10px;
   animation: fadeUp .8s 3.2s ease both;
 }
@@ -403,7 +403,7 @@ section { padding: 120px 0; position: relative; }
 @keyframes scrollWheel { 0% { transform:translateY(0); opacity:1; } 100% { transform:translateY(12px); opacity:0; } }
 .hero-scroll-cue span { font-size: .6rem; letter-spacing: .25em; text-transform: uppercase; color: var(--clr-dim); writing-mode: vertical-rl; }
 
-/* ── TICKER STRIP ── */
+/* ΓöÇΓöÇ TICKER STRIP ΓöÇΓöÇ */
 .ticker-strip {
   overflow: hidden; padding: 18px 0;
   background: rgba(192,57,43,.07);
@@ -423,9 +423,9 @@ section { padding: 120px 0; position: relative; }
 .t-dot { color: var(--clr-red2) !important; font-size: .5rem !important; vertical-align: middle; }
 @keyframes ticker { from { transform:translateX(0); } to { transform:translateX(-50%); } }
 
-/* ═══════════════════════════════════════════════
+/* ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
    ABOUT
-═══════════════════════════════════════════════ */
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ */
 #about { background: var(--clr-surface); overflow: hidden; }
 .about-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 80px; align-items: center; }
 
@@ -524,9 +524,9 @@ section { padding: 120px 0; position: relative; }
 .skill-bar { height: 3px; background: rgba(255,255,255,.06); border-radius: 99px; overflow: hidden; }
 .skill-fill { height: 100%; width: 0; background: var(--grad-fire); border-radius: 99px; transition: width 1.4s var(--ease-expo); }
 
-/* ═══════════════════════════════════════════════
+/* ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
    SERVICES
-═══════════════════════════════════════════════ */
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ */
 #services { background: var(--clr-bg); }
 .services-heading { margin-bottom: 60px; }
 .svc-title-block { display: flex; flex-direction: column; }
@@ -599,9 +599,9 @@ section { padding: 120px 0; position: relative; }
 .service-card:hover .svc-arrow { color: var(--clr-red2); transform: translate(4px,-4px); }
 .service-card.featured .svc-arrow { color: rgba(255,255,255,.3); }
 
-/* ═══════════════════════════════════════════════
+/* ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
    WORK
-═══════════════════════════════════════════════ */
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ */
 #work { background: var(--clr-surface); }
 .work-header {
   display: flex; justify-content: space-between; align-items: flex-end;
@@ -650,9 +650,9 @@ section { padding: 120px 0; position: relative; }
 .work-overlay h4 { font-family: var(--ff-display); font-size: 1.4rem; letter-spacing: .04em; margin-bottom: 5px; }
 .work-overlay p { font-size: .76rem; color: rgba(255,255,255,.6); line-height: 1.5; }
 
-/* ═══════════════════════════════════════════════
+/* ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
    VIDEOS
-═══════════════════════════════════════════════ */
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ */
 #videos { background: var(--clr-bg); }
 .vid-title-block {
   display: flex; align-items: baseline; gap: 20px; flex-wrap: wrap;
@@ -707,9 +707,9 @@ section { padding: 120px 0; position: relative; }
 .vid-type { font-size: .65rem; letter-spacing: .18em; text-transform: uppercase; color: var(--clr-amber2); display: block; margin-bottom: 4px; }
 .video-label h4 { font-family: var(--ff-display); font-size: 1.3rem; letter-spacing: .05em; }
 
-/* ═══════════════════════════════════════════════
+/* ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
    AI SECTION
-═══════════════════════════════════════════════ */
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ */
 #ai { background: var(--clr-surface); }
 .ai-title-block { margin-bottom: 60px; }
 .aitb-top {
@@ -764,9 +764,9 @@ section { padding: 120px 0; position: relative; }
 .ai-art-item:hover { transform: scale(1.06) translateY(-4px); z-index: 10; box-shadow: 0 20px 40px rgba(0,0,0,.5); }
 .ai-art-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease-expo); }
 
-/* ═══════════════════════════════════════════════
+/* ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
    CONTACT
-═══════════════════════════════════════════════ */
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ */
 #contact { background: var(--clr-bg); }
 .contact-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
 .contact-title-block { display: flex; flex-direction: column; margin-bottom: 28px; }
@@ -834,7 +834,7 @@ section { padding: 120px 0; position: relative; }
 }
 .form-group select option { background: var(--clr-surface); }
 
-/* ── FOOTER ── */
+/* ΓöÇΓöÇ FOOTER ΓöÇΓöÇ */
 footer {
   background: var(--clr-surface);
   border-top: 1px solid var(--clr-border);
@@ -861,7 +861,7 @@ footer {
 }
 .back-to-top:hover { transform: translateY(calc(50% - 6px)); }
 
-/* ── LIGHTBOX ── */
+/* ΓöÇΓöÇ LIGHTBOX ΓöÇΓöÇ */
 .lightbox {
   position: fixed; inset: 0; z-index: 9000;
   background: rgba(0,0,0,.95);
@@ -877,14 +877,14 @@ footer {
 }
 .lb-close:hover { color: var(--clr-red2); }
 
-/* ── SCROLL REVEAL ── */
+/* ΓöÇΓöÇ SCROLL REVEAL ΓöÇΓöÇ */
 .reveal { opacity: 0; transform: translateY(36px); transition: opacity .8s var(--ease-expo), transform .8s var(--ease-expo); }
 .reveal.revealed { opacity: 1; transform: translateY(0); }
 .reveal-d1 { transition-delay: .1s; }
 .reveal-d2 { transition-delay: .2s; }
 .reveal-d3 { transition-delay: .3s; }
 
-/* ── RESPONSIVE ── */
+/* ΓöÇΓöÇ RESPONSIVE ΓöÇΓöÇ */
 @media (max-width: 1100px) {
   .services-grid { grid-template-columns: repeat(2,1fr); }
   .ai-art-grid { grid-template-columns: repeat(4,1fr); }
@@ -1422,7 +1422,7 @@ section, nav, footer, .ticker-strip { position: relative; z-index: 1; }
 [data-theme="light"] .hero-scroll-cue span { color: #999 !important; }
 
 /* -----------------------------------------------
-   MOBILE RESPONSIVE � COMPREHENSIVE
+   MOBILE RESPONSIVE ∩┐╜ COMPREHENSIVE
    ----------------------------------------------- */
 @media (max-width: 1024px) {
   .story-intro { grid-template-columns: 1fr; text-align: center; gap: 40px; }
@@ -1520,7 +1520,7 @@ section, nav, footer, .ticker-strip { position: relative; z-index: 1; }
 }
 
 /* -----------------------------------------------
-   v5 � REDESIGNED CHAPTERS + TYPOGRAPHY OVERHAUL
+   v5 ∩┐╜ REDESIGNED CHAPTERS + TYPOGRAPHY OVERHAUL
    ----------------------------------------------- */
 
 /* Global typography refinement */
@@ -1537,7 +1537,7 @@ h1,h2,h3 { font-family: "Bebas Neue", sans-serif; letter-spacing: .04em; }
 p, .ch-body-txt, .ch-lead, .service-card p,
 .contact-sub, .about-desc, .si-subhook { font-family: "DM Sans", sans-serif; font-size: 1rem; line-height: 1.75; }
 
-/* Expression strip � ashique 8 collage */
+/* Expression strip ∩┐╜ ashique 8 collage */
 .expression-strip {
   max-width: 1100px; margin: 0 auto 80px;
   padding: 0 40px;
@@ -1596,7 +1596,7 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 }
 .chapter-block.ch-alt .ch-bg-num { right: auto; left: 20px; }
 
-/* Chapter layout � two-col */
+/* Chapter layout ∩┐╜ two-col */
 .ch-layout {
   display: grid;
   grid-template-columns: 1fr 280px;
@@ -1722,7 +1722,7 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 }
 
 /* -----------------------------------------------
-   COOK / FOOTER SECTION � "Did I Cook Well?"
+   COOK / FOOTER SECTION ∩┐╜ "Did I Cook Well?"
    ----------------------------------------------- */
 
 .cook-section {
@@ -1896,10 +1896,10 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 }
 
 /* -----------------------------------------------
-   v6 � THOUGHT BUBBLES + HERO WIDE + EXPRESSIONS
+   v6 ∩┐╜ THOUGHT BUBBLES + HERO WIDE + EXPRESSIONS
    ----------------------------------------------- */
 
-/* Hero portrait � ashique 1 is landscape/wide so handle differently */
+/* Hero portrait ∩┐╜ ashique 1 is landscape/wide so handle differently */
 .hero-portrait-wide {
   object-position: center 20%;
   width: 100%; height: 100%;
@@ -1913,7 +1913,7 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 }
 .thought-photo { width: 100%; }
 
-/* Thought bubbles � sticky note / speech bubble style */
+/* Thought bubbles ∩┐╜ sticky note / speech bubble style */
 .thought-bubble {
   position: absolute;
   font-family: "DM Sans", sans-serif;
@@ -1987,7 +1987,7 @@ p, .ch-body-txt, .ch-lead, .service-card p,
   50%      { transform: rotate(-2deg) translateY(-4px); }
 }
 
-/* Story intro � poster-style portrait for ashique 2 */
+/* Story intro ∩┐╜ poster-style portrait for ashique 2 */
 .si-portrait-poster {
   object-position: center top !important;
   aspect-ratio: 3/4;
@@ -2095,22 +2095,21 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 /* ------------------------------------------------------
 
 /* ----------------------------------------------------------
-   ASH � 3D ROPE-SWING MASCOT CHARACTER
+   ASH ∩┐╜ 3D ROPE-SWING MASCOT CHARACTER
    Full background-removed PNG with CSS 3D body animations
    ---------------------------------------------------------- */
 
-/* Mascot root � absolute on the page, moves with JS translateY */
+/* Mascot root ∩┐╜ absolute on the page, moves with JS translateY */
 #ash-mascot {
   position: fixed;
   bottom: 55px;
   right: 10px;
   width: 120px;
-  overflow: visible;
   pointer-events: none;
   z-index: 900;
 }
 
-/* Body wrapper � JS moves this via transform: translateY(npx) */
+/* Body wrapper ∩┐╜ JS moves this via transform: translateY(npx) */
 #ash-body {
   position: relative;
   width: 120px;
@@ -2149,13 +2148,13 @@ p, .ch-body-txt, .ch-lead, .service-card p,
   100% { transform: rotate(-14deg) translateX(0)    perspective(400px) rotateY(8deg);  }
 }
 
-/* Subtle vertical bob � body weight shifting */
+/* Subtle vertical bob ∩┐╜ body weight shifting */
 @keyframes bodyBob {
   0%,100% { margin-top: 0;   }
   50%      { margin-top: 5px; }
 }
 
-/* Scale depth illusion � bigger at bottom of swing (closer), smaller at top */
+/* Scale depth illusion ∩┐╜ bigger at bottom of swing (closer), smaller at top */
 @keyframes depthPulse {
   0%,100% { filter: drop-shadow(0 10px 28px rgba(0,0,0,.45)) brightness(0.95); }
   50%      { filter: drop-shadow(0 18px 40px rgba(0,0,0,.65)) brightness(1.05); }
@@ -2236,11 +2235,10 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 /* -- SPEECH BUBBLE --------------------------------------- */
 #ash-bubble {
   position: absolute;
-  bottom: 115px;
-  right: -10px;
-  left: auto;
-  min-width: 140px;
-  max-width: 165px;
+  bottom: 125px;
+  right: 0px;
+  min-width: 130px;
+  max-width: 170px;
   background: #fffef8;
   color: #1a1208;
   border-radius: 14px 14px 4px 14px;
@@ -2350,14 +2348,14 @@ p, .ch-body-txt, .ch-lead, .service-card p,
 
 /* -- RESPONSIVE ------------------------------------------- */
 @media (max-width: 768px) {
-  /* ASH — smaller but still visible on tablets */
+  /* ASH ΓÇö smaller but still visible on tablets */
   #ash-mascot { width: 100px; bottom: 45px; right: 8px; }
   #ash-char   { width: 100px; }
   #ash-bubble { min-width: 140px; max-width: 185px; right: 108px; bottom: 115px; font-size: 0.74rem; }
   #ash-rope-line { right: 65px; }
 }
 @media (max-width: 480px) {
-  /* ASH — compact on phones, still visible bottom-right */
+  /* ASH ΓÇö compact on phones, still visible bottom-right */
   #ash-mascot { width: 82px; bottom: 30px; right: 4px; }
   #ash-char   { width: 82px; }
   #ash-bubble { min-width: 120px; max-width: 160px; right: 90px; bottom: 100px; font-size: 0.7rem; padding: 7px 10px; }
@@ -2423,7 +2421,7 @@ p, .ch-body-txt, .ch-lead, .service-card p,
   background: var(--clr-red2);
   transform: scale(1.4);
 }
-/* ===== CHAPTER 05 — EXPRESSION SLIDESHOW ===== */
+/* ===== CHAPTER 05 ΓÇö EXPRESSION SLIDESHOW ===== */
 .ch-expr-slideshow {
   position: relative;
   width: 100%;
@@ -2505,14 +2503,14 @@ p, .ch-body-txt, .ch-lead, .service-card p,
   .ch-expr-slideshow { max-width: 260px; min-height: 320px; margin: 0 auto; }
   .ch-expr-img { max-width: 240px; }
 }
-/* ===== ASH MASCOT v3 — EMOTIONS + PHYSICS + PSEUDO-3D ===== */
+/* ===== ASH MASCOT v3 ΓÇö EMOTIONS + PHYSICS + PSEUDO-3D ===== */
 
 
   60%  { transform: scale(1.4) rotate(8deg); }
   100% { transform: scale(1) rotate(0deg); }
 }
 
-/* Override ash-char transform — now handled by JS animate loop */
+/* Override ash-char transform ΓÇö now handled by JS animate loop */
 .ash-state-fall #ash-char,
 .ash-state-wave #ash-char,
 .ash-state-talk #ash-char {
@@ -2583,7 +2581,7 @@ p, .ch-body-txt, .ch-lead, .service-card p,
   100% { transform: perspective(500px) scale(1) rotateZ(0); }
 }
 
-/* SPAWN — JS sets transform, base pop in */
+/* SPAWN ΓÇö JS sets transform, base pop in */
 .ash-state-spawn #ash-char {
   animation: spawnIn 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards !important;
 }
@@ -2636,7 +2634,7 @@ p, .ch-body-txt, .ch-lead, .service-card p,
   width: 120px;
   height: auto;
   pointer-events: none;
-  transform-origin: 30% 0%;  /* grip point — top-left where hands hold rope */
+  transform-origin: 30% 0%;  /* grip point ΓÇö top-left where hands hold rope */
   will-change: transform;
   filter: drop-shadow(0 16px 40px rgba(0,0,0,0.55));
 }
@@ -2767,7 +2765,7 @@ p, .ch-body-txt, .ch-lead, .service-card p,
   .spidey-row { grid-template-columns: 1fr; }
   .ai3d-box-wrap { height: 260px; }
 }
-/* ===== VIDEO SECTION — Background & Grid Fill ===== */
+/* ===== VIDEO SECTION ΓÇö Background & Grid Fill ===== */
 #videos { position: relative; overflow: hidden; background: var(--clr-bg); }
 #videos .container { position: relative; z-index: 2; }
 
@@ -2776,14 +2774,14 @@ p, .ch-body-txt, .ch-lead, .service-card p,
   grid-row: 1 / span 2;
 }
 
-/* hl6 card — matches featured-video style */
+/* hl6 card ΓÇö matches featured-video style */
 .vid-hl6 {
   margin-top: 18px;
 }
 .vid-hl6 .video-thumb-wrap {
   aspect-ratio: 16/9;
 }
-/* ===== VIDEO SECTION — ANIMATED BACKGROUND & 3D ELEMENTS ===== */
+/* ===== VIDEO SECTION ΓÇö ANIMATED BACKGROUND & 3D ELEMENTS ===== */
 
 /* --- Gradient orbs --- */
 .vid-bg-orb {
@@ -2950,7 +2948,7 @@ p, .ch-body-txt, .ch-lead, .service-card p,
   aspect-ratio: unset !important;
 }
 /* ============================================================
-   GLOBAL BACKGROUND — FIXED CANVAS + TRANSPARENT SECTIONS
+   GLOBAL BACKGROUND ΓÇö FIXED CANVAS + TRANSPARENT SECTIONS
    ============================================================ */
 
 /* Canvas fixed full-viewport, truly behind everything */
@@ -2967,7 +2965,7 @@ p, .ch-body-txt, .ch-lead, .service-card p,
   height: 100% !important;
 }
 
-/* CSS animated elements — also fixed behind everything */
+/* CSS animated elements ΓÇö also fixed behind everything */
 .gbg-ring, .gbg-geo, .gbg-line, .gbg-grid { position: fixed; pointer-events: none; z-index: -1; }
 
 /* Sections transparent so fixed canvas shows through */
@@ -2983,7 +2981,7 @@ body { background: #080808 !important; }
 /* Nav stays readable */
 nav, header { background: rgba(8,8,8,0.85) !important; backdrop-filter: blur(12px); }
 
-/* ─── Floating Rings ─── */
+/* ΓöÇΓöÇΓöÇ Floating Rings ΓöÇΓöÇΓöÇ */
 .gbg-ring {
   border-radius: 50%;
   border: 1px solid rgba(230,57,43,0.06);
@@ -3005,7 +3003,7 @@ nav, header { background: rgba(8,8,8,0.85) !important; backdrop-filter: blur(12p
   to   { transform: rotate(360deg); }
 }
 
-/* ─── Floating Geometrics ─── */
+/* ΓöÇΓöÇΓöÇ Floating Geometrics ΓöÇΓöÇΓöÇ */
 .gbg-geo1 {
   width: 110px; height: 110px;
   top: 22vh; left: 4%;
@@ -3041,7 +3039,7 @@ nav, header { background: rgba(8,8,8,0.85) !important; backdrop-filter: blur(12p
   to   { transform: rotate(35deg) translateY(-15px); opacity: 1; }
 }
 
-/* ─── Diagonal glow lines ─── */
+/* ΓöÇΓöÇΓöÇ Diagonal glow lines ΓöÇΓöÇΓöÇ */
 .gbg-line {
   height: 1px;
   background: linear-gradient(90deg, transparent 0%, rgba(230,57,43,0.14) 50%, transparent 100%);
@@ -3055,7 +3053,7 @@ nav, header { background: rgba(8,8,8,0.85) !important; backdrop-filter: blur(12p
   50%      { opacity: 1;   transform: rotate(-14deg) scaleX(1.2); }
 }
 
-/* ─── Moving dot grid ─── */
+/* ΓöÇΓöÇΓöÇ Moving dot grid ΓöÇΓöÇΓöÇ */
 .gbg-grid {
   inset: 0;
   background-image:
@@ -3084,7 +3082,7 @@ nav, header { background: rgba(8,8,8,0.85) !important; backdrop-filter: blur(12p
 #videos::before  { background: radial-gradient(ellipse at 20% 50%, rgba(230,57,43,0.035) 0%, transparent 55%); }
 
 /* ============================================================
-   COMPREHENSIVE MOBILE FIX — 768px and below
+   COMPREHENSIVE MOBILE FIX ΓÇö 768px and below
    ============================================================ */
 
 /* Prevent horizontal scroll globally */
@@ -3100,12 +3098,12 @@ html, body {
   .vid-3d-wrap, .vid-scanline { display: none !important; }
   .vid-bg-orb { filter: blur(50px); width: 200px !important; height: 200px !important; }
 
-  /* ─── Navbar ─── */
+  /* ΓöÇΓöÇΓöÇ Navbar ΓöÇΓöÇΓöÇ */
   #navbar { padding: 14px 20px !important; gap: 16px; }
   #navbar.scrolled { padding: 12px 20px !important; }
   .logo { font-size: 1.2rem; }
 
-  /* ─── Hero ─── */
+  /* ΓöÇΓöÇΓöÇ Hero ΓöÇΓöÇΓöÇ */
   #hero {
     grid-template-columns: 1fr !important;
     padding: 100px 20px 60px !important;
@@ -3125,7 +3123,7 @@ html, body {
   .hero-bg-word { font-size: 25vw !important; }
   .hero-descriptor { text-align: center; }
 
-  /* ─── Story/About ─── */
+  /* ΓöÇΓöÇΓöÇ Story/About ΓöÇΓöÇΓöÇ */
   .about-grid { grid-template-columns: 1fr !important; gap: 30px; }
   .about-visual { min-height: 280px !important; order: -1; }
   .about-portrait-frame { width: 200px !important; height: 280px !important; margin: 0 auto; }
@@ -3141,17 +3139,17 @@ html, body {
   .si-text-col { width: 100% !important; }
   .chapters-wrap { gap: 0; }
 
-  /* ─── Services ─── */
+  /* ΓöÇΓöÇΓöÇ Services ΓöÇΓöÇΓöÇ */
   .services-grid { grid-template-columns: 1fr !important; gap: 16px; }
   .service-card { padding: 24px 20px !important; }
 
-  /* ─── Work ─── */
+  /* ΓöÇΓöÇΓöÇ Work ΓöÇΓöÇΓöÇ */
   .work-masonry { columns: 1 !important; gap: 14px; }
   .work-header { flex-direction: column !important; align-items: flex-start !important; gap: 16px; }
   .work-filter-bar { flex-wrap: wrap; gap: 8px; }
   .filter-btn { font-size: 0.7rem; padding: 6px 12px !important; }
 
-  /* ─── Videos ─── */
+  /* ΓöÇΓöÇΓöÇ Videos ΓöÇΓöÇΓöÇ */
   .video-grid { grid-template-columns: 1fr !important; gap: 16px; }
   .video-right-col { flex-direction: column !important; grid-row: auto !important; }
   .vid-hl6 { margin-top: 0 !important; min-height: 200px !important; }
@@ -3161,25 +3159,25 @@ html, body {
   .vtb-serif  { font-size: clamp(1.5rem, 7vw,  3rem) !important; }
   .vtb-outline { font-size: clamp(2rem, 10vw, 4rem) !important; }
 
-  /* ─── AI Section ─── */
+  /* ΓöÇΓöÇΓöÇ AI Section ΓöÇΓöÇΓöÇ */
   .ai-video-row { grid-template-columns: 1fr !important; gap: 14px; }
   .ai-art-grid  { grid-template-columns: repeat(2,1fr) !important; gap: 10px; }
   .ai-title-block { gap: 8px; }
   .aitb-main { font-size: clamp(2rem, 10vw, 4rem) !important; }
 
-  /* ─── 3D Showcase (Spider-Man section) ─── */
+  /* ΓöÇΓöÇΓöÇ 3D Showcase (Spider-Man section) ΓöÇΓöÇΓöÇ */
   .spidey-row { grid-template-columns: 1fr !important; gap: 16px; }
   .spidey-box { padding: 16px !important; }
   .spidey-box model-viewer { height: 260px !important; }
   .ai3d-box-wrap { height: 220px !important; }
   .spidey-section { padding: 30px 0 !important; }
 
-  /* ─── Contact ─── */
+  /* ΓöÇΓöÇΓöÇ Contact ΓöÇΓöÇΓöÇ */
   .contact-wrap { grid-template-columns: 1fr !important; gap: 30px; }
   .contact-form { padding: 24px 18px !important; }
   .social-row { gap: 12px; flex-wrap: wrap; }
 
-  /* ─── ASH Mascot — smaller on mobile ─── */
+  /* ΓöÇΓöÇΓöÇ ASH Mascot ΓÇö smaller on mobile ΓöÇΓöÇΓöÇ */
   #ash-wrap { bottom: 8px !important; right: 8px !important; }
   #ash-char  { width: 70px !important; }
   #ash-speech {
@@ -3190,21 +3188,21 @@ html, body {
     right: 6px !important;
   }
 
-  /* ─── Section padding ─── */
+  /* ΓöÇΓöÇΓöÇ Section padding ΓöÇΓöÇΓöÇ */
   section { padding: 60px 0 !important; }
   .section-tag { font-size: 0.65rem; }
   .container { padding: 0 20px !important; }
 
-  /* ─── Video lightbox ─── */
+  /* ΓöÇΓöÇΓöÇ Video lightbox ΓöÇΓöÇΓöÇ */
   .vlb-video { width: 95vw !important; }
 
-  /* ─── Typography global mobile ─── */
+  /* ΓöÇΓöÇΓöÇ Typography global mobile ΓöÇΓöÇΓöÇ */
   h1 { font-size: clamp(2rem, 9vw, 3.5rem) !important; }
   h2 { font-size: clamp(1.6rem, 7vw, 2.8rem) !important; }
   h3 { font-size: clamp(1.2rem, 5vw, 2rem) !important; }
 }
 
-/* ─── Extra small (< 480px) ─── */
+/* ΓöÇΓöÇΓöÇ Extra small (< 480px) ΓöÇΓöÇΓöÇ */
 @media (max-width: 480px) {
   #navbar { padding: 12px 16px !important; }
   .hn-ashique { font-size: clamp(2rem, 12vw, 3rem) !important; }
@@ -3219,7 +3217,7 @@ html, body {
   .vid-title-block { margin-bottom: 20px; }
 }
 /* ============================================================
-   CHAPTER LAYOUT MOBILE FIX — images on top of text fix
+   CHAPTER LAYOUT MOBILE FIX ΓÇö images on top of text fix
    ============================================================ */
 @media (max-width: 768px) {
 
@@ -3262,7 +3260,7 @@ html, body {
     margin: 0 auto;
   }
 
-  /* ch-bg-num (large background number) — shrink on mobile */
+  /* ch-bg-num (large background number) ΓÇö shrink on mobile */
   .ch-bg-num {
     font-size: 8rem !important;
     opacity: 0.04 !important;
@@ -3284,7 +3282,7 @@ html, body {
   .chapter-block { padding: 24px 14px !important; }
   .ch-headline { font-size: clamp(1.4rem, 8vw, 2rem) !important; }
 }
-/* My Works — outlined red button */
+/* My Works ΓÇö outlined red button */
 .btn-outline-red {
   display: inline-flex; align-items: center; gap: 10px;
   padding: 13px 32px;
@@ -3308,14 +3306,14 @@ html, body {
 @media (max-width: 480px) {
   .btn-outline-red { width: 100%; justify-content: center; }
 }
-/* ===== MOBILE — Kill overwhelming glow ===== */
+/* ===== MOBILE ΓÇö Kill overwhelming glow ===== */
 @media (max-width: 768px) {
-  /* Section pseudo-element glows — completely off on mobile */
+  /* Section pseudo-element glows ΓÇö completely off on mobile */
   #hero::before, #ch02::before, #ch03::before,
   #ch04::before, #ai::before, #contact::before,
   #videos::before { display: none !important; }
 
-  /* Video section orbs — much smaller and dimmer */
+  /* Video section orbs ΓÇö much smaller and dimmer */
   .vid-orb1 { width: 120px !important; height: 120px !important; opacity: 0.4 !important; filter: blur(40px) !important; }
   .vid-orb2 { width: 100px !important; height: 100px !important; opacity: 0.3 !important; filter: blur(35px) !important; }
   .vid-orb3 { display: none !important; }
@@ -3323,7 +3321,7 @@ html, body {
   /* Section backgrounds slightly more opaque so content pops */
   section { background: rgba(8,8,8,0.75) !important; }
 
-  /* Canvas itself — lower global alpha on small screens via opacity */
+  /* Canvas itself ΓÇö lower global alpha on small screens via opacity */
   #particleCanvas { opacity: 0.55 !important; }
 }
 
@@ -3331,232 +3329,75 @@ html, body {
   #particleCanvas { opacity: 0.35 !important; }
   .vid-orb1, .vid-orb2 { display: none !important; }
 }
+
 /* ============================================================
-   BUG FIXES — images, glitch, bubble, video, selection
+   CLEAN GOOD FIXES (no image changes)
    ============================================================ */
 
-/* ── 1. Images cropped on mobile: chapter-block overflow ── */
-@media (max-width: 768px) {
-  /* Allow images to breathe — remove overflow:hidden on mobile */
-  .chapter-block {
-    overflow: visible !important;
-  }
-  /* But keep the bg-num clipped */
-  .ch-bg-num {
-    overflow: hidden;
-    clip-path: inset(0);
-  }
-  /* Images must stay within their column */
-  .ch-expr-img {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    object-fit: contain !important;
-    border-radius: 12px !important;
-  }
-  .ch-expr-slideshow {
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow: hidden;
-    border-radius: 12px;
-  }
-  .ch-expr-slide {
-    position: relative !important;
-    width: 100% !important;
-  }
-  .ch-expr-slide.active {
-    display: block !important;
-    opacity: 1 !important;
-    transform: none !important;
-  }
-  .ch-expr-slide:not(.active) { display: none !important; }
-
-  /* Cook section and work images */
-  .cook-photo-wrap img,
-  .ch-visual-col img,
-  .si-img-col img {
-    width: 100% !important;
-    height: auto !important;
-    max-width: 100% !important;
-    object-fit: contain !important;
-  }
+/* Scroll-cue — right side, not overlapping stats */
+.scroll-cue {
+  right: 60px !important;
+  left: auto !important;
 }
 
-/* ── 2. Name glitch flicker on load — delay until after slideUp ── */
-.hn-ashique::before {
-  animation-delay: 4s !important;   /* was running during slideUp entrance */
-}
-.hn-ashique::after {
-  animation-delay: 4.5s !important;
-}
-/* Hide pseudo-elements initially via animation-fill-mode */
-.hn-ashique::before,
-.hn-ashique::after {
-  animation-fill-mode: both !important;
-}
+/* Hero gap — tighter columns */
+#hero { gap: 0 !important; }
 
-/* ── 3. Speech bubble mobile — compact, above character, not over content ── */
-@media (max-width: 768px) {
-  #ash-bubble {
-    bottom: 74px !important;
-    right: 0 !important;
-    left: auto !important;
-    min-width: 110px !important;
-    max-width: 130px !important;
-    font-size: 0.60rem !important;
-    padding: 6px 9px !important;
-    border-radius: 12px 12px 3px 12px !important;
-    line-height: 1.35 !important;
-  }
-  #ash-bubble::after {
-    right: 12px !important;
-    bottom: -8px !important;
-    border-left-width: 8px !important;
-    border-top-width: 8px !important;
-  }
-  /* Mascot char smaller on mobile */
-  #ash-char {
-    width: 60px !important;
-  }
-  #ash-mascot {
-    bottom: 6px !important;
-    right: 6px !important;
-    width: 60px !important;
-  }
+/* btn-outline-red */
+.btn-outline-red {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 13px 32px;
+  border: 1.5px solid var(--clr-red2, #e63946);
+  border-radius: 99px;
+  font-size: .86rem; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--clr-red2, #e63946);
+  transition: background .3s, color .3s, transform .2s;
+  text-decoration: none;
 }
+.btn-outline-red svg { width: 16px; height: 16px; transition: transform .3s; }
+.btn-outline-red:hover { background: var(--clr-red2,#e63946); color:#fff; transform:translateY(-2px); }
+.btn-outline-red:hover svg { transform:translateX(4px); }
+@media (max-width:480px) { .btn-outline-red { width:100%; justify-content:center; } }
 
-/* ── 4. AI 3D video — fix autoplay on mobile ── */
-.ai3d-box-vid {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  border-radius: 12px;
-  /* Remove any blend-mode that breaks mobile rendering */
-  mix-blend-mode: normal !important;
-}
-@media (max-width: 768px) {
-  .ai3d-box-wrap {
-    height: 240px !important;
-  }
-  .ai3d-box-vid {
-    width: 100% !important;
-    height: 240px !important;
-  }
-}
+/* Name glitch — delay until after load animation */
+.hn-ashique::before { animation-delay: 4s !important; animation-fill-mode: both !important; }
+.hn-ashique::after  { animation-delay: 4.5s !important; animation-fill-mode: both !important; }
 
-/* ── 5. Mascot not selectable — desktop + mobile + touch ── */
-#ash-mascot,
-#ash-body,
-#ash-char,
-#ash-bubble,
-#ash-rope-line,
-#ash-speech,
-#ash-wrap {
+/* Mascot — not selectable on any device */
+#ash-mascot, #ash-body, #ash-char, #ash-bubble, #ash-rope-line, #ash-speech, #ash-wrap {
   -webkit-user-select: none !important;
-  -moz-user-select: none !important;
-  -ms-user-select: none !important;
   user-select: none !important;
   -webkit-touch-callout: none !important;
 }
 #ash-char {
   -webkit-user-drag: none !important;
-  user-drag: none !important;
   pointer-events: none !important;
 }
-/* Prevent text triple-click selection on bubble content */
-#ash-bubble * {
-  -webkit-user-select: none !important;
-  user-select: none !important;
-}
-/* ============================================================
-   TARGETED FIXES — only poster images full, restore others
-   ============================================================ */
+#ash-bubble * { -webkit-user-select: none !important; user-select: none !important; }
 
-/* ── Revert broad ch-expr-slide changes (restore absolute positioning) ── */
+/* Mascot centered on rope (rope is fixed at right:75px) */
+/* Desktop: char 120px wide → right = 75-60 = 15px */
+#ash-mascot { right: 15px !important; }
+
+/* Mascot — overflow visible so bubble shows */
+#ash-mascot { overflow: visible !important; }
+
+/* Speech bubble desktop */
+#ash-bubble {
+  bottom: 115px;
+  right: -10px;
+  min-width: 140px;
+  max-width: 165px;
+  font-size: 0.70rem;
+}
+
+/* Mobile mascot + speech bubble */
 @media (max-width: 768px) {
-  .ch-expr-slide {
-    position: absolute !important;
-    display: block !important;
-  }
-  .ch-expr-slide:not(.active) {
-    display: block !important;
-    opacity: 0 !important;
-  }
-  .ch-expr-slide.active {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-  /* Restore ch-expr-img to original sizing */
-  .ch-expr-img {
-    width: 100% !important;
-    max-width: 280px !important;
-    height: auto !important;
-    object-fit: contain !important;
-    border-radius: 16px !important;
-    display: block;
-    margin: 0 auto;
-  }
-
-  /* Restore ch-photo portrait (ch02) */
-  .ch-photo {
-    width: 100% !important;
-    height: auto !important;
-    max-width: 100% !important;
-    object-fit: cover !important;
-    border-radius: 16px !important;
-  }
-
-  /* ONLY the poster images (ch03, ch04) — full width, no crop */
-  .ch-photo-poster {
-    width: 100% !important;
-    height: auto !important;
-    max-width: 100% !important;
-    object-fit: contain !important;
-    border-radius: 12px !important;
-    display: block;
-  }
-
-  /* Keep chapter-block overflow visible so poster is not clipped */
-  .chapter-block {
-    overflow: visible !important;
-  }
-
-  /* Restore cook / si images (not poster type) */
-  .cook-photo-wrap img,
-  .si-img-col img {
-    width: 100% !important;
-    height: auto !important;
-    object-fit: cover !important;
-    border-radius: 12px !important;
-  }
-}
-
-/* ── Mascot on rope line — align center of character with rope (right:75px) ── */
-/* Desktop: mascot 120px wide → right = 75 - 60 = 15px to center on rope */
-#ash-mascot {
-  right: 15px !important;
-}
-/* Desktop rope line stays at right: 75px, mascot center = 15 + 60 = 75px ✓ */
-
-/* Mobile: mascot 60px wide → right = 75 - 30 = 45px to center on rope */
-@media (max-width: 768px) {
-  #ash-mascot {
-    right: 45px !important;
-    bottom: 6px !important;
-    width: 60px !important;
-  }
-  #ash-char {
-    width: 60px !important;
-    transform-origin: 30px 0px !important; /* anchor center of 60px char */
-  }
-  /* Rope line on mobile — keep visible at right: 75px */
-  .ash-rope-line {
-    display: block !important;
-  }
-
-  /* ── Speech bubble mobile — compact, sits above char, to the LEFT ── */
+  /* char 60px wide → right = 75-30 = 45px, centered on rope */
+  #ash-mascot { right: 45px !important; bottom: 6px !important; width: 60px !important; }
+  #ash-char   { width: 60px !important; transform-origin: 30px 0px !important; }
   #ash-bubble {
-    position: absolute !important;
     bottom: 70px !important;
     right: 0 !important;
     left: auto !important;
@@ -3566,84 +3407,15 @@ html, body {
     padding: 6px 8px !important;
     line-height: 1.3 !important;
     border-radius: 10px 10px 2px 10px !important;
-    z-index: 1001 !important;
   }
-  /* Bubble tail stays bottom-right pointing to character head below */
   #ash-bubble::after {
-    bottom: -7px !important;
-    right: 10px !important;
-    border-left-width: 7px !important;
-    border-top-width: 7px !important;
+    bottom: -7px !important; right: 10px !important;
+    border-left-width: 7px !important; border-top-width: 7px !important;
   }
+  /* Mobile glow OFF */
+  #hero::before, #ch02::before, #ch03::before,
+  #ch04::before, #ai::before, #contact::before, #videos::before { display: none !important; }
+  #particleCanvas { opacity: 0.55 !important; }
+  section { background: rgba(8,8,8,0.75) !important; }
 }
-/* ============================================================
-   REVERT — restore chapter block and ALL image behaviour
-   to original (overflow:hidden, no forced full-width)
-   ============================================================ */
-@media (max-width: 768px) {
-
-  /* Restore chapter-block overflow — DO NOT let images escape */
-  .chapter-block {
-    overflow: hidden !important;
-  }
-
-  /* Restore ch-expr-slide to original absolute fade */
-  .ch-expr-slide {
-    position: absolute !important;
-    display: block !important;
-    opacity: 0 !important;
-    transform: scale(0.92) translateY(16px) !important;
-    transition: opacity 0.55s ease, transform 0.55s ease !important;
-  }
-  .ch-expr-slide.active {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-
-  /* Restore ch-expr-img to contained sizing */
-  .ch-expr-img {
-    width: auto !important;
-    max-width: 100% !important;
-    height: auto !important;
-    object-fit: contain !important;
-    border-radius: 16px !important;
-    display: block;
-    margin: 0 auto;
-  }
-
-  /* Restore ch-photo (portrait images ch02 etc.) */
-  .ch-photo {
-    width: 100% !important;
-    height: 100% !important;
-    max-width: unset !important;
-    object-fit: cover !important;
-    border-radius: unset !important;
-  }
-
-  /* Restore ch-photo-poster — contained, no overflow */
-  .ch-photo-poster {
-    width: 100% !important;
-    height: auto !important;
-    max-width: 100% !important;
-    object-fit: contain !important;
-    border-radius: 0 !important;
-    display: block;
-  }
-
-  /* Restore work masonry images */
-  .work-card img,
-  .work-masonry img {
-    width: 100% !important;
-    height: auto !important;
-    object-fit: cover !important;
-    max-height: 280px !important;
-  }
-
-  /* Restore story/about portrait */
-  .about-portrait-frame img,
-  .about-visual img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-  }
-}
+@media (max-width: 480px) { #particleCanvas { opacity: 0.35 !important; } }
