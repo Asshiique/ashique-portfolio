@@ -3331,3 +3331,140 @@ html, body {
   #particleCanvas { opacity: 0.35 !important; }
   .vid-orb1, .vid-orb2 { display: none !important; }
 }
+/* ============================================================
+   BUG FIXES — images, glitch, bubble, video, selection
+   ============================================================ */
+
+/* ── 1. Images cropped on mobile: chapter-block overflow ── */
+@media (max-width: 768px) {
+  /* Allow images to breathe — remove overflow:hidden on mobile */
+  .chapter-block {
+    overflow: visible !important;
+  }
+  /* But keep the bg-num clipped */
+  .ch-bg-num {
+    overflow: hidden;
+    clip-path: inset(0);
+  }
+  /* Images must stay within their column */
+  .ch-expr-img {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    object-fit: contain !important;
+    border-radius: 12px !important;
+  }
+  .ch-expr-slideshow {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden;
+    border-radius: 12px;
+  }
+  .ch-expr-slide {
+    position: relative !important;
+    width: 100% !important;
+  }
+  .ch-expr-slide.active {
+    display: block !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .ch-expr-slide:not(.active) { display: none !important; }
+
+  /* Cook section and work images */
+  .cook-photo-wrap img,
+  .ch-visual-col img,
+  .si-img-col img {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100% !important;
+    object-fit: contain !important;
+  }
+}
+
+/* ── 2. Name glitch flicker on load — delay until after slideUp ── */
+.hn-ashique::before {
+  animation-delay: 4s !important;   /* was running during slideUp entrance */
+}
+.hn-ashique::after {
+  animation-delay: 4.5s !important;
+}
+/* Hide pseudo-elements initially via animation-fill-mode */
+.hn-ashique::before,
+.hn-ashique::after {
+  animation-fill-mode: both !important;
+}
+
+/* ── 3. Speech bubble mobile — compact, above character, not over content ── */
+@media (max-width: 768px) {
+  #ash-bubble {
+    bottom: 74px !important;
+    right: 0 !important;
+    left: auto !important;
+    min-width: 110px !important;
+    max-width: 130px !important;
+    font-size: 0.60rem !important;
+    padding: 6px 9px !important;
+    border-radius: 12px 12px 3px 12px !important;
+    line-height: 1.35 !important;
+  }
+  #ash-bubble::after {
+    right: 12px !important;
+    bottom: -8px !important;
+    border-left-width: 8px !important;
+    border-top-width: 8px !important;
+  }
+  /* Mascot char smaller on mobile */
+  #ash-char {
+    width: 60px !important;
+  }
+  #ash-mascot {
+    bottom: 6px !important;
+    right: 6px !important;
+    width: 60px !important;
+  }
+}
+
+/* ── 4. AI 3D video — fix autoplay on mobile ── */
+.ai3d-box-vid {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 12px;
+  /* Remove any blend-mode that breaks mobile rendering */
+  mix-blend-mode: normal !important;
+}
+@media (max-width: 768px) {
+  .ai3d-box-wrap {
+    height: 240px !important;
+  }
+  .ai3d-box-vid {
+    width: 100% !important;
+    height: 240px !important;
+  }
+}
+
+/* ── 5. Mascot not selectable — desktop + mobile + touch ── */
+#ash-mascot,
+#ash-body,
+#ash-char,
+#ash-bubble,
+#ash-rope-line,
+#ash-speech,
+#ash-wrap {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+#ash-char {
+  -webkit-user-drag: none !important;
+  user-drag: none !important;
+  pointer-events: none !important;
+}
+/* Prevent text triple-click selection on bubble content */
+#ash-bubble * {
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}

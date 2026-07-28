@@ -798,5 +798,20 @@
   <script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
   <script src="particles.js"></script>
 
+  <script>
+    /* Force autoplay all muted videos on mobile (iOS/Android) */
+    document.addEventListener('DOMContentLoaded', function () {
+      var vids = document.querySelectorAll('video[autoplay]');
+      vids.forEach(function (v) {
+        v.muted = true;
+        v.play().catch(function () {});
+      });
+      /* Also play on first user interaction */
+      document.addEventListener('touchstart', function handler() {
+        vids.forEach(function (v) { v.play().catch(function () {}); });
+        document.removeEventListener('touchstart', handler);
+      }, { passive: true });
+    });
+  </script>
 </body>
 </html>
