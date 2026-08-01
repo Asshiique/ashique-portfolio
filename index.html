@@ -67,6 +67,19 @@
   </nav>
 
   <div class="mobile-menu" id="mobileMenu">
+    <!-- Minion climbing the menu -->
+    <div class="minion-climb-wrap" id="minionClimber">
+      <model-viewer
+        id="minionClimberMV"
+        class="minion-mv minion-climber"
+        src="assets/models/minion_james.glb"
+        alt="Minion climbing menu"
+        camera-orbit="0deg 85deg 2m"
+        shadow-intensity="0.3"
+        interaction-prompt="none"
+        disable-zoom disable-pan
+      ></model-viewer>
+    </div>
     <ul>
       <li><a href="#story"    onclick="closeMobile()">Story</a></li>
       <li><a href="#services" onclick="closeMobile()">Services</a></li>
@@ -101,7 +114,24 @@
       <p class="hero-sub">
         I design things people <span class="highlight-word">stop scrolling for.</span>
       </p>
-      <div class="hero-actions">
+      <div class="hero-actions" style="position:relative">
+      <!-- Minion sitting on My Story button -->
+      <div class="minion-btn-sitter-wrap" id="minionBtnWrap">
+        <model-viewer
+          id="minionBtnSitter"
+          class="minion-mv minion-sitter"
+          src="assets/models/minion_james.glb"
+          alt="Minion sitting on button"
+          camera-orbit="15deg 70deg 2.5m"
+          shadow-intensity="0.5"
+          interaction-prompt="none"
+          disable-zoom disable-pan
+          auto-rotate
+          auto-rotate-delay="0"
+          rotation-per-second="25deg"
+        ></model-viewer>
+        <div class="minion-shadow"></div>
+      </div>
         <a href="#story" class="btn-primary" id="see-work-btn">
           <span>My Story</span>
           <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
