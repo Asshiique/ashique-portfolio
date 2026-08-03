@@ -3527,8 +3527,8 @@ html, body {
   position: fixed;
   bottom: 180px;
   left: 80px;
-  width: 100px;
-  height: 110px;
+  width: 75px;
+  height: 85px;
   z-index: 500;
   pointer-events: none;
   opacity: 0;
@@ -3652,10 +3652,4 @@ html, body {
 @keyframes minionClimberIdle {
   0%, 100% { transform: rotate(-4deg); }
   50%       { transform: rotate(4deg) translateY(-5px); }
-}
-/* DEBUG: Force minion always visible to confirm GLB loads */
-.minion-btn-sitter-wrap {
-  opacity: 1 !important;
-  transform: none !important;
-  animation: minionSway 3.5s ease-in-out infinite !important;
 }

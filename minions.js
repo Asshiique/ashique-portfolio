@@ -1,28 +1,43 @@
 /* =============================================================
-   MINION SYSTEM — Controls for 4 interactive Minion behaviors
-   model-viewer elements are in HTML directly (no race conditions)
+   MINION SYSTEM v3 — position sitter via real button coordinates
    ============================================================= */
 
-const isMobile = () => window.innerWidth < 768;
-const prefersReduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isMobile  = () => window.innerWidth < 768;
+const prefersRed = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* =============================================================
-   1. BUTTON SITTER — shows after 2s, bounces on hover
+   1. BUTTON SITTER — anchors to "My Story" button position
    ============================================================= */
 function initBtnSitter() {
   const wrap = document.getElementById('minionBtnWrap');
   const btn  = document.getElementById('see-work-btn');
   if (!wrap || !btn) return;
 
-  // Appear with a little pop after 2s delay
+  /* Read button position and snap minion just above it */
+  function positionMinion() {
+    const r = btn.getBoundingClientRect();
+    const mw = isMobile() ? 60 : 75;   // wrapper width
+    const mh = isMobile() ? 70 : 85;   // wrapper height
+
+    // Sit just above the left edge of the button
+    wrap.style.left   = (r.left + 8) + 'px';
+    wrap.style.bottom = (window.innerHeight - r.top + 4) + 'px';
+    wrap.style.width  = mw + 'px';
+    wrap.style.height = mh + 'px';
+  }
+
+  positionMinion();
+  window.addEventListener('resize', positionMinion);
+
+  // Pop in after 2 s
   setTimeout(() => {
     wrap.classList.add('minion-visible');
   }, 2000);
 
-  // Jump/wave when My Story button is hovered or tapped
+  // Wave on button hover / tap
   const doWave = () => {
     wrap.classList.remove('minion-wave');
-    void wrap.offsetWidth; // reflow to restart animation
+    void wrap.offsetWidth;
     wrap.classList.add('minion-wave');
     setTimeout(() => wrap.classList.remove('minion-wave'), 800);
   };
@@ -31,7 +46,7 @@ function initBtnSitter() {
 }
 
 /* =============================================================
-   2. SECTION LEAN — dynamically inserts leaners near headings
+   2. SECTION LEAN — appear beside section headings on scroll
    ============================================================= */
 function initSectionLean() {
   const JAMES = 'assets/models/minion_james.glb';
@@ -44,7 +59,6 @@ function initSectionLean() {
     const el = document.querySelector(selector);
     if (!el) return;
 
-    // Build wrapper + model-viewer
     const wrap = document.createElement('div');
     wrap.className = `minion-lean-wrap minion-lean-${side}`;
     wrap.id = id;
@@ -63,23 +77,18 @@ function initSectionLean() {
     el.style.position = 'relative';
     el.appendChild(wrap);
 
-    // Reveal when section enters viewport
-    const obs = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        wrap.classList.add('minion-visible');
-        obs.disconnect();
-      }
+    const obs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { wrap.classList.add('minion-visible'); obs.disconnect(); }
     }, { threshold: 0.25 });
     obs.observe(el);
   });
 }
 
 /* =============================================================
-   3. CARD PEEK — minion head peeks from behind cards
+   3. CARD PEEK — head pops up on hover / tap
    ============================================================= */
 function initCardPeek() {
   const JAMES = 'assets/models/minion_james.glb';
-  // Pick the first video-card and first service-card
   const peekTargets = [
     document.querySelector('.video-card'),
     document.querySelector('.service-card'),
@@ -95,7 +104,7 @@ function initCardPeek() {
     wrap.innerHTML = `
       <model-viewer
         id="minionPeekMV${i}"
-        class="minion-mv minion-peeker"
+        class="minion-mv"
         src="${JAMES}"
         alt="Minion peeking"
         camera-orbit="0deg 25deg 1.8m"
@@ -105,44 +114,34 @@ function initCardPeek() {
       ></model-viewer>`;
     card.appendChild(wrap);
 
-    // Lazy load: reveal model only when card is near viewport
-    const obs = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        wrap.querySelector('model-viewer').setAttribute('reveal', 'auto');
-        obs.disconnect();
-      }
+    const obs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { obs.disconnect(); }
     }, { threshold: 0.05 });
     obs.observe(card);
 
-    // Peek on hover (desktop) / tap (mobile)
     const show = () => wrap.classList.add('minion-peeking');
     const hide = () => wrap.classList.remove('minion-peeking');
-
     if (!isMobile()) {
       card.addEventListener('mouseenter', show);
       card.addEventListener('mouseleave', hide);
     } else {
       card.addEventListener('touchstart', () => {
         wrap.classList.toggle('minion-peeking');
-        if (wrap.classList.contains('minion-peeking')) {
-          setTimeout(hide, 2000);
-        }
+        if (wrap.classList.contains('minion-peeking')) setTimeout(hide, 2000);
       }, { passive: true });
     }
   });
 }
 
 /* =============================================================
-   4. MOBILE MENU CLIMBER — climbs when menu opens
+   4. MOBILE MENU CLIMBER
    ============================================================= */
 function initMenuClimber() {
   const menu    = document.getElementById('mobileMenu');
   const climber = document.getElementById('minionClimber');
   if (!menu || !climber) return;
 
-  // Watch for menu open via class changes
   const obs = new MutationObserver(() => {
-    // Check common "open" patterns used by the site's script.js
     const isOpen = menu.classList.contains('open') ||
                    menu.style.display === 'flex'   ||
                    menu.style.opacity === '1'       ||
@@ -151,12 +150,11 @@ function initMenuClimber() {
     if (isOpen) {
       climber.classList.remove('minion-climb-done');
       climber.classList.add('minion-climbing');
-      setTimeout(() => climber.classList.add('minion-climb-done'), 1200);
+      setTimeout(() => climber.classList.add('minion-climb-done'), 1300);
     } else {
       climber.classList.remove('minion-climbing', 'minion-climb-done');
     }
   });
-
   obs.observe(menu, { attributes: true, attributeFilter: ['class', 'style'] });
 }
 
@@ -164,14 +162,15 @@ function initMenuClimber() {
    BOOT
    ============================================================= */
 document.addEventListener('DOMContentLoaded', () => {
-  if (prefersReduced()) return;
+  if (prefersRed()) return;
 
-  initBtnSitter();
-
-  // Defer heavier inits slightly
-  setTimeout(() => {
-    initSectionLean();
-    initCardPeek();
-    if (isMobile()) initMenuClimber();
-  }, 800);
+  // Wait for layout to settle before reading button coords
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      initBtnSitter();
+      initSectionLean();
+      initCardPeek();
+      if (isMobile()) initMenuClimber();
+    }, 300);
+  });
 });
