@@ -339,3 +339,192 @@ body.custom-cursor-active * { cursor: none !important; }
   80% { background-position: 30px -15px; }
   100%{ background-position: 0 0; }
 }
+/* ═══════════════════════════════════════════════════════════════
+   PRELOADER
+   ═══════════════════════════════════════════════════════════════ */
+#preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+#preloader.pl-done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.pl-content {
+  text-align: center;
+  overflow: hidden;
+}
+.pl-name {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0;
+  overflow: hidden;
+  line-height: 1;
+}
+.pl-m, .pl-a {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(4rem, 15vw, 9rem);
+  color: var(--clr-red2, #c0392b);
+  opacity: 0;
+  transform: translateY(60px);
+  animation: plLetterIn 0.6s cubic-bezier(0.22,1,0.36,1) 0.1s forwards;
+}
+.pl-rest, .pl-rest2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(4rem, 15vw, 9rem);
+  color: #fff;
+  letter-spacing: 0.06em;
+  opacity: 0;
+  transform: translateY(60px);
+  animation: plLetterIn 0.6s cubic-bezier(0.22,1,0.36,1) 0.22s forwards;
+}
+.pl-name2 { margin-top: -0.12em; }
+.pl-a { animation-delay: 0.32s; }
+.pl-rest2 { animation-delay: 0.44s; }
+
+@keyframes plLetterIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+.pl-line {
+  width: 0;
+  height: 2px;
+  background: var(--clr-red2, #c0392b);
+  margin: 12px auto;
+  animation: plLineGrow 0.5s ease 0.7s forwards;
+}
+@keyframes plLineGrow {
+  to { width: clamp(200px, 40vw, 360px); }
+}
+.pl-role {
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(0.7rem, 2vw, 0.95rem);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  opacity: 0;
+  animation: plFadeIn 0.5s ease 0.9s forwards;
+}
+@keyframes plFadeIn { to { opacity: 1; } }
+
+.pl-progress {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: rgba(255,255,255,0.06);
+}
+.pl-bar {
+  height: 100%;
+  width: 0;
+  background: var(--clr-red2, #c0392b);
+  animation: plBarFill 1.4s ease forwards;
+}
+@keyframes plBarFill {
+  0%   { width: 0; }
+  60%  { width: 75%; }
+  100% { width: 100%; }
+}
+
+/* Body hidden until preloader done */
+body.pl-loading { overflow: hidden; }
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE POLISH — cramped section fixes
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* Section spacing */
+  section { padding: 70px 0 !important; }
+
+  /* Services cards — better tap targets */
+  .service-card {
+    padding: 24px 20px !important;
+    margin-bottom: 4px;
+  }
+  .service-icon { font-size: 2rem !important; }
+
+  /* Work section */
+  .work-title-block { margin-bottom: 20px; }
+  .filter-tabs { gap: 8px !important; flex-wrap: wrap; }
+  .filter-btn { padding: 7px 14px !important; font-size: 0.75rem !important; }
+  .work-item { margin-bottom: 12px; }
+
+  /* Videos section */
+  .video-card { margin-bottom: 12px; }
+
+  /* AI section */
+  #ai { padding: 60px 0 !important; }
+
+  /* Contact section spacing */
+  .contact-left { margin-bottom: 32px; }
+  .contact-line { font-size: 0.85rem !important; }
+
+  /* Story chapters — reduce excessive gaps */
+  .chapters-wrap { gap: 28px !important; }
+  .chapter-block { padding: 22px 18px !important; }
+
+  /* Tools ticker on mobile */
+  .tools-ticker-section { padding: 16px 0 !important; }
+  .tool-chip { font-size: 0.72rem !important; gap: 6px !important; }
+  .tools-ticker-track { gap: 32px !important; }
+
+  /* Back to top */
+  .back-to-top { bottom: 16px !important; right: 16px !important; width: 40px !important; height: 40px !important; }
+}
+
+@media (max-width: 480px) {
+  /* Hero tighten */
+  .hero-stats { flex-wrap: wrap; gap: 12px !important; }
+  .h-stat-num { font-size: 1.4rem !important; }
+  .h-stat-label { font-size: 0.65rem !important; }
+
+  /* Filter tabs scroll horizontally */
+  .filter-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+  .filter-tabs::-webkit-scrollbar { display: none; }
+  .filter-btn { flex-shrink: 0; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PERFORMANCE — GPU-accelerated, reduce paint
+   ═══════════════════════════════════════════════════════════════ */
+/* Only use transform+opacity for reveals (already GPU) */
+.reveal {
+  will-change: transform, opacity;
+  contain: layout style;
+}
+.reveal.in-view {
+  will-change: auto; /* release after animation */
+}
+
+/* Throttle grain animation on low-power mode */
+@media (prefers-reduced-motion: reduce) {
+  .noise-overlay,
+  .tools-ticker-track,
+  .avail-dot,
+  #preloader { display: none !important; }
+
+  .reveal, .reveal-group > * {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* Prevent layout thrash on scroll */
+#ash-mascot, #ash-rope-line, .back-to-top, .lightbox-overlay {
+  will-change: transform, opacity;
+}

@@ -337,3 +337,28 @@ document.addEventListener('DOMContentLoaded', () => {
     initGrain();
   });
 });
+/* =============================================================
+   PRELOADER — dismisses after 1.5s min, or when page loaded
+   ============================================================= */
+(function() {
+  const pl = document.getElementById('preloader');
+  if (!pl) return;
+
+  document.body.classList.add('pl-loading');
+
+  function dismiss() {
+    pl.classList.add('pl-done');
+    document.body.classList.remove('pl-loading');
+    // Remove from DOM after fade
+    setTimeout(() => pl.remove(), 700);
+  }
+
+  // Minimum 1.5s to let animation play, then wait for load
+  const minDelay = new Promise(r => setTimeout(r, 1500));
+  const pageLoad = new Promise(r => {
+    if (document.readyState === 'complete') r();
+    else window.addEventListener('load', r, { once: true });
+  });
+
+  Promise.all([minDelay, pageLoad]).then(dismiss);
+})();
