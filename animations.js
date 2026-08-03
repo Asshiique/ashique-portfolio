@@ -268,16 +268,36 @@ function initChapterBlocks() {
   const blocks = document.querySelectorAll('.chapter-block');
   if (!blocks.length) return;
 
-  // Split each headline into word spans
+  // Split headlines into word spans — walk TEXT NODES only (preserves <br> <em> tags)
+  function wrapTextWords(el) {
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+    const textNodes = [];
+    let n;
+    while ((n = walker.nextNode())) textNodes.push(n);
+
+    textNodes.forEach(textNode => {
+      const parts = textNode.textContent.split(/(\s+)/);
+      if (parts.length <= 1) return;
+      const frag = document.createDocumentFragment();
+      parts.forEach(part => {
+        if (/^\s+$/.test(part)) {
+          frag.appendChild(document.createTextNode(part));
+        } else if (part) {
+          const span = document.createElement('span');
+          span.className = 'ch-headline-word';
+          span.textContent = part;
+          frag.appendChild(span);
+        }
+      });
+      textNode.parentNode.replaceChild(frag, textNode);
+    });
+  }
+
   blocks.forEach(block => {
     const headline = block.querySelector('.ch-headline');
     if (headline && !headline.dataset.split) {
       headline.dataset.split = 'done';
-      // Keep <em> tags intact while splitting text nodes
-      const rawHTML  = headline.innerHTML;
-      const wrapped  = rawHTML
-        .replace(/([A-Za-zÀ-ÿ']+)/g, '<span class="ch-headline-word">$1</span>');
-      headline.innerHTML = wrapped;
+      wrapTextWords(headline);
     }
   });
 
