@@ -1,0 +1,299 @@
+/* ═══════════════════════════════════════════════════════════════════
+   MOTION UI — Complete Animation System
+   All transforms use GPU-composited properties (transform + opacity)
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ───────────────────────────────────────────────────────────────────
+   SCROLL PROGRESS BAR
+   ─────────────────────────────────────────────────────────────────── */
+#scroll-progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, #c0392b, #e74c3c, #ff6b6b);
+  z-index: 99998;
+  transition: width 0.1s linear;
+  border-radius: 0 2px 2px 0;
+  box-shadow: 0 0 10px rgba(192,57,43,0.6);
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   BASE ANIMATION STATES (all start hidden)
+   ─────────────────────────────────────────────────────────────────── */
+
+/* Fade up — default */
+[data-motion="fade-up"] {
+  opacity: 0;
+  transform: translateY(60px);
+  transition: opacity 0.8s cubic-bezier(0.22,1,0.36,1),
+              transform 0.8s cubic-bezier(0.22,1,0.36,1);
+  will-change: transform, opacity;
+}
+
+/* Fade left */
+[data-motion="fade-left"] {
+  opacity: 0;
+  transform: translateX(-70px);
+  transition: opacity 0.8s cubic-bezier(0.22,1,0.36,1),
+              transform 0.8s cubic-bezier(0.22,1,0.36,1);
+  will-change: transform, opacity;
+}
+
+/* Fade right */
+[data-motion="fade-right"] {
+  opacity: 0;
+  transform: translateX(70px);
+  transition: opacity 0.8s cubic-bezier(0.22,1,0.36,1),
+              transform 0.8s cubic-bezier(0.22,1,0.36,1);
+  will-change: transform, opacity;
+}
+
+/* Scale up — for cards */
+[data-motion="scale-up"] {
+  opacity: 0;
+  transform: scale(0.85) translateY(40px);
+  transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1),
+              transform 0.7s cubic-bezier(0.22,1,0.36,1);
+  will-change: transform, opacity;
+}
+
+/* 3D flip — for chapter blocks */
+[data-motion="flip-in"] {
+  opacity: 0;
+  transform: perspective(900px) rotateX(18deg) translateY(50px);
+  transition: opacity 0.9s cubic-bezier(0.22,1,0.36,1),
+              transform 0.9s cubic-bezier(0.22,1,0.36,1);
+  will-change: transform, opacity;
+}
+
+/* Wipe — for headings (clip-path sweep) */
+[data-motion="wipe"] {
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.9s cubic-bezier(0.77,0,0.18,1);
+  will-change: clip-path;
+}
+
+/* Blur in — for images */
+[data-motion="blur-in"] {
+  opacity: 0;
+  filter: blur(12px);
+  transform: scale(1.04);
+  transition: opacity 1s cubic-bezier(0.22,1,0.36,1),
+              filter 1s cubic-bezier(0.22,1,0.36,1),
+              transform 1s cubic-bezier(0.22,1,0.36,1);
+  will-change: transform, opacity, filter;
+}
+
+/* Slide up pop — for tags/small elements */
+[data-motion="pop"] {
+  opacity: 0;
+  transform: translateY(20px) scale(0.9);
+  transition: opacity 0.5s cubic-bezier(0.34,1.56,0.64,1),
+              transform 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  will-change: transform, opacity;
+}
+
+/* IN VIEW — all types */
+[data-motion].motion-in {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  clip-path: inset(0 0% 0 0) !important;
+}
+
+/* Stagger delay helpers */
+[data-delay="100"] { transition-delay: 0.1s !important; }
+[data-delay="150"] { transition-delay: 0.15s !important; }
+[data-delay="200"] { transition-delay: 0.2s !important; }
+[data-delay="250"] { transition-delay: 0.25s !important; }
+[data-delay="300"] { transition-delay: 0.3s !important; }
+[data-delay="400"] { transition-delay: 0.4s !important; }
+[data-delay="500"] { transition-delay: 0.5s !important; }
+[data-delay="600"] { transition-delay: 0.6s !important; }
+[data-delay="700"] { transition-delay: 0.7s !important; }
+
+/* ───────────────────────────────────────────────────────────────────
+   HERO ENTRANCE SEQUENCE (triggered after preloader)
+   ─────────────────────────────────────────────────────────────────── */
+.hero-eyebrow    { opacity: 0; transform: translateX(-30px); }
+.hero-name-line  { overflow: hidden; }
+.hn-muhammed     { display: inline-block; opacity: 0; transform: translateY(100%); }
+.hn-ashique      { display: inline-block; opacity: 0; transform: translateY(100%); }
+.hero-descriptor { opacity: 0; transform: translateY(20px); }
+.hero-actions    { opacity: 0; transform: translateY(24px); }
+.hero-stats      { opacity: 0; transform: translateY(24px); }
+.hero-portrait-wrap { opacity: 0; transform: translateX(50px) scale(0.97); }
+
+/* Hero entrance transitions */
+.hero-eyebrow {
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22,1,0.36,1);
+}
+.hn-muhammed, .hn-ashique {
+  transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1),
+              transform 0.7s cubic-bezier(0.22,1,0.36,1);
+}
+.hero-descriptor {
+  transition: opacity 0.6s ease 0.55s, transform 0.6s ease 0.55s;
+}
+.hero-actions {
+  transition: opacity 0.6s ease 0.7s, transform 0.6s ease 0.7s;
+}
+.hero-stats {
+  transition: opacity 0.6s ease 0.85s, transform 0.6s ease 0.85s;
+}
+.hero-portrait-wrap {
+  transition: opacity 0.9s cubic-bezier(0.22,1,0.36,1) 0.3s,
+              transform 0.9s cubic-bezier(0.22,1,0.36,1) 0.3s;
+}
+/* Active state — added by JS */
+.hero-animate .hero-eyebrow    { opacity: 1; transform: none; }
+.hero-animate .hn-muhammed     { opacity: 1; transform: none; transition-delay: 0.1s; }
+.hero-animate .hn-ashique      { opacity: 1; transform: none; transition-delay: 0.22s; }
+.hero-animate .hero-descriptor { opacity: 1; transform: none; }
+.hero-animate .hero-actions    { opacity: 1; transform: none; }
+.hero-animate .hero-stats      { opacity: 1; transform: none; }
+.hero-animate .hero-portrait-wrap { opacity: 1; transform: none; }
+
+/* ───────────────────────────────────────────────────────────────────
+   MICRO-INTERACTIONS
+   ─────────────────────────────────────────────────────────────────── */
+
+/* Button ripple effect */
+.btn-primary, .btn-ghost, .btn-outline-red, .filter-btn, .hire-me-btn {
+  position: relative;
+  overflow: hidden;
+}
+.ripple-wave {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  transform: scale(0);
+  animation: rippleAnim 0.6s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes rippleAnim {
+  to { transform: scale(4); opacity: 0; }
+}
+
+/* Service card tilt — enhanced hover */
+.service-card {
+  transition: transform 0.35s cubic-bezier(0.22,1,0.36,1),
+              box-shadow 0.35s ease !important;
+  transform-style: preserve-3d;
+}
+.service-card:hover {
+  transform: perspective(800px) rotateY(-4deg) rotateX(3deg) translateY(-8px) !important;
+  box-shadow: 12px 20px 60px rgba(0,0,0,0.35) !important;
+}
+
+/* Work item — zoom + overlay slide */
+.work-item img {
+  transition: transform 0.5s cubic-bezier(0.22,1,0.36,1) !important;
+}
+.work-item:hover img { transform: scale(1.06) !important; }
+.work-overlay {
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.22,1,0.36,1) !important;
+  transform: translateY(10px);
+  opacity: 0;
+}
+.work-item:hover .work-overlay { opacity: 1 !important; transform: none !important; }
+
+/* Video card hover */
+.video-card {
+  transition: transform 0.35s cubic-bezier(0.22,1,0.36,1),
+              box-shadow 0.35s ease !important;
+}
+.video-card:hover {
+  transform: translateY(-8px) scale(1.02) !important;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.4) !important;
+}
+
+/* Nav links — animated underline */
+.nav-links a {
+  position: relative;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -3px; left: 0;
+  width: 0; height: 2px;
+  background: var(--clr-red2);
+  transition: width 0.3s cubic-bezier(0.22,1,0.36,1);
+}
+.nav-links a:hover::after { width: 100%; }
+
+/* Stat numbers — pulse on hover */
+.h-stat {
+  transition: transform 0.3s ease;
+  cursor: default;
+}
+.h-stat:hover { transform: translateY(-4px) scale(1.05); }
+.h-stat:hover .h-stat-num { color: var(--clr-red2); }
+.h-stat-num { transition: color 0.3s ease; }
+
+/* Filter buttons — active slide */
+.filter-btn {
+  transition: background 0.3s ease, color 0.3s ease,
+              transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+.filter-btn:active { transform: scale(0.95) !important; }
+
+/* Section tags — bounce in */
+.section-tag {
+  display: inline-block;
+}
+
+/* Chapter blocks — border glow on hover */
+.chapter-block {
+  transition: box-shadow 0.4s ease, transform 0.4s cubic-bezier(0.22,1,0.36,1) !important;
+}
+.chapter-block:hover {
+  box-shadow: 0 0 0 1px rgba(192,57,43,0.3), 0 20px 60px rgba(0,0,0,0.3) !important;
+  transform: translateY(-6px) !important;
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   PARALLAX ELEMENTS
+   ─────────────────────────────────────────────────────────────────── */
+.hero-bg-word {
+  will-change: transform;
+  transition: transform 0.1s linear;
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   TEXT SPLIT ANIMATION
+   ─────────────────────────────────────────────────────────────────── */
+.split-word {
+  display: inline-block;
+  overflow: hidden;
+}
+.split-char {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(40px) rotate(3deg);
+  transition: opacity 0.5s cubic-bezier(0.22,1,0.36,1),
+              transform 0.5s cubic-bezier(0.22,1,0.36,1);
+  will-change: transform, opacity;
+}
+.split-char.char-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   REDUCED MOTION — respect accessibility
+   ─────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  [data-motion], [data-motion].motion-in,
+  .hero-eyebrow, .hn-muhammed, .hn-ashique,
+  .hero-descriptor, .hero-actions, .hero-stats, .hero-portrait-wrap,
+  .split-char, .ripple-wave {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    clip-path: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}

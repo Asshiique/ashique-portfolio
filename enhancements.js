@@ -229,7 +229,7 @@ function initFooterWarp() {
 document.addEventListener('DOMContentLoaded', () => {
   // Small delay so page renders first
   requestAnimationFrame(() => {
-    initScrollReveal();
+    // initScrollReveal(); // replaced by animations.js data-motion system
     initCountUp();
     initLightbox();
     initHeroTilt();
