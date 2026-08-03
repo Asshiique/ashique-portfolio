@@ -3378,7 +3378,7 @@ html, body {
 
 /* Mascot centered on rope (rope is fixed at right:75px) */
 /* Desktop: char 120px wide → right = 75-60 = 15px */
-#ash-mascot { right: 15px !important; }
+#ash-mascot { right: 10px !important; }
 
 /* Mascot — overflow visible so bubble shows */
 #ash-mascot { overflow: visible !important; }

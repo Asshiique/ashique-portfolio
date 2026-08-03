@@ -137,78 +137,7 @@
   .lightbox-info { max-width: 90vw; }
 }
 
-/* ─────────────────────────────────────────────────────────────
-   4. TESTIMONIALS SECTION
-   ───────────────────────────────────────────────────────────── */
-#testimonials {
-  padding: 100px 0 80px;
-}
-.testimonials-tag { margin-bottom: 12px; }
-.testimonials-heading {
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  font-weight: 900;
-  line-height: 1.1;
-  margin-bottom: 60px;
-}
-.testimonials-heading em {
-  font-style: italic;
-  color: var(--clr-red2);
-}
-.testi-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-}
-.testi-card {
-  background: var(--clr-surface);
-  border: 1px solid var(--clr-border);
-  border-radius: 20px;
-  padding: 28px;
-  position: relative;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.testi-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 24px 48px rgba(0,0,0,0.25);
-}
-.testi-quote-icon {
-  font-size: 3rem;
-  line-height: 1;
-  color: var(--clr-red2);
-  opacity: 0.4;
-  margin-bottom: 14px;
-  font-family: Georgia, serif;
-}
-.testi-text {
-  font-size: 0.92rem;
-  line-height: 1.7;
-  color: var(--clr-muted);
-  margin-bottom: 22px;
-}
-.testi-author {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.testi-avatar {
-  width: 42px; height: 42px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--clr-red2);
-}
-.testi-avatar-initials {
-  width: 42px; height: 42px;
-  border-radius: 50%;
-  background: var(--grad-fire);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.85rem; font-weight: 800; color: #fff;
-  flex-shrink: 0;
-}
-.testi-name { font-weight: 700; font-size: 0.9rem; color: var(--clr-text); }
-.testi-role { font-size: 0.75rem; color: var(--clr-dim); }
-/* Light mode */
-[data-theme="light"] .testi-card { background: #fff; }
-@media (max-width: 900px) { .testi-grid { grid-template-columns: 1fr; gap: 16px; } }
+
 
 /* ─────────────────────────────────────────────────────────────
    5. FOOTER — "LET'S TALK" warp / liquid effect
