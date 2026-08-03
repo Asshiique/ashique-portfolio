@@ -236,3 +236,104 @@ document.addEventListener('DOMContentLoaded', () => {
     initFooterWarp();
   });
 });
+
+/* =============================================================
+   6. MAGNETIC CUSTOM CURSOR
+   ============================================================= */
+function initMagCursor() {
+  // Only on desktop (pointer: fine)
+  if (!window.matchMedia('(pointer: fine)').matches) return;
+
+  const dot  = document.createElement('div');
+  const ring = document.createElement('div');
+  dot.className  = 'mag-cursor-dot';
+  ring.className = 'mag-cursor-ring';
+  document.body.appendChild(dot);
+  document.body.appendChild(ring);
+  document.body.classList.add('custom-cursor-active');
+
+  let mx = -100, my = -100;
+  let rx = -100, ry = -100;
+
+  // Dot follows cursor exactly
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    dot.style.left = mx + 'px';
+    dot.style.top  = my + 'px';
+  });
+
+  // Ring follows with smooth lag
+  (function animateRing() {
+    rx += (mx - rx) * 0.14;
+    ry += (my - ry) * 0.14;
+    ring.style.left = rx + 'px';
+    ring.style.top  = ry + 'px';
+    requestAnimationFrame(animateRing);
+  })();
+
+  // Hover state on interactive elements
+  const hoverEls = 'a, button, .work-item, .filter-btn, .service-card, .video-card, .testi-card, .btn-primary, .btn-ghost, .btn-outline-red, label, input, textarea, [role="button"]';
+  document.querySelectorAll(hoverEls).forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      dot.classList.add('cursor-hover');
+      ring.classList.add('cursor-hover');
+    });
+    el.addEventListener('mouseleave', () => {
+      dot.classList.remove('cursor-hover');
+      ring.classList.remove('cursor-hover');
+    });
+  });
+
+  // Magnetic button effect — buttons attract cursor slightly
+  document.querySelectorAll('.btn-primary, .btn-ghost, .btn-outline-red, .filter-btn').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const r  = btn.getBoundingClientRect();
+      const cx = r.left + r.width  / 2;
+      const cy = r.top  + r.height / 2;
+      const dx = (e.clientX - cx) * 0.3;
+      const dy = (e.clientY - cy) * 0.3;
+      btn.style.transform = `translate(${dx}px, ${dy}px)`;
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.transform = '';
+    });
+  });
+}
+
+/* =============================================================
+   7. BACK TO TOP
+   ============================================================= */
+function initBackToTop() {
+  const btn = document.getElementById('backToTop');
+  if (!btn) return;
+
+  const toggle = () => {
+    btn.classList.toggle('btt-show', window.scrollY > 500);
+  };
+  window.addEventListener('scroll', toggle, { passive: true });
+
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+
+/* =============================================================
+   8. NOISE GRAIN OVERLAY
+   ============================================================= */
+function initGrain() {
+  const el = document.createElement('div');
+  el.className = 'noise-overlay';
+  el.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(el);
+}
+
+/* =============================================================
+   BOOT — add new inits
+   ============================================================= */
+document.addEventListener('DOMContentLoaded', () => {
+  requestAnimationFrame(() => {
+    initMagCursor();
+    initBackToTop();
+    initGrain();
+  });
+});

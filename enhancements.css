@@ -263,3 +263,150 @@
   opacity: 0.5;
   flex-shrink: 0;
 }
+
+/* ─────────────────────────────────────────────────────────────
+   TOOLS TICKER — highlighted chip
+   ───────────────────────────────────────────────────────────── */
+.tool-chip.tc-highlight {
+  color: var(--clr-red2);
+  font-weight: 800;
+}
+.tool-chip.tc-highlight .tc-dot {
+  opacity: 1;
+  box-shadow: 0 0 6px var(--clr-red2);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   AVAILABLE BADGE — pulsing green dot in navbar
+   ───────────────────────────────────────────────────────────── */
+.avail-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #22c55e;
+  background: rgba(34,197,94,0.1);
+  border: 1px solid rgba(34,197,94,0.25);
+  border-radius: 99px;
+  padding: 3px 10px 3px 6px;
+  margin-left: 10px;
+  vertical-align: middle;
+  cursor: default;
+  white-space: nowrap;
+}
+.avail-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  flex-shrink: 0;
+  animation: availPulse 2s ease-in-out infinite;
+}
+@keyframes availPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
+  50%       { box-shadow: 0 0 0 5px rgba(34,197,94,0); }
+}
+@media (max-width: 768px) { .avail-badge { display: none; } }
+
+/* ─────────────────────────────────────────────────────────────
+   BACK TO TOP BUTTON
+   ───────────────────────────────────────────────────────────── */
+.back-to-top {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: var(--clr-red2);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 800;
+  opacity: 0;
+  transform: translateY(16px) scale(0.8);
+  transition: opacity 0.35s ease, transform 0.35s ease, background 0.2s ease;
+  box-shadow: 0 4px 20px rgba(192,57,43,0.45);
+  pointer-events: none;
+}
+.back-to-top.btt-show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: all;
+}
+.back-to-top:hover {
+  background: #a02020;
+  transform: translateY(-3px) scale(1.08);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   CUSTOM SCROLLBAR
+   ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--clr-red2);
+  border-radius: 99px;
+  opacity: 0.7;
+}
+::-webkit-scrollbar-thumb:hover { background: #a02020; }
+
+/* ─────────────────────────────────────────────────────────────
+   MAGNETIC CURSOR — custom cursor ring + dot
+   ───────────────────────────────────────────────────────────── */
+.mag-cursor-dot {
+  position: fixed;
+  width: 8px; height: 8px;
+  background: var(--clr-red2);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.08s ease, width 0.2s ease, height 0.2s ease, background 0.2s ease;
+  mix-blend-mode: difference;
+}
+.mag-cursor-ring {
+  position: fixed;
+  width: 36px; height: 36px;
+  border: 1.5px solid rgba(192,57,43,0.6);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 99998;
+  transform: translate(-50%, -50%);
+  transition: width 0.25s ease, height 0.25s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+.mag-cursor-dot.cursor-hover {
+  width: 12px; height: 12px;
+  background: #fff;
+}
+.mag-cursor-ring.cursor-hover {
+  width: 56px; height: 56px;
+  border-color: var(--clr-red2);
+}
+/* Hide default cursor site-wide when custom cursor active */
+body.custom-cursor-active * { cursor: none !important; }
+
+/* ─────────────────────────────────────────────────────────────
+   NOISE GRAIN OVERLAY — cinematic film grain texture
+   ───────────────────────────────────────────────────────────── */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9990;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 180px 180px;
+  animation: grainShift 0.5s steps(1) infinite;
+}
+@keyframes grainShift {
+  0%  { background-position: 0 0; }
+  20% { background-position: -30px 15px; }
+  40% { background-position: 15px -30px; }
+  60% { background-position: -15px 30px; }
+  80% { background-position: 30px -15px; }
+  100%{ background-position: 0 0; }
+}
