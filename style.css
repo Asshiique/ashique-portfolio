@@ -3653,3 +3653,9 @@ html, body {
   0%, 100% { transform: rotate(-4deg); }
   50%       { transform: rotate(4deg) translateY(-5px); }
 }
+/* DEBUG: Force minion always visible to confirm GLB loads */
+.minion-btn-sitter-wrap {
+  opacity: 1 !important;
+  transform: none !important;
+  animation: minionSway 3.5s ease-in-out infinite !important;
+}
