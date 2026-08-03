@@ -260,3 +260,70 @@ document.addEventListener('DOMContentLoaded', () => {
     initSectionParallax();
   });
 });
+
+/* ─────────────────────────────────────────────────────────────────────
+   CHAPTER BLOCKS — split headlines + IntersectionObserver trigger
+   ───────────────────────────────────────────────────────────────────── */
+function initChapterBlocks() {
+  const blocks = document.querySelectorAll('.chapter-block');
+  if (!blocks.length) return;
+
+  // Split each headline into word spans
+  blocks.forEach(block => {
+    const headline = block.querySelector('.ch-headline');
+    if (headline && !headline.dataset.split) {
+      headline.dataset.split = 'done';
+      // Keep <em> tags intact while splitting text nodes
+      const rawHTML  = headline.innerHTML;
+      const wrapped  = rawHTML
+        .replace(/([A-Za-zÀ-ÿ']+)/g, '<span class="ch-headline-word">$1</span>');
+      headline.innerHTML = wrapped;
+    }
+  });
+
+  // IntersectionObserver — add .ch-visible when block enters viewport
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('ch-visible');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+  blocks.forEach(b => obs.observe(b));
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   SERVICE CARDS — click/tap navigates to #work section
+   ───────────────────────────────────────────────────────────────────── */
+function initServiceCardNav() {
+  const cards = document.querySelectorAll('.service-card');
+  const workSection = document.getElementById('work');
+  if (!workSection) return;
+
+  cards.forEach(card => {
+    // Make keyboard-accessible
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-label', 'View my work');
+    card.style.cursor = 'pointer';
+
+    const go = () => {
+      workSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    card.addEventListener('click', go);
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); }
+    });
+  });
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   ADD TO BOOT
+   ───────────────────────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  initChapterBlocks();
+  initServiceCardNav();
+});

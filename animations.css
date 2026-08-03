@@ -529,3 +529,119 @@
   from { transform: scaleX(0); }
   to   { transform: scaleX(1); }
 }
+/* ═══════════════════════════════════════════════════════════════════
+   CHAPTER BLOCK — FULL ANIMATION SYSTEM
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Base: block hides inner elements until in-view ── */
+.chapter-block {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.45s cubic-bezier(0.22,1,0.36,1),
+              box-shadow 0.45s ease !important;
+}
+
+/* Red accent line that grows from left on scroll-in */
+.chapter-block::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px;
+  height: 0%;
+  background: linear-gradient(180deg, var(--clr-red2), transparent);
+  transition: height 0.9s cubic-bezier(0.22,1,0.36,1);
+  border-radius: 0 0 4px 4px;
+  z-index: 2;
+}
+/* Trigger via JS adding .ch-visible */
+.chapter-block.ch-visible::before { height: 100%; }
+
+/* Chapter tag — pops in */
+.chapter-block .ch-tag {
+  display: inline-block;
+  opacity: 0;
+  transform: translateX(-16px);
+  transition: opacity 0.5s ease 0.1s, transform 0.5s cubic-bezier(0.22,1,0.36,1) 0.1s;
+}
+.chapter-block.ch-visible .ch-tag { opacity: 1; transform: none; }
+
+/* Headline — wipes in word by word */
+.chapter-block .ch-headline {
+  overflow: hidden;
+}
+.chapter-block .ch-headline-word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(60%) skewY(4deg);
+  transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1),
+              transform 0.6s cubic-bezier(0.22,1,0.36,1);
+}
+.chapter-block.ch-visible .ch-headline-word:nth-child(1) { opacity:1; transform:none; transition-delay: 0.18s; }
+.chapter-block.ch-visible .ch-headline-word:nth-child(2) { opacity:1; transform:none; transition-delay: 0.30s; }
+.chapter-block.ch-visible .ch-headline-word:nth-child(3) { opacity:1; transform:none; transition-delay: 0.42s; }
+.chapter-block.ch-visible .ch-headline-word:nth-child(4) { opacity:1; transform:none; transition-delay: 0.54s; }
+
+/* Lead text — fade in */
+.chapter-block .ch-lead {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease 0.45s, transform 0.6s ease 0.45s;
+}
+.chapter-block.ch-visible .ch-lead { opacity: 1; transform: none; }
+
+/* Break items — stagger slide in from left */
+.chapter-block .ch-br-item {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22,1,0.36,1);
+}
+.chapter-block.ch-visible .ch-br-item:nth-child(1) { opacity:1; transform:none; transition-delay: 0.55s; }
+.chapter-block.ch-visible .ch-br-item:nth-child(2) { opacity:1; transform:none; transition-delay: 0.67s; }
+.chapter-block.ch-visible .ch-br-item:nth-child(3) { opacity:1; transform:none; transition-delay: 0.79s; }
+.chapter-block.ch-visible .ch-br-item:nth-child(4) { opacity:1; transform:none; transition-delay: 0.91s; }
+
+/* Punchline — rises up */
+.chapter-block .ch-punchline {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease 0.85s, transform 0.6s ease 0.85s;
+}
+.chapter-block.ch-visible .ch-punchline { opacity: 1; transform: none; }
+
+/* BG number — dramatic zoom-in from 300% */
+.ch-bg-num {
+  transition: transform 0.9s cubic-bezier(0.22,1,0.36,1),
+              opacity 0.9s ease !important;
+  transform: scale(1.4) translateX(20px);
+  opacity: 0 !important;
+}
+.chapter-block.ch-visible .ch-bg-num {
+  transform: scale(1) translateX(0) !important;
+  opacity: 0.07 !important;
+}
+
+/* ── Hover state — card lifts + border glow ── */
+.chapter-block:hover {
+  transform: translateY(-8px) !important;
+  box-shadow: 0 0 0 1.5px rgba(192,57,43,0.35),
+              0 24px 60px rgba(0,0,0,0.35) !important;
+}
+
+/* Hover: red line fully lights up */
+.chapter-block:hover::before {
+  background: linear-gradient(180deg, var(--clr-red2) 60%, transparent);
+  width: 4px;
+}
+
+/* ── Right column (image/visual) — scale in ── */
+.chapter-block .ch-visual-col img,
+.chapter-block .ch-img {
+  opacity: 0;
+  transform: scale(0.9) translateY(20px);
+  transition: opacity 0.8s ease 0.3s, transform 0.8s cubic-bezier(0.22,1,0.36,1) 0.3s;
+}
+.chapter-block.ch-visible .ch-visual-col img,
+.chapter-block.ch-visible .ch-img {
+  opacity: 1;
+  transform: none;
+}
