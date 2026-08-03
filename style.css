@@ -3504,71 +3504,67 @@ html, body {
   }
 }
 /* =============================================================
-   MINION SYSTEM — CSS Animations & Positioning
+   MINION SYSTEM — CSS Animations & Positioning (v2)
    ============================================================= */
 
-/* ── Shared model-viewer base ── */
-.minion-mv {
-  display: block;
+/* Global: prevent model-viewer global rules from breaking minion sizes */
+.minion-btn-sitter-wrap model-viewer,
+.minion-lean-wrap model-viewer,
+.minion-peek-wrap model-viewer,
+.minion-climb-wrap model-viewer {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: unset !important;
   --progress-bar-color: transparent;
   --progress-mask: none;
+  display: block;
 }
 
 /* ─────────────────────────────────────────────────────────────
-   1. BUTTON SITTER
+   1. BUTTON SITTER — fixed position near hero, always visible
    ───────────────────────────────────────────────────────────── */
 .minion-btn-sitter-wrap {
-  position: absolute;
-  bottom: 100%;         /* sit ON TOP of the hero-actions row */
-  left: 0;
-  width: 90px;
-  height: 90px;
+  position: fixed;
+  bottom: 180px;
+  left: 80px;
+  width: 100px;
+  height: 110px;
+  z-index: 500;
   pointer-events: none;
   opacity: 0;
-  transform: translateY(20px) scale(0.6);
-  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-  z-index: 10;
+  transform: translateY(30px) scale(0.5);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.4));
 }
 .minion-btn-sitter-wrap.minion-visible {
   opacity: 1;
   transform: translateY(0) scale(1);
-}
-.minion-btn-sitter-wrap .minion-mv {
-  width: 90px;
-  height: 90px;
-}
-/* Subtle sway while sitting */
-.minion-btn-sitter-wrap.minion-visible {
-  animation: minionSway 3s ease-in-out 3s infinite;
+  animation: minionSway 3.5s ease-in-out 1s infinite;
 }
 @keyframes minionSway {
-  0%, 100% { transform: rotate(-3deg) translateY(0); }
-  50%       { transform: rotate(3deg)  translateY(-4px); }
+  0%, 100% { transform: rotate(-4deg); }
+  50%       { transform: rotate(4deg) translateY(-5px); }
 }
-/* Bounce when button hovered */
 .minion-btn-sitter-wrap.minion-wave {
-  animation: minionWave 0.6s ease;
+  animation: minionWave 0.7s ease !important;
 }
 @keyframes minionWave {
-  0%   { transform: rotate(-3deg) scale(1); }
-  30%  { transform: rotate(15deg) scale(1.15) translateY(-8px); }
-  60%  { transform: rotate(-8deg) scale(1.1); }
-  100% { transform: rotate(-3deg) scale(1); }
+  0%   { transform: rotate(-4deg) scale(1); }
+  25%  { transform: rotate(20deg) scale(1.2) translateY(-10px); }
+  60%  { transform: rotate(-10deg) scale(1.1); }
+  100% { transform: rotate(-4deg) scale(1); }
 }
-/* Shadow disc */
+/* Shadow */
 .minion-shadow {
-  width: 50px; height: 10px;
-  background: radial-gradient(ellipse, rgba(0,0,0,0.35) 0%, transparent 70%);
+  width: 55px; height: 10px;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.3) 0%, transparent 70%);
   border-radius: 50%;
-  margin: -8px auto 0;
+  margin: -4px auto 0;
   pointer-events: none;
 }
-
-/* Mobile: smaller sitter */
-@media (max-width: 768px) {
-  .minion-btn-sitter-wrap { width: 60px; height: 60px; left: 50%; transform: translateX(-50%) translateY(20px) scale(0.6); }
-  .minion-btn-sitter-wrap.minion-visible { transform: translateX(-50%) translateY(0) scale(1); }
-  .minion-btn-sitter-wrap .minion-mv { width: 60px; height: 60px; }
+/* Hide on very small screens */
+@media (max-width: 480px) {
+  .minion-btn-sitter-wrap { left: 10px; width: 70px; height: 80px; bottom: 160px; }
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -3583,65 +3579,47 @@ html, body {
   z-index: 5;
   transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.34,1.56,0.64,1);
 }
-.minion-lean-right {
-  right: -30px;
-  transform: rotate(12deg) translateX(30px);
-}
-.minion-lean-left {
-  left: -30px;
-  transform: rotate(-12deg) translateX(-30px);
-}
-.minion-lean-wrap.minion-visible {
-  opacity: 1;
-}
+.minion-lean-right { right: -30px; transform: rotate(12deg) translateX(30px); }
+.minion-lean-left  { left: -30px;  transform: rotate(-12deg) translateX(-30px); }
 .minion-lean-right.minion-visible {
-  transform: rotate(12deg) translateX(0);
-  animation: minionLeanRight 4s ease-in-out 0.8s infinite;
+  opacity: 1; transform: rotate(12deg);
+  animation: minionLeanRight 4s ease-in-out infinite;
 }
 .minion-lean-left.minion-visible {
-  transform: rotate(-12deg) translateX(0);
-  animation: minionLeanLeft 4.5s ease-in-out 0.8s infinite;
+  opacity: 1; transform: rotate(-12deg);
+  animation: minionLeanLeft 4.5s ease-in-out infinite;
 }
 @keyframes minionLeanRight {
   0%, 100% { transform: rotate(12deg) translateY(0); }
-  50%       { transform: rotate(10deg) translateY(-5px); }
+  50%       { transform: rotate(9deg) translateY(-5px); }
 }
 @keyframes minionLeanLeft {
   0%, 100% { transform: rotate(-12deg) translateY(0); }
   50%       { transform: rotate(-9deg) translateY(-5px); }
 }
-.minion-lean-wrap .minion-mv {
-  width: 80px; height: 100px;
-}
-@media (max-width: 768px) {
-  .minion-lean-wrap { display: none; } /* hidden on mobile — too crowded */
-}
+@media (max-width: 768px) { .minion-lean-wrap { display: none; } }
 
 /* ─────────────────────────────────────────────────────────────
    3. CARD PEEK
    ───────────────────────────────────────────────────────────── */
 .minion-peek-wrap {
   position: absolute;
-  bottom: 0;
-  right: 16px;
-  width: 60px; height: 60px;
+  bottom: 0; right: 16px;
+  width: 60px; height: 70px;
   pointer-events: none;
   z-index: 8;
-  transform: translateY(100%) scale(0.8);
+  transform: translateY(100%);
   transition: transform 0.45s cubic-bezier(0.34,1.56,0.64,1), opacity 0.35s ease;
   opacity: 0;
 }
 .minion-peek-wrap.minion-peeking {
-  transform: translateY(30%) scale(1);
+  transform: translateY(25%);
   opacity: 1;
-  animation: minionPeekBob 0.8s ease-in-out 0.45s infinite alternate;
+  animation: minionPeekBob 0.9s ease-in-out infinite alternate;
 }
 @keyframes minionPeekBob {
-  0%   { transform: translateY(30%) scale(1); }
-  100% { transform: translateY(20%) scale(1.05); }
-}
-.minion-peek-wrap .minion-mv {
-  width: 60px; height: 60px;
+  from { transform: translateY(25%); }
+  to   { transform: translateY(15%); }
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -3649,34 +3627,29 @@ html, body {
    ───────────────────────────────────────────────────────────── */
 .minion-climb-wrap {
   position: fixed;
-  right: 8px;
-  bottom: -80px;            /* starts hidden below screen */
+  right: 10px;
+  bottom: -90px;
   width: 55px; height: 75px;
   pointer-events: none;
   z-index: 2000;
-  transition: bottom 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease;
   opacity: 0;
+  transition: opacity 0.3s ease;
 }
 .minion-climb-wrap.minion-climbing {
   opacity: 1;
-  bottom: -80px;            /* start position */
-  animation: minionClimbUp 1.2s cubic-bezier(0.25,1,0.5,1) forwards;
+  animation: minionClimbUp 1.3s cubic-bezier(0.25,1,0.5,1) forwards;
 }
 .minion-climb-wrap.minion-climb-done {
-  bottom: 120px;            /* resting position — side of menu */
+  bottom: 130px;
+  opacity: 1;
   animation: minionClimberIdle 2.5s ease-in-out infinite;
 }
 @keyframes minionClimbUp {
-  0%   { bottom: -80px; opacity: 0; transform: rotate(-5deg); }
-  20%  { opacity: 1; }
-  60%  { transform: rotate(5deg); }
-  80%  { transform: rotate(-3deg); }
-  100% { bottom: 120px; opacity: 1; transform: rotate(0deg); }
+  0%   { bottom: -90px; opacity: 0; transform: rotate(-5deg); }
+  15%  { opacity: 1; }
+  100% { bottom: 130px; opacity: 1; transform: rotate(0); }
 }
 @keyframes minionClimberIdle {
   0%, 100% { transform: rotate(-4deg); }
-  50%       { transform: rotate(4deg) translateY(-4px); }
-}
-.minion-climb-wrap .minion-mv {
-  width: 55px; height: 75px;
+  50%       { transform: rotate(4deg) translateY(-5px); }
 }
