@@ -79,7 +79,7 @@ function closeMobile() {
 
 /* TYPED ROLE TEXT */
 function startTyper() {
-  const roles = ["Graphic Design", "Videography", "AI Videography", "Storytelling", "Creative Direction"];
+  const roles = ["Creative Thinker", "Story Teller", "Graphic Designer", "Video Editor", "Web Designer", "AI Creator"];
   const el = document.getElementById("typed-role");
   if (!el) return;
   let i = 0, charI = 0, deleting = false;
