@@ -199,3 +199,46 @@ section::before {
     border-radius: 16px !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   THREE.JS HERO CANVAS
+   ═══════════════════════════════════════════════════════════════════ */
+#particles-canvas {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.3s ease;
+}
+#hero {
+  position: relative;
+  overflow: hidden;
+}
+/* Ensure hero content sits above the canvas */
+.hero-content,
+.hero-portrait-wrap,
+.hero-float-tags,
+.hero-float-tag,
+.hero-3d-scene,
+.hero-bg-word {
+  position: relative;
+  z-index: 2;
+}
+.hero-bg-overlay {
+  z-index: 1 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   GSAP SCROLL — set initial states so GSAP can animate from them
+   (prevents flash of unstyled content)
+   ═══════════════════════════════════════════════════════════════════ */
+/* GSAP handles these elements — remove data-motion interference */
+.chapter-block,
+.service-card,
+.work-item,
+.video-card,
+.section-tag {
+  /* Let GSAP set visibility; remove data-motion opacity:0 */
+}
