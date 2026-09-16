@@ -347,3 +347,53 @@ document.addEventListener('DOMContentLoaded', () => {
   initChapterBlocks();
   initServiceCardNav();
 });
+/* ─────────────────────────────────────────────────────────────────────
+   LENIS SMOOTH SCROLL — cinematic scrolling
+   ───────────────────────────────────────────────────────────────────── */
+function initLenis() {
+  if (typeof Lenis === 'undefined') return;
+  const lenis = new Lenis({
+    duration: 1.4,
+    easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    smooth: true,
+    smoothTouch: false,
+    touchMultiplier: 2
+  });
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
+  window._lenis = lenis;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   NAV ACTIVE SECTION — highlight current section in nav
+   ───────────────────────────────────────────────────────────────────── */
+function initNavActive() {
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+  const navbar   = document.getElementById('navbar');
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('nav-active'));
+        const active = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+        if (active) active.classList.add('nav-active');
+      }
+    });
+  }, { threshold: 0.4 });
+
+  sections.forEach(s => obs.observe(s));
+
+  // Navbar shrink on scroll
+  window.addEventListener('scroll', () => {
+    navbar?.classList.toggle('nav-scrolled', window.scrollY > 80);
+  }, { passive: true });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initLenis();
+  initNavActive();
+});

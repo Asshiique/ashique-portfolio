@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Block any potential admin or config paths
+Disallow: /node_modules/
+Disallow: /.git/
+
+# Sitemap location
+Sitemap: https://ashique-portfolio.vercel.app/sitemap.xml
+
+# Crawl-delay (optional, some crawlers respect this)
+Crawl-delay: 1

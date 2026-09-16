@@ -24,11 +24,41 @@
   <meta name="twitter:image" content="https://ashique-portfolio.vercel.app/assets/images/og-preview.jpg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;900&family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;900&family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
-    <script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
-  <link rel="stylesheet" href="enhancements.css">
+    <link rel="stylesheet" href="enhancements.css">
   <link rel="stylesheet" href="animations.css">
+  <link rel="stylesheet" href="lusion.css">
+  <!-- Schema Markup -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Muhammed Ashique",
+    "url": "https://ashique-portfolio.vercel.app/",
+    "image": "https://ashique-portfolio.vercel.app/assets/images/og-preview.jpg",
+    "jobTitle": "Graphic Designer, Video Editor, Web Designer",
+    "description": "Creative Director and Visual Storyteller from Malappuram, Kerala. Graphic Designer, Video Editor, Web Designer and AI Creator.",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Malappuram",
+      "addressRegion": "Kerala",
+      "addressCountry": "IN"
+    },
+    "sameAs": [],
+    "knowsAbout": ["Graphic Design", "Video Editing", "Web Design", "AI Content Creation", "Branding", "Visual Storytelling"],
+    "hasOccupation": {
+      "@type": "Occupation",
+      "name": "Creative Director",
+      "occupationLocation": {
+        "@type": "City",
+        "name": "Malappuram, Kerala, India"
+      }
+    }
+  }
+  </script>
+  <!-- Lenis Smooth Scroll -->
+  <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.42/bundled/lenis.min.js"></script>
 </head>
 <body>
 
@@ -69,10 +99,7 @@
   <div id="cursor" class="cursor"></div>
   <div id="cursor-follower" class="cursor-follower"></div>
 
-  <div id="preloader">
-    <div class="preloader-inner">
-      <div class="pl-logo">A</div>
-      <div class="pl-name">MUHAMMED ASHIQUE</div>
+  
       <div class="pl-role">Creative Director · Visual Storyteller</div>
       <div class="preloader-progress"><div class="preloader-bar"></div></div>
     </div>
@@ -124,7 +151,7 @@
         <span class="eyebrow-dash"></span>
         <span class="eyebrow-text">Malappuram, Kerala · India</span>
       </div>
-      <div class="hero-name-block">
+      <h1 class="hero-name-block" aria-label="Muhammed Ashique">
         <div class="hero-name-line"><span class="hn-muhammed">MUHAMMED</span></div>
         <div class="hero-name-line hero-name-main">
           <span class="hn-ashique" id="glitch-text" data-text="ASHIQUE">ASHIQUE</span>
@@ -217,7 +244,7 @@
           <div class="portrait-thumbs">
             <img src="assets/images/hero_new2.jpeg" onclick="switchAboutImg(this,'assets/images/hero_new2.jpeg')" class="thumb-img active" alt="Self-designed poster" />
             <img src="assets/images/hero_new3.jpeg" onclick="switchAboutImg(this,'assets/images/hero_new3.jpeg')" class="thumb-img" alt="Sunglasses shot" />
-            <img src="assets/images/hero_new4.jpeg" onclick="switchAboutImg(this,'assets/images/hero_new4.jpeg')" class="thumb-img" alt="Shot 3" />
+            <img src="assets/images/hero_new4.jpeg" onclick="switchAboutImg(this,'assets/images/hero_new4.jpeg')" class="thumb-img" alt="Muhammed Ashique — Creative Portrait" />
           </div>
         </div>
       </div>
@@ -380,6 +407,7 @@
 
   <!-- ═══════ SERVICES ═══════ -->
   <section id="services">
+    <h2 class="sr-only">Services</h2>
     <div class="container">
       <div class="services-heading">
         <p class="section-tag">— WHAT I DO</p>
@@ -484,19 +512,19 @@
           <div class="work-overlay"><span class="work-cat">Education</span><h4>EBS Orientation</h4><p>Study. Earn. Build — cinematic gold on dark</p></div>
         </div>
         <div class="work-item" data-cat="event" id="wi3">
-          <img src="assets/images/hl_poster3.png" alt="Highlight Poster 3" loading="lazy" />
+          <img src="assets/images/hl_poster3.png" alt="Highlight Event Design Poster — Bold Graphic Design" loading="lazy" />
           <div class="work-overlay"><span class="work-cat">Event Design</span><h4>Highlight Event</h4><p>Bold hierarchy, graphic punch — designed to stop the scroll at 0.3 seconds.</p></div>
         </div>
         <div class="work-item tall" data-cat="brand" id="wi4">
-          <img src="assets/images/hl_poster4.png" alt="Highlight Poster 4" loading="lazy" />
+          <img src="assets/images/hl_poster4.png" alt="Brand Identity Poster — Creative Direction" loading="lazy" />
           <div class="work-overlay"><span class="work-cat">Brand Design</span><h4>Creative Poster #4</h4><p>Premium design — concept to canvas</p></div>
         </div>
         <div class="work-item" data-cat="event" id="wi5">
-          <img src="assets/images/hl_poster5.png" alt="Highlight Poster 5" loading="lazy" />
+          <img src="assets/images/hl_poster5.png" alt="Visual Campaign Poster — Layered Narrative Design" loading="lazy" />
           <div class="work-overlay"><span class="work-cat">Event Design</span><h4>Visual Campaign</h4><p>Layered visual narrative — each element earns its space, nothing decorative for decoration's sake.</p></div>
         </div>
         <div class="work-item" data-cat="edu" id="wi6">
-          <img src="assets/images/hl_poster6.png" alt="Highlight Poster 6" loading="lazy" />
+          <img src="assets/images/hl_poster6.png" alt="Academic Education Poster — Clean Layout Design" loading="lazy" />
           <div class="work-overlay"><span class="work-cat">Education</span><h4>Academic Poster</h4><p>Clean layout, confident type, conversion-focused — because education content should also be beautiful.</p></div>
         </div>
       </div>
@@ -514,6 +542,7 @@
 
   <!-- ═══════ VIDEOS ═══════ -->
   <section id="videos">
+    <h2 class="sr-only">Videos & Motion</h2>
     <!-- Animated BG orbs -->
     <div class="vid-bg-orb vid-orb1"></div>
     <div class="vid-bg-orb vid-orb2"></div>
@@ -666,6 +695,7 @@
 
   <!-- ═══════ AI ═══════ -->
   <section id="ai">
+    <h2 class="sr-only">AI Creation</h2>
     <div class="container">
       <p class="section-tag">— AI GENERATION</p>
       <div class="ai-title-block">
@@ -697,13 +727,13 @@
         <span class="aal-line"></span><span class="aal-text">AI Art Direction</span><span class="aal-line"></span>
       </div>
       <div class="ai-art-grid">
-        <div class="ai-art-item" id="art1"><img src="assets/images/ai_art1.png" alt="AI Art 1" loading="lazy" /></div>
-        <div class="ai-art-item" id="art2"><img src="assets/images/ai_art2.png" alt="AI Art 2" loading="lazy" /></div>
-        <div class="ai-art-item" id="art3"><img src="assets/images/ai_art3.png" alt="AI Art 3" loading="lazy" /></div>
-        <div class="ai-art-item" id="art4"><img src="assets/images/ai_art4.png" alt="AI Art 4" loading="lazy" /></div>
-        <div class="ai-art-item" id="art5"><img src="assets/images/ai_art5.png" alt="AI Art 5" loading="lazy" /></div>
-        <div class="ai-art-item" id="art6"><img src="assets/images/ai_art6.png" alt="AI Art 6" loading="lazy" /></div>
-        <div class="ai-art-item" id="art7"><img src="assets/images/ai_art7.png" alt="AI Art 7" loading="lazy" /></div>
+        <div class="ai-art-item" id="art1"><img src="assets/images/ai_art1.png" alt="AI Generated Artwork by Muhammed Ashique — Graphic 1" loading="lazy" /></div>
+        <div class="ai-art-item" id="art2"><img src="assets/images/ai_art2.png" alt="AI Generated Artwork by Muhammed Ashique — Graphic 2" loading="lazy" /></div>
+        <div class="ai-art-item" id="art3"><img src="assets/images/ai_art3.png" alt="AI Generated Artwork by Muhammed Ashique — Graphic 3" loading="lazy" /></div>
+        <div class="ai-art-item" id="art4"><img src="assets/images/ai_art4.png" alt="AI Generated Artwork by Muhammed Ashique — Graphic 4" loading="lazy" /></div>
+        <div class="ai-art-item" id="art5"><img src="assets/images/ai_art5.png" alt="AI Generated Artwork by Muhammed Ashique — Graphic 5" loading="lazy" /></div>
+        <div class="ai-art-item" id="art6"><img src="assets/images/ai_art6.png" alt="AI Generated Artwork by Muhammed Ashique — Graphic 6" loading="lazy" /></div>
+        <div class="ai-art-item" id="art7"><img src="assets/images/ai_art7.png" alt="AI Generated Artwork by Muhammed Ashique — Graphic 7" loading="lazy" /></div>
       </div>
     </div>
   </section>
@@ -712,6 +742,7 @@
   
   
 <section id="contact">
+    <h2 class="sr-only">Contact</h2>
     <div class="container">
       <div class="contact-wrap">
         <div class="contact-left">
@@ -834,13 +865,13 @@
       <p class="footer-tagline"><em>"Instead of reading Homer's Odyssey, I'm out here editing homie's odyssey reel."</em></p>
       <p class="footer-copy">© 2026 Muhammed Ashique · <a href="https://www.instagram.com/ashique__o" target="_blank" style="color:inherit;opacity:.6;">@ashique__o</a> · All Rights Reserved · Malappuram, Kerala</p>
     </div>
-    <a href="#hero" class="back-to-top" id="back-top" aria-label="Back to top">↑</a>
+    
   </footer>
 
   <div id="lightbox" class="lightbox" onclick="closeLightbox()">
     <div class="lightbox-inner" onclick="event.stopPropagation()">
       <button class="lb-close" onclick="closeLightbox()">✕</button>
-      <img id="lb-img" src="" alt="Lightbox" />
+      <img id="lb-img" src="" alt="" />
     </div>
   </div>
 
@@ -855,7 +886,6 @@
   </div>
 
   <script src="script.js"></script>
-  <script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
   <script src="particles.js"></script>
 
   <script>
