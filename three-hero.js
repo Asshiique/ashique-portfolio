@@ -20,8 +20,13 @@
   const DEPTH    = 80;
 
   /* ── Scene ── */
-  const canvas   = document.getElementById('particles-canvas');
-  if (!canvas) return;
+  // Create a NEW canvas — don't fight over #particles-canvas (script.js uses 2D ctx on it)
+  const hero = document.getElementById('hero');
+  if (!hero) return;
+  const canvas = document.createElement('canvas');
+  canvas.id = 'three-canvas';
+  canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;';
+  hero.insertBefore(canvas, hero.firstChild);
 
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));

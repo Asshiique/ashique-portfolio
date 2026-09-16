@@ -40,6 +40,8 @@ setTimeout(function() {
 /* CURSOR */
 const cursor = document.getElementById("cursor");
 const follower = document.getElementById("cursor-follower");
+// Skip if animations.js magnetic cursor is active
+if (document.body.classList.contains("custom-cursor-active")) { var _skipCursor = true; }
 let cx = 0, cy = 0, fx = 0, fy = 0;
 if (cursor && follower) {
   document.addEventListener("mousemove", function(e) {
@@ -101,6 +103,8 @@ function startTyper() {
 
 /* PARTICLES */
 (function initParticles() {
+  // Skip if Three.js is handling particles
+  if (typeof THREE !== "undefined") return;
   if (isSlowConn) return;
   const canvas = document.getElementById("particles-canvas");
   if (!canvas) return;

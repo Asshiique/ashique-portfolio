@@ -22,6 +22,7 @@
   const PRELOADER_MS = 1600;
 
   function initAll() {
+    document.body.classList.add("gsap-ready");
     syncLenis();
 
     /* ════════════════════════════════════════════════
@@ -42,7 +43,7 @@
        ════════════════════════════════════════════════ */
     gsap.utils.toArray('.section-tag').forEach(el => {
       gsap.fromTo(el,
-        { opacity: 0, x: -30 },
+        { opacity: 0.01, x: -40 },
         { opacity: 1, x: 0, ease: 'expo.out',
           scrollTrigger: { trigger: el, start: 'top 90%', end: 'top 68%', scrub: 0.5 }
         }
