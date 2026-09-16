@@ -230,10 +230,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Small delay so page renders first
   requestAnimationFrame(() => {
     // initScrollReveal(); // replaced by animations.js data-motion system
-    initCountUp();
+    // initCountUp(); // GSAP handles stat counting in gsap-scroll.js
     initLightbox();
-    initHeroTilt();
-    initFooterWarp();
+    // initHeroTilt(); // disabled - conflicts with animations.js card tilt
+    // initFooterWarp(); // using GSAP for footer
   });
 });
 
@@ -333,7 +333,7 @@ function initGrain() {
 document.addEventListener('DOMContentLoaded', () => {
   requestAnimationFrame(() => {
     initMagCursor();
-    initBackToTop();
+    // initBackToTop(); // moved to animations.js
     initGrain();
   });
 });

@@ -1,208 +1,36 @@
 /* ═══════════════════════════════════════════════════════════════════
-   LUSION / BRUNO SIMON INSPIRED — Cinematic Design Layer
+   LUSION.CSS — Redesign Layer (Clean)
+   Inspired by lusion.co visual language:
+   – Minimal nav, editorial type, generous space, purposeful accents
    ═══════════════════════════════════════════════════════════════════ */
 
-/* ─── Smooth Scroll Feel ────────────────────────────────────────── */
-html {
-  scroll-behavior: smooth;
-}
-html.lenis, html.lenis body {
-  height: auto;
-}
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
+/* ─── Global ──────────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
 
-/* ─── Nav — Lusion-style minimal floating pill ──────────────────── */
+/* ─── Navbar — minimal glass bar ─────────────────────────────────── */
 #navbar {
-  backdrop-filter: blur(20px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  background: rgba(8,8,8,0.72) !important;
-  border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+  backdrop-filter: blur(24px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
+  background: rgba(6,6,6,0.65) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
   transition: padding 0.4s ease, background 0.4s ease !important;
+  z-index: 9000 !important;
 }
 #navbar.nav-scrolled {
-  padding: 10px 40px !important;
-  background: rgba(5,5,5,0.92) !important;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+  background: rgba(4,4,4,0.92) !important;
 }
 .nav-links a {
-  font-size: 0.78rem !important;
-  letter-spacing: 0.12em !important;
+  font-size: 0.76rem !important;
+  letter-spacing: 0.14em !important;
   text-transform: uppercase !important;
   font-weight: 500 !important;
-  color: rgba(255,255,255,0.6) !important;
-  transition: color 0.3s ease !important;
-}
-.nav-links a:hover { color: #fff !important; }
-
-/* ─── Hero — cinematic full-screen feel like Lusion ─────────────── */
-#hero {
-  min-height: 100svh;
-  display: grid;
-  place-items: center start;
 }
 
-/* Hero name — giant editorial scale */
-h1.hero-name-block {
-  margin: 0;
-  font-weight: inherit;
-  line-height: inherit;
-}
-
-/* ─── Section transitions — full-width curtain dividers ─────────── */
-.section-divider {
-  width: 100%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
-  margin: 0;
-}
-
-/* ─── Work section — Lusion-style horizontal card strip on desktop ─ */
-@media (min-width: 1024px) {
-  .work-masonry {
-    column-count: 3 !important;
-    column-gap: 16px !important;
-  }
-  .work-item {
-    break-inside: avoid;
-    margin-bottom: 16px !important;
-  }
-}
-
-/* ─── Project cards — Lusion hover effect ───────────────────────── */
-.work-item {
-  border-radius: 12px !important;
-  overflow: hidden !important;
-  position: relative;
-  transition: transform 0.5s cubic-bezier(0.22,1,0.36,1) !important;
-}
-.work-item:hover {
-  transform: scale(1.02) !important;
-  z-index: 2;
-}
-.work-item img {
-  transition: transform 0.7s cubic-bezier(0.22,1,0.36,1) !important;
-}
-.work-item:hover img {
-  transform: scale(1.08) !important;
-}
-
-/* ─── Typography — Bruno Simon-style massive headings ───────────── */
-.work-title-big,
-.vid-title-big,
-.cook-giant {
-  font-size: clamp(4rem, 12vw, 10rem) !important;
-  line-height: 0.9 !important;
-  letter-spacing: -0.03em !important;
-}
-
-/* ─── Cursor blend — Lusion uses mix-blend-mode: difference ─────── */
-.mag-cursor-dot {
-  mix-blend-mode: difference !important;
-  background: #fff !important;
-  width: 10px !important;
-  height: 10px !important;
-}
-.mag-cursor-ring {
-  border-color: rgba(255,255,255,0.4) !important;
-}
-
-/* ─── Service cards — Lusion grid style ─────────────────────────── */
-.services-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1px !important;
-  background: rgba(255,255,255,0.06) !important;
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 20px;
-  overflow: hidden;
-}
-.service-card {
-  background: var(--clr-bg) !important;
-  border: none !important;
-  border-radius: 0 !important;
-  transition: background 0.4s ease !important;
-}
-.service-card:hover {
-  background: var(--clr-surface) !important;
-}
-
-/* ─── Sections — generous breathing room, cinematic ─────────────── */
-section {
-  position: relative;
-}
-section::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 5%; right: 5%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
-  pointer-events: none;
-}
-
-/* ─── Lusion-style "available" tag ──────────────────────────────── */
-.avail-badge {
-  font-size: 0.65rem !important;
-  padding: 4px 12px 4px 8px !important;
-  letter-spacing: 0.1em !important;
-}
-
-/* ─── Footer — Bruno-style giant text treatment ──────────────────── */
-.footer-big-text {
-  font-size: clamp(5rem, 16vw, 14rem) !important;
-  line-height: 0.85 !important;
-  letter-spacing: -0.04em !important;
-}
-
-/* ─── Smooth active section highlight in nav ─────────────────────── */
-.nav-links a.nav-active {
-  color: #fff !important;
-}
-.nav-links a.nav-active::after {
-  width: 100% !important;
-}
-
-/* ─── Page transition overlay (Lusion-style) ─────────────────────── */
-#page-transition {
-  position: fixed;
-  inset: 0;
-  background: #000;
-  z-index: 99997;
-  transform: scaleY(0);
-  transform-origin: bottom;
-  pointer-events: none;
-}
-#page-transition.pt-enter {
-  transform: scaleY(1);
-  transition: transform 0.5s cubic-bezier(0.77,0,0.18,1);
-  transform-origin: bottom;
-}
-#page-transition.pt-leave {
-  transform: scaleY(0);
-  transition: transform 0.5s cubic-bezier(0.77,0,0.18,1) 0.1s;
-  transform-origin: top;
-}
-
-/* ─── Mobile: keep it clean ──────────────────────────────────────── */
-@media (max-width: 768px) {
-  .services-grid {
-    grid-template-columns: 1fr !important;
-    background: transparent !important;
-    border: none !important;
-    gap: 12px !important;
-  }
-  .service-card {
-    border: 1px solid rgba(255,255,255,0.08) !important;
-    border-radius: 16px !important;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════════
-   THREE.JS HERO CANVAS
-   ═══════════════════════════════════════════════════════════════════ */
+/* ─── Three.js canvas ─────────────────────────────────────────────── */
 #particles-canvas {
   position: absolute !important;
   inset: 0 !important;
@@ -210,35 +38,103 @@ section::before {
   height: 100% !important;
   z-index: 0 !important;
   pointer-events: none !important;
-  transition: opacity 0.3s ease;
 }
 #hero {
   position: relative;
   overflow: hidden;
 }
-/* Ensure hero content sits above the canvas */
-.hero-content,
-.hero-portrait-wrap,
-.hero-float-tags,
-.hero-float-tag,
-.hero-3d-scene,
-.hero-bg-word {
+.hero-content, .hero-portrait-wrap, .hero-float-tags,
+.hero-float-tag, .hero-3d-scene, .hero-bg-word {
   position: relative;
   z-index: 2;
 }
-.hero-bg-overlay {
-  z-index: 1 !important;
+.hero-bg-overlay { z-index: 1 !important; }
+
+/* ─── Hero — Lusion editorial scale ──────────────────────────────── */
+h1.hero-name-block { margin: 0; font-weight: inherit; line-height: inherit; }
+
+/* ─── Section dividers ────────────────────────────────────────────── */
+section { position: relative; }
+section::before {
+  content: '';
+  position: absolute; top: 0; left: 5%; right: 5%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);
+  pointer-events: none;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   GSAP SCROLL — set initial states so GSAP can animate from them
-   (prevents flash of unstyled content)
-   ═══════════════════════════════════════════════════════════════════ */
-/* GSAP handles these elements — remove data-motion interference */
-.chapter-block,
-.service-card,
-.work-item,
-.video-card,
-.section-tag {
-  /* Let GSAP set visibility; remove data-motion opacity:0 */
+/* ─── Services — Lusion panel grid ───────────────────────────────── */
+@media (min-width: 769px) {
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px !important;
+    background: rgba(255,255,255,0.07) !important;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+  .service-card {
+    background: var(--clr-surface, #0d0d0d) !important;
+    border: none !important;
+    border-radius: 0 !important;
+    transition: background 0.35s ease !important;
+  }
+  .service-card:hover { background: rgba(255,255,255,0.03) !important; }
 }
+@media (max-width: 768px) {
+  .service-card { border-radius: 16px !important; }
+}
+
+/* ─── Work grid ───────────────────────────────────────────────────── */
+@media (min-width: 1024px) {
+  .work-masonry { column-count: 3 !important; column-gap: 14px !important; }
+  .work-item { break-inside: avoid; margin-bottom: 14px !important; }
+}
+
+/* ─── Chapter blocks — cleaner card ──────────────────────────────── */
+.chapter-block {
+  border: 1px solid rgba(255,255,255,0.07) !important;
+  border-radius: 20px !important;
+  background: rgba(255,255,255,0.025) !important;
+  transition: box-shadow 0.4s ease, transform 0.4s cubic-bezier(0.22,1,0.36,1), border-color 0.4s ease !important;
+}
+.chapter-block:hover {
+  border-color: rgba(192,57,43,0.3) !important;
+  transform: translateY(-6px) !important;
+}
+
+/* ─── Video cards ─────────────────────────────────────────────────── */
+.video-card { border-radius: 16px !important; overflow: hidden !important; }
+.vid-play-btn, .vlb-play { animation: playPulse 2.5s ease-in-out infinite; }
+@keyframes playPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(192,57,43,0.4); }
+  50%      { box-shadow: 0 0 0 14px rgba(192,57,43,0); }
+}
+
+/* ─── Contact inputs ──────────────────────────────────────────────── */
+.contact-form input, .contact-form textarea {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease !important;
+}
+.contact-form input:focus, .contact-form textarea:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(192,57,43,0.12) !important;
+}
+
+/* ─── Filter buttons ──────────────────────────────────────────────── */
+.filter-btn { transition: all 0.25s ease !important; }
+.filter-btn:active { transform: scale(0.94) !important; }
+
+/* ─── Footer ──────────────────────────────────────────────────────── */
+.footer-big-text {
+  font-size: clamp(4.5rem, 14vw, 12rem) !important;
+  line-height: 0.88 !important;
+  letter-spacing: -0.03em !important;
+}
+.cook-giant {
+  font-size: clamp(3.5rem, 11vw, 9rem) !important;
+  line-height: 0.9 !important;
+}
+
+/* ─── Cursor ──────────────────────────────────────────────────────── */
+.mag-cursor-dot { mix-blend-mode: difference !important; }
