@@ -128,7 +128,8 @@ function makeDoor(def) {
   const gold = new THREE.MeshStandardMaterial({ color: 0xe8b657, roughness: .25, metalness: .9 });
   const knob = new THREE.Mesh(new THREE.SphereGeometry(.1, 24, 16), gold); knob.position.set(DW - .24, DH * .48, .16); pivot.add(knob);
   const plq = new THREE.Mesh(new THREE.PlaneGeometry(1.25, .375), new THREE.MeshBasicMaterial({ map: plaque(def.label), transparent: true, toneMapped: false })); plq.position.set(DW / 2, DH * .76, .1); pivot.add(plq);
-  g.userData = { def, pivot, inner, glow, light, open: 0, panel }; panel.userData.door = g;
+  const hit = new THREE.Mesh(new THREE.PlaneGeometry(DW + .3, DH + .3), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })); hit.position.set(0, DH / 2, .4); g.add(hit);
+  g.userData = { def, pivot, inner, glow, light, open: 0, panel, hit }; hit.userData.door = g;
   doors.add(g); doorObjs.push(g);
 }
 function layoutDoors() {
@@ -163,7 +164,7 @@ function buildTunnel(key, list, z0) {
 buildTunnel('edits', EDITS, Z.edits); buildTunnel('ai', AI, Z.ai);
 function setVideo(it, on) {
   if (on && !it.vid) {
-    const v = mk('video', { src: `/media/vid/${it.v.id}.mp4`, loop: true, muted: true, playsInline: true });
+    const v = mk('video', { src: `/media/vid/${it.v.id}.mp4`, loop: true, muted: true, playsInline: true, preload: 'auto' }); v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
     v.play().catch(() => {}); it.vid = v; it.tex = new THREE.VideoTexture(v); it.tex.colorSpace = THREE.SRGBColorSpace; it.m.material.map = it.tex; it.m.material.needsUpdate = true;
   } else if (!on && it.vid) { it.vid.pause(); it.vid.removeAttribute('src'); it.vid.load(); it.tex.dispose(); it.vid = it.tex = null; it.m.material.map = it.poster; it.m.material.needsUpdate = true; }
 }
@@ -297,7 +298,7 @@ function tick() {
   ring2.rotation.z = -t * .5; ring.rotation.z = t * .1; halo.material.opacity = .75 + Math.sin(t * 1.6) * .1;
 
   // doors open toward you on hover
-  const hit = id === 'doors' ? pick(doorObjs.map((g) => g.userData.panel)) : null;
+  const hit = id === 'doors' ? pick(doorObjs.map((g) => g.userData.hit)) : null;
   doorObjs.forEach((g) => { const u = g.userData, want = hit && hit.door === g ? 1 : 0; const was = u.open; u.open = lerp(u.open, want, 1 - Math.exp(-dt * 6)); if (was < .25 && u.open >= .25) sfx('open'); u.pivot.rotation.y = -u.open * 1.55; u.inner.material.color.setScalar(.2 + u.open * .8); u.glow.material.opacity = u.open * .8; u.light.intensity = u.open * 55; });
 
   // corridors: only the video in front of you plays
@@ -341,3 +342,4 @@ function tick() {
   requestAnimationFrame(tick);
 }
 resize(); tick();
+
