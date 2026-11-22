@@ -16,7 +16,7 @@ main a,main button,main img,main .qr,main h1,main h2,main p,main li{pointer-even
 #ldtime{font:800 clamp(48px,10vw,120px)/1 "Big Shoulders Display";letter-spacing:.02em;color:var(--or);font-variant-numeric:tabular-nums}
 #loader p+p{color:var(--dim)}
 
-.top{position:fixed;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:center;padding:20px clamp(18px,4vw,48px);z-index:20;pointer-events:none}
+.top{background:linear-gradient(#05060af0 30%,transparent);position:fixed;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:center;padding:20px clamp(18px,4vw,48px);z-index:20;pointer-events:none}
 .top a{pointer-events:auto}
 .mark{font:900 26px "Big Shoulders Display";letter-spacing:.04em;text-transform:uppercase}
 .right{display:flex;gap:10px;align-items:center;pointer-events:auto}
@@ -57,7 +57,7 @@ h1 span{display:block}h1 span+span{padding-left:.22em}
 #chapter{position:fixed;left:clamp(18px,5vw,72px);top:92px;max-width:min(560px,80vw);opacity:0;transform:translateY(14px);transition:.6s;pointer-events:none}
 #chapter.on{opacity:1;transform:none}
 #chapter h2{font:900 clamp(44px,7vw,104px)/.86 "Big Shoulders Display";text-transform:uppercase}
-#chapter p{text-shadow:0 1px 12px #000,0 0 3px #000;color:#e6e1d8;margin-top:10px;max-width:380px}
+#chapter p{background:#05060acc;padding:8px 12px;border-radius:10px;backdrop-filter:blur(6px);width:fit-content;text-shadow:0 1px 12px #000,0 0 3px #000;color:#e6e1d8;margin-top:10px;max-width:380px}
 #caption{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);text-align:center;opacity:0;transition:opacity .4s;pointer-events:none}
 #caption.on{opacity:1}
 #caption b{display:block;font:800 30px "Big Shoulders Display";letter-spacing:.04em;text-transform:uppercase}
