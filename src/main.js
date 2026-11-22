@@ -32,7 +32,12 @@ const closeLB = () => { lb.hidden = true; lbb.replaceChildren(); };
 const openLB = (node) => { lbb.replaceChildren(node); lb.hidden = false; node.play?.(); };
 $('#lbx').onclick = closeLB; lb.onclick = (e) => e.target === lb && closeLB();
 addEventListener('keydown', (e) => e.key === 'Escape' && closeLB());
-const openVideo = (id) => openLB(mk('video', { src: `/media/vid/${id}.mp4`, loop: true, muted: true, playsInline: true, controls: true, autoplay: true }));
+// the corridor loops a 9-second preview; clicking opens the full video with sound (falls back to the preview if the full file is missing)
+const openVideo = (id) => {
+  const v = mk('video', { src: `/media/full/${id}.mp4`, playsInline: true, controls: true, autoplay: true, preload: 'auto' });
+  v.onerror = () => { v.onerror = null; v.src = `/media/vid/${id}.mp4`; v.loop = true; v.play().catch(() => {}); };
+  openLB(v); v.play().catch(() => { v.muted = true; v.play().catch(() => {}); });
+};
 const openImage = (id) => openLB(mk('img', { src: `/media/img/${id}.webp`, alt: 'Poster design' }));
 $('#yr').textContent = new Date().getFullYear();
 
