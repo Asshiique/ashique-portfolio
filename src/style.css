@@ -193,3 +193,15 @@ body.intro h1{animation:titleIn 2s cubic-bezier(.2,.7,.2,1) .5s both}
 body.intro .lower{animation:lowerIn 1.2s ease 1.5s both}
 @keyframes lowerIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){body.intro #bars i,body.intro h1,body.intro .lower{animation:none}}
+
+/* end-of-film rating card */
+.vwrap{position:relative;display:inline-block;line-height:0}
+.rate{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:12px;text-align:center;background:#000d;backdrop-filter:blur(8px);border-radius:12px;padding:20px;line-height:1.4;color:#f2efe9}
+.rate h3{font:900 clamp(34px,6vw,56px)/1 "Big Shoulders Display";text-transform:uppercase}
+.rate p{color:#9b968e;font-size:15px}
+.stars{display:flex;flex-direction:row-reverse;justify-content:center;gap:4px}
+.stars button{background:none;border:0;font-size:clamp(38px,8vw,56px);line-height:1;color:#4a4742;cursor:pointer;transition:color .15s,transform .15s}
+.stars button:hover,.stars button:hover~button{color:#ffc46b}.stars button:hover{transform:scale(1.15)}
+.rate .btn{font-size:15px}
+.rate .again{background:none;border:0;color:#9b968e;font:600 14px "Hanken Grotesk";text-decoration:underline;cursor:pointer}
+.rate .again:hover{color:#f2efe9}

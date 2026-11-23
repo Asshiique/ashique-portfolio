@@ -38,8 +38,18 @@ addEventListener('keydown', (e) => e.key === 'Escape' && closeLB());
 const openVideo = (id) => {
   const v = mk('video', { src: `/media/full/${id}.mp4`, playsInline: true, controls: true, autoplay: true, preload: 'auto' });
   v.onerror = () => { v.onerror = null; v.src = `/media/vid/${id}.mp4`; v.loop = true; v.play().catch(() => {}); };
-  openLB(v); v.play().catch(() => { v.muted = true; v.play().catch(() => {}); });
+  // the film shows a private rating card once it has played to the end (stars open WhatsApp, nothing is stored or shown publicly)
+  const wrap = mk('div', { className: 'vwrap' }); wrap.append(v);
+  if (id === 'film') v.addEventListener('ended', () => { if (!wrap.querySelector('.rate')) wrap.append(rateCard(v)); });
+  openLB(wrap); v.play().catch(() => { v.muted = true; v.play().catch(() => {}); });
 };
+function rateCard(v) {
+  const wa = (t) => `https://wa.me/919947045212?text=${encodeURIComponent(t)}`, c = mk('div', { className: 'rate' });
+  c.innerHTML = `<h3>How was it?</h3><div class="stars" role="group" aria-label="Rate the film">${[5, 4, 3, 2, 1].map((n) => `<button type="button" data-n="${n}" aria-label="${n} star${n > 1 ? 's' : ''}">★</button>`).join('')}</div><p>Tap a star and tell me on WhatsApp.</p><a class="btn" href="${wa("Hi Ashique, I watched your short film and I'd like one for my project.")}" target="_blank" rel="noopener">Want a film like this? Let's talk</a><button class="again" type="button">Watch again</button>`;
+  c.querySelectorAll('.stars button').forEach((b) => b.addEventListener('click', () => open(wa(`Hi Ashique, I just watched your short film. My rating: ${b.dataset.n}/5.`), '_blank', 'noopener')));
+  c.querySelector('.again').addEventListener('click', () => { c.remove(); v.currentTime = 0; v.play().catch(() => {}); });
+  return c;
+}
 const openImage = (id) => openLB(mk('img', { src: `/media/img/${id}.webp`, alt: 'Poster design' }));
 $('#yr').textContent = new Date().getFullYear();
 
