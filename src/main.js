@@ -307,8 +307,8 @@ let deskScreen, deskVid = null, deskTex = null;
   const add = (geo, mat, x, y, z, rx = 0) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.rotation.x = rx; desk.add(m); return m; };
   add(new THREE.BoxGeometry(3.4, .1, 1.5), dark, 0, 0, 0);
   add(new THREE.BoxGeometry(.1, 1.7, 1.3), dark, -1.55, -.9, 0); add(new THREE.BoxGeometry(.1, 1.7, 1.3), dark, 1.55, -.9, 0);
-  add(new THREE.BoxGeometry(2.04, 1.24, .07), black, 0, 1.05, -.35);
-  deskScreen = add(new THREE.PlaneGeometry(1.92, 1.12), new THREE.MeshBasicMaterial({ map: loadTex('/media/vid/promo.jpg'), toneMapped: false }), 0, 1.05, -.31);
+  add(new THREE.BoxGeometry(1.56, 1.2, .07), black, 0, 1.05, -.35);
+  deskScreen = add(new THREE.PlaneGeometry(1.44, 1.08), new THREE.MeshBasicMaterial({ map: loadTex('/media/vid/promo.jpg'), toneMapped: false }), 0, 1.05, -.31);
   deskScreen.userData.desk = true;
   add(new THREE.BoxGeometry(.12, .5, .1), black, 0, .35, -.37); add(new THREE.BoxGeometry(.8, .04, .45), black, 0, .08, -.3);
   add(new THREE.BoxGeometry(1.1, .03, .32), black, 0, .07, .38);
@@ -427,6 +427,51 @@ function fitName() {
 }
 document.fonts.ready.then(fitName);
 
+/* the song: official video in YouTube's own player (no audio file is hosted). Desktop: it plays on the 3D TV at Contact, muted at first
+   (browsers require that for autoplay), with YouTube's controls to pause or unmute. Phones: the button opens a small player. Spider-Man dances while it plays. */
+const YT = 'https://www.youtube-nocookie.com', YT_SRC = YT + '/embed/dQw4w9WgXcQ?rel=0&playsinline=1&enablejsapi=1&controls=1&modestbranding=1&start=81&origin=' + encodeURIComponent(location.origin);
+let party = false, tvFrame = null, tvMuted = true, tvState = -1; const tunes = mk('div', { id: 'tunes', hidden: true });
+tunes.innerHTML = '<button type="button" aria-label="Stop the song">×</button><div class="slot"></div><p>Never Gonna Give You Up, Rick Astley (official video, via YouTube)</p>'; document.body.append(tunes);
+const partyBtn = $('#party');
+function partyLabel() { partyBtn.textContent = tvFrame ? (tvState === 1 ? (tvMuted ? 'Turn the sound on' : 'Pause') : 'Play') : party ? 'Stop the music' : 'Make him dance'; partyBtn.setAttribute('aria-pressed', party); }
+const ytCmd = (f, func) => f?.contentWindow?.postMessage(JSON.stringify({ event: 'command', func, args: [] }), YT);
+function tvOn() {
+  if (tvFrame) return; const loud = !!navigator.userActivation?.hasBeenActive; tvMuted = !loud; tvState = -1;   // sound only if the visitor has already interacted with the page
+  tvFrame = mk('iframe', { className: 'tv', title: 'Never Gonna Give You Up (official video) on the TV', allow: 'autoplay; encrypted-media; picture-in-picture', src: YT_SRC + '&autoplay=1' + (loud ? '' : '&mute=1') });
+  tvFrame.addEventListener('load', () => tvFrame?.contentWindow?.postMessage(JSON.stringify({ event: 'listening', id: 1, channel: 'widget' }), YT));
+  document.body.append(tvFrame); partyLabel(); const f = tvFrame;
+  if (loud) setTimeout(() => { if (tvFrame === f && tvState !== 1) { ytCmd(f, 'mute'); ytCmd(f, 'playVideo'); tvMuted = true; partyLabel(); } }, 3500);   // browser blocked sound: fall back to muted playback
+  const once = () => { removeEventListener('pointerdown', once); removeEventListener('keydown', once); setTimeout(() => { if (tvFrame === f && tvMuted) { ytCmd(f, 'unMute'); ytCmd(f, 'playVideo'); tvMuted = false; partyLabel(); } }, 150); };
+  addEventListener('pointerdown', once); addEventListener('keydown', once);   // first click, tap or key anywhere turns the sound on
+}
+function tvOff() { if (!tvFrame) return; tvFrame.remove(); tvFrame = null; tvState = -1; party = false; partyLabel(); }
+addEventListener('message', (e) => {
+  if (e.origin !== YT || !tvFrame || e.source !== tvFrame.contentWindow) return; let d; try { d = JSON.parse(e.data); } catch { return; }
+  const st = d.event === 'onStateChange' ? d.info : d.info?.playerState; if (typeof st !== 'number') return;
+  tvState = st; party = st === 1; partyLabel();
+});
+function startParty() {
+  party = true; tunes.querySelector('.slot').innerHTML = `<iframe src="${YT_SRC}&autoplay=1" title="Never Gonna Give You Up" allow="autoplay; encrypted-media; picture-in-picture"></iframe>`;
+  tunes.hidden = false; partyLabel(); if (ac && sndOn) master.gain.linearRampToValueAtTime(0, ac.currentTime + .4);
+}
+function stopParty() {
+  if (!party || tvFrame) return; party = false; tunes.querySelector('.slot').innerHTML = ''; tunes.hidden = true; partyLabel(); if (ac && sndOn) master.gain.linearRampToValueAtTime(.6, ac.currentTime + .6);
+}
+partyBtn.addEventListener('click', () => {
+  if (cam.aspect > 1) { if (!tvFrame) return tvOn(); if (tvMuted) { ytCmd(tvFrame, 'unMute'); ytCmd(tvFrame, 'playVideo'); tvMuted = false; partyLabel(); } else ytCmd(tvFrame, tvState === 1 ? 'pauseVideo' : 'playVideo'); }
+  else party ? stopParty() : startParty();
+});
+tunes.querySelector('button').addEventListener('click', stopParty);
+// pin the iframe onto the 3D monitor: map its rectangle to the screen quad (perspective included)
+const tvCorners = [[-.72, .54], [.72, .54], [.72, -.54], [-.72, -.54]], tvV = new THREE.Vector3();
+function placeTv() {
+  if (!tvFrame) return; const ok = desk.visible && Math.abs(cam.position.z - (Z.end + 5)) < 1.6; tvFrame.style.visibility = ok ? 'visible' : 'hidden'; if (!ok) return;
+  const P = tvCorners.map(([x, y]) => { tvV.set(x * .995, y * .995, 0); deskScreen.localToWorld(tvV); tvV.project(cam); return [(tvV.x + 1) / 2 * innerWidth, (1 - tvV.y) / 2 * innerHeight]; });
+  const [[x0, y0], [x1, y1], [x2, y2], [x3, y3]] = P, W = 480, H = 360, dx1 = x1 - x2, dx2 = x3 - x2, sx = x0 - x1 + x2 - x3, dy1 = y1 - y2, dy2 = y3 - y2, sy = y0 - y1 + y2 - y3, den = dx1 * dy2 - dx2 * dy1;
+  const g = (sx * dy2 - dx2 * sy) / den, h = (dx1 * sy - sx * dy1) / den, a = x1 - x0 + g * x1, b = x3 - x0 + h * x3, d = y1 - y0 + g * y1, e = y3 - y0 + h * y3;
+  tvFrame.style.transform = `matrix3d(${a / W},${d / W},0,${g / W},${b / H},${e / H},0,${h / H},0,0,1,0,${x0},${y0},0,1)`;
+}
+
 /* colour wheel: press or drag on it to grade the hero; double-click to reset */
 {
   let wd = false; const v3 = new THREE.Vector3();
@@ -526,12 +571,12 @@ function tick() {
   { const doorsView = id === 'doors' && cam.aspect > .95, th = Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)) * (doorsView ? 3.8 : 5), hw = th * cam.aspect;
     pet.visible = doorsView || id === 'contact' || (id === 'about' && prog > .6);
     pet.position.set(doorsView ? -hw * .62 : hw * (cam.aspect > 1 ? .64 : .4), -th * (doorsView ? .72 : .78), doorsView ? Z.doors + 2.6 : Z.end);
-    pet.scale.setScalar((doorsView ? .55 : .8) * (cam.aspect > 1 ? 1 : .7)); pet.rotation.y = lerp(pet.rotation.y, (doorsView ? .5 : -.45) + ptr.x * .3, .08); petMixer?.update(dt); }
+    pet.scale.setScalar((doorsView ? .55 : .8) * (cam.aspect > 1 ? 1 : .7)); pet.rotation.y = lerp(pet.rotation.y, (doorsView ? .5 : -.45) + ptr.x * .3, .08); petMixer?.update(dt * (party ? 1.7 : 1)); if (party) { pet.position.y += Math.abs(Math.sin(t * 6)) * .1; pet.rotation.z = Math.sin(t * 3) * .06; } else pet.rotation.z = 0; if (id !== 'contact' && (party || tvFrame)) { if (tvFrame) tvOff(); else stopParty(); } }
   { const on = id === 'cinema'; cinemaVideo(on); cineOpen = lerp(cineOpen, on ? 1 : 0, 1 - Math.exp(-dt * 1.5));
     curtains.forEach((c) => { const sc = lerp(1, .12, cineOpen), outer = 4.7 + (1 - sc) * .9; c.scale.x = sc; c.position.x = c.userData.side * (outer - 2.35 * sc); }); }
   // editing desk (Contact)
   { const dth = Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)) * 6.2, dhw = dth * cam.aspect, showDesk = id === 'contact' && cam.aspect > 1;
-    desk.visible = showDesk; deskVideo(showDesk); desk.position.set(dhw * .34, -dth * .6, Z.end - 1.2); desk.scale.setScalar(.8); desk.rotation.y = -.25 + ptr.x * .06; }
+    desk.visible = showDesk; deskScreen.visible = !tvFrame; deskVideo(showDesk && !tvFrame); if (showDesk && !tvFrame) tvOn(); desk.position.set(dhw * .34, -dth * .6, Z.end - 1.2); desk.scale.setScalar(.8); desk.rotation.y = -.25 + ptr.x * .06; }
   $('#back').classList.toggle('on', id === 'edits' || id === 'ai' || id === 'cinema' || id === 'posters');
   if (id === 'hero') { heroP = lerp(heroP, 50 + 34 * Math.sin(t * .45) + (heroFx - .5) * 40, .03); heroH1.style.backgroundPosition = heroP + '% 0'; }
   // overlays
@@ -544,7 +589,7 @@ function tick() {
   else { hov.hidden = true; canvas.style.cursor = id === 'posters' ? 'grab' : ''; }
 
   drawFx();
-  renderer.render(scene, cam);
+  renderer.render(scene, cam); placeTv();
   requestAnimationFrame(tick);
 }
 resize(); tick();

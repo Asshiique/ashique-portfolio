@@ -205,3 +205,15 @@ body.intro .lower{animation:lowerIn 1.2s ease 1.5s both}
 .rate .btn{font-size:15px}
 .rate .again{background:none;border:0;color:#9b968e;font:600 14px "Hanken Grotesk";text-decoration:underline;cursor:pointer}
 .rate .again:hover{color:#f2efe9}
+
+/* dance party: official video in YouTube's own player, no audio file hosted */
+#tunes{position:fixed;right:clamp(14px,3vw,36px);top:84px;z-index:35;width:min(320px,calc(100vw - 28px));padding:8px;border-radius:14px;background:#0b0c10f2;border:1px solid #ffffff2a;box-shadow:0 20px 60px #000b}
+#tunes[hidden]{display:none}
+#tunes iframe{display:block;width:100%;aspect-ratio:16/10;border:0;border-radius:8px}
+#tunes p{font-size:12px;color:#9b968e;margin:6px 4px 0}
+#tunes button{position:absolute;top:-12px;right:-8px;width:28px;height:28px;border-radius:50%;border:1px solid #ffffff44;background:#0b0c10;color:#f2efe9;cursor:pointer;font-size:18px;line-height:1}
+.light #tunes{background:#fffffff2;border-color:#10101433}.light #tunes p{color:#5e5a54}.light #tunes button{background:#fff;color:#101014}
+@media(max-width:760px){#tunes{right:auto;left:14px;top:auto;bottom:96px}}
+
+/* the song plays on the 3D TV: this iframe is pinned onto the monitor by the script */
+iframe.tv{position:fixed;left:0;top:0;width:480px;height:360px;transform-origin:0 0;border:0;z-index:26;background:#000;visibility:hidden}
