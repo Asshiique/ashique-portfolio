@@ -429,7 +429,7 @@ document.fonts.ready.then(fitName);
 
 /* the song: official video in YouTube's own player (no audio file is hosted). Desktop: it plays on the 3D TV at Contact, muted at first
    (browsers require that for autoplay), with YouTube's controls to pause or unmute. Phones: the button opens a small player. Spider-Man dances while it plays. */
-const YT = 'https://www.youtube-nocookie.com', YT_SRC = YT + '/embed/dQw4w9WgXcQ?rel=0&playsinline=1&enablejsapi=1&controls=1&modestbranding=1&start=81&origin=' + encodeURIComponent(location.origin);
+const YT = 'https://www.youtube-nocookie.com', YT_SRC = YT + '/embed/dQw4w9WgXcQ?rel=0&playsinline=1&enablejsapi=1&controls=1&modestbranding=1&start=81&cc_load_policy=1&cc_lang_pref=en&hl=en&origin=' + encodeURIComponent(location.origin);
 let party = false, tvFrame = null, tvMuted = true, tvState = -1; const tunes = mk('div', { id: 'tunes', hidden: true });
 tunes.innerHTML = '<button type="button" aria-label="Stop the song">×</button><div class="slot"></div><p>Never Gonna Give You Up, Rick Astley (official video, via YouTube)</p>'; document.body.append(tunes);
 const partyBtn = $('#party');
@@ -458,7 +458,7 @@ function stopParty() {
   if (!party || tvFrame) return; party = false; tunes.querySelector('.slot').innerHTML = ''; tunes.hidden = true; partyLabel(); if (ac && sndOn) master.gain.linearRampToValueAtTime(.6, ac.currentTime + .6);
 }
 partyBtn.addEventListener('click', () => {
-  if (cam.aspect > 1) { if (!tvFrame) return tvOn(); if (tvMuted) { ytCmd(tvFrame, 'unMute'); ytCmd(tvFrame, 'playVideo'); tvMuted = false; partyLabel(); } else ytCmd(tvFrame, tvState === 1 ? 'pauseVideo' : 'playVideo'); }
+  if (true) { if (!tvFrame) return tvOn(); if (tvMuted) { ytCmd(tvFrame, 'unMute'); ytCmd(tvFrame, 'playVideo'); tvMuted = false; partyLabel(); } else ytCmd(tvFrame, tvState === 1 ? 'pauseVideo' : 'playVideo'); }
   else party ? stopParty() : startParty();
 });
 tunes.querySelector('button').addEventListener('click', stopParty);
@@ -570,13 +570,13 @@ function tick() {
 
   { const doorsView = id === 'doors' && cam.aspect > .95, th = Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)) * (doorsView ? 3.8 : 5), hw = th * cam.aspect;
     pet.visible = doorsView || id === 'contact' || (id === 'about' && prog > .6);
-    pet.position.set(doorsView ? -hw * .62 : hw * (cam.aspect > 1 ? .64 : .4), -th * (doorsView ? .72 : .78), doorsView ? Z.doors + 2.6 : Z.end);
-    pet.scale.setScalar((doorsView ? .55 : .8) * (cam.aspect > 1 ? 1 : .7)); pet.rotation.y = lerp(pet.rotation.y, (doorsView ? .5 : -.45) + ptr.x * .3, .08); petMixer?.update(dt * (party ? 1.7 : 1)); if (party) { pet.position.y += Math.abs(Math.sin(t * 6)) * .1; pet.rotation.z = Math.sin(t * 3) * .06; } else pet.rotation.z = 0; if (id !== 'contact' && (party || tvFrame)) { if (tvFrame) tvOff(); else stopParty(); } }
+    pet.position.set(doorsView ? -hw * .62 : hw * (cam.aspect > 1 ? .64 : .55), -th * (doorsView ? .72 : cam.aspect > 1 ? .78 : .64), doorsView ? Z.doors + 2.6 : Z.end);
+    pet.scale.setScalar((doorsView ? .55 : .8) * (cam.aspect > 1 ? 1 : .62)); pet.rotation.y = lerp(pet.rotation.y, (doorsView ? .5 : -.45) + ptr.x * .3, .08); petMixer?.update(dt * (party ? 1.7 : 1)); if (party) { pet.position.y += Math.abs(Math.sin(t * 6)) * .1; pet.rotation.z = Math.sin(t * 3) * .06; } else pet.rotation.z = 0; if (id !== 'contact' && (party || tvFrame)) { if (tvFrame) tvOff(); else stopParty(); } }
   { const on = id === 'cinema'; cinemaVideo(on); cineOpen = lerp(cineOpen, on ? 1 : 0, 1 - Math.exp(-dt * 1.5));
     curtains.forEach((c) => { const sc = lerp(1, .12, cineOpen), outer = 4.7 + (1 - sc) * .9; c.scale.x = sc; c.position.x = c.userData.side * (outer - 2.35 * sc); }); }
   // editing desk (Contact)
-  { const dth = Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)) * 6.2, dhw = dth * cam.aspect, showDesk = id === 'contact' && cam.aspect > 1;
-    desk.visible = showDesk; deskScreen.visible = !tvFrame; deskVideo(showDesk && !tvFrame); if (showDesk && !tvFrame) tvOn(); desk.position.set(dhw * .34, -dth * .6, Z.end - 1.2); desk.scale.setScalar(.8); desk.rotation.y = -.25 + ptr.x * .06; }
+  { const dth = Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)) * 6.2, dhw = dth * cam.aspect, showDesk = id === 'contact', wideV = cam.aspect > 1;
+    desk.visible = showDesk; deskScreen.visible = !tvFrame; deskVideo(showDesk && !tvFrame); if (showDesk && !tvFrame) tvOn(); desk.position.set(wideV ? dhw * .34 : -dhw * .1, wideV ? -dth * .6 : -dth * .42, Z.end - 1.2); desk.scale.setScalar(wideV ? .8 : .6); desk.rotation.y = (wideV ? -.25 : -.12) + ptr.x * .06; }
   $('#back').classList.toggle('on', id === 'edits' || id === 'ai' || id === 'cinema' || id === 'posters');
   if (id === 'hero') { heroP = lerp(heroP, 50 + 34 * Math.sin(t * .45) + (heroFx - .5) * 40, .03); heroH1.style.backgroundPosition = heroP + '% 0'; }
   // overlays
