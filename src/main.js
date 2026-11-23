@@ -3,7 +3,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 /* ───────────── content ───────────── */
 const V = (id, t, wide = false) => ({ id, t, wide });
-const EDITS = [V('edit1', 'Edit 01'), V('edit2', 'Edit 02'), V('edit4', 'Edit 03'), V('edit6', 'Edit 04'), V('content1', 'Content 01')];
+const EDITS = [V('edit1', 'Edit 01'), V('edit6', 'Edit 02'), V('content1', 'Edit 03')];
 const AI = [V('promo', 'AI promo', true), V('ai2', 'AI film 01'), V('ai1', 'AI film 02', true), V('ai3', 'AI film 03'), V('ai3d', 'AI 3D'), V('ai4', 'AI film 04', true), V('ai5', 'AI film 05'), V('ai6', 'AI film 06'), V('ai7', 'AI film 07'), V('ai8', 'AI film 08')];
 const POSTERS = ['poster-tarang', 'poster-hook', 'poster-sheep', 'poster-battery', 'poster-superhero', 'poster-onam', 'poster-childrens', 'poster-uae', 'poster-landcruiser', 'poster-plus2-way', 'poster-plus2-marks', 'poster-aplus', 'poster-tarang2', 'poster-ebs', 'poster-fail', 'poster-ff-global', 'poster-ff-abroad', 'poster-ivy', 'poster-brillianton', 'poster-resort', 'poster-emerald-kids', 'poster-hiroshima', 'poster-ramadan', 'poster-times', 'poster-bca', 'poster-inline-marketing', 'logo-electus'];
 const CHAPTERS = {
@@ -140,10 +140,10 @@ function makeDoor(def) {
   doors.add(g); doorObjs.push(g);
 }
 function layoutDoors() {
-  const stacked = cam.aspect < .95, n = DOOR_DEFS.length;
+  const n = doorObjs.length, stacked = cam.aspect < .95;
   doorObjs.forEach((g, i) => {
-    if (stacked) { g.position.set((i % 2 ? 1 : -1) * 1.3, .4 - ((i / 2) | 0) * 2.75, 0); g.scale.setScalar(.5); }
-    else { g.position.set((i - (n - 1) / 2) * (DW + .85), -DH / 2 + .2, 0); g.scale.setScalar(Math.min(1, cam.aspect * .62)); }
+    if (stacked) { const row = (i / 2) | 0, alone = n % 2 && i === n - 1; g.position.set(alone ? 0 : (i % 2 ? 1 : -1) * 1.3, 1.0 - row * 2.5, 0); g.scale.setScalar(.46); }
+    else { const visW = 2 * 6.4 * Math.tan(THREE.MathUtils.degToRad(25)) * cam.aspect, step = DW + .85; g.position.set((i - (n - 1) / 2) * step * Math.min(1, visW * .9 / (n * step)) , -DH / 2 + .2, 0); g.scale.setScalar(Math.min(1, visW * .9 / (n * step))); }
   });
 }
 document.fonts.load('800 40px "Big Shoulders Display"').finally(() => { DOOR_DEFS.forEach(makeDoor); layoutDoors(); });
@@ -188,11 +188,6 @@ let cineScreen, cineVid = null, cineTex = null, cineOpen = 0; const curtains = [
   add(new THREE.PlaneGeometry(18, 10), additive(0xff6a13, .16), 0, 0, -.6);
   [-1, 1].forEach((side) => { const c = add(new THREE.PlaneGeometry(4.7, 5.9), std(0x4a0d12, .9), side * 2.35, 0, .3); c.userData.side = side; curtains.push(c); });
   add(new THREE.BoxGeometry(11.4, .7, .5), std(0x3a0a0e), 0, 3.1, .35);
-  const seat = std(0x2b0b0f, .8);
-  for (let r = 0; r < 4; r++) for (let i = -5; i <= 5; i++) {
-    const x = i * .95, z = 8.8 + r * 2.4, y = -2.15 - r * .05;
-    add(new THREE.BoxGeometry(.8, .5, .8), seat, x, y, z); add(new THREE.BoxGeometry(.8, 1, .16), seat, x, y + .55, z + .36);
-  }
   add(new THREE.PlaneGeometry(60, 60), std(0x0a0a0f, .9), 0, -2.45, 0, -Math.PI / 2);
   const beam = add(new THREE.ConeGeometry(4.8, 20, 40, 1, true), new THREE.MeshBasicMaterial({ color: 0xdfe8ff, transparent: true, opacity: .05, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide }), 0, 1.2, 10, Math.PI / 2);
 }
