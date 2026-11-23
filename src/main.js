@@ -3,9 +3,9 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 /* ───────────── content ───────────── */
 const V = (id, t, wide = false) => ({ id, t, wide });
-const EDITS = [V('edit1', 'Edit 01'), V('edit2', 'Edit 02'), V('edit3', 'Edit 03'), V('edit4', 'Edit 04'), V('edit6', 'Edit 05'), V('content2', 'Content 01'), V('content3', 'Content 02'), V('content1', 'Content 03')];
-const AI = [V('ai1', 'AI film 01', true), V('ai2', 'AI film 02'), V('ai3', 'AI film 03'), V('ai4', 'AI film 04', true), V('ai5', 'AI film 05'), V('ai6', 'AI film 06'), V('ai7', 'AI film 07'), V('ai8', 'AI film 08'), V('ai3d', 'AI 3D')];
-const POSTERS = ['poster-tarang', 'poster-tarang2', 'poster-ebs', 'poster-fail', 'poster-times', 'poster-tuition', 'poster-faculty', 'poster-future', 'poster-scholarship', 'poster-ivy', 'poster-bca', 'poster-abroad', 'poster-brillianton', 'poster-resort', 'poster-ramadan', 'poster-ramayanam', 'poster-hiring', 'poster-emerald-kids', 'poster-inline-marketing', 'logo-electus'];
+const EDITS = [V('edit1', 'Edit 01'), V('edit2', 'Edit 02'), V('edit4', 'Edit 03'), V('edit6', 'Edit 04'), V('content1', 'Content 01')];
+const AI = [V('promo', 'AI promo', true), V('ai2', 'AI film 01'), V('ai1', 'AI film 02', true), V('ai3d', 'AI 3D'), V('ai4', 'AI film 03', true), V('ai5', 'AI film 04'), V('ai6', 'AI film 05'), V('ai7', 'AI film 06'), V('ai8', 'AI film 07')];
+const POSTERS = ['poster-tarang', 'poster-hook', 'poster-sheep', 'poster-battery', 'poster-superhero', 'poster-onam', 'poster-childrens', 'poster-uae', 'poster-landcruiser', 'poster-plus2-way', 'poster-plus2-marks', 'poster-aplus', 'poster-tarang2', 'poster-ebs', 'poster-fail', 'poster-ff-global', 'poster-ff-abroad', 'poster-ivy', 'poster-brillianton', 'poster-resort', 'poster-emerald-kids', 'poster-hiroshima', 'poster-ramadan', 'poster-times', 'poster-bca', 'poster-inline-marketing', 'logo-electus'];
 const CHAPTERS = {
   doors: ['Pick a door', 'Magic happens behind them. Hover to peek, click to walk in.'],
   edits: ['Edits', 'Short-form cuts built to hold attention. Scroll to walk through.'],
@@ -102,11 +102,12 @@ function layoutHero() {
   ring.scale.setScalar(R); ring.position.set(x, hy, -.3); ring2.scale.setScalar(R * 1.12); ring2.position.set(x, hy, -.25);
 }
 
+const GRADE = { warm: [0xff5a10, 0x2f7bff, 0xffa24a, 0x4d93ff], cool: [0x2f7bff, 0xff6a13, 0x6fa8ff, 0xff9a4a] }; for (const k in GRADE) GRADE[k] = GRADE[k].map((c) => new THREE.Color(c));
 /* ───────────── the doors ───────────── */
 const doors = new THREE.Group(); doors.position.set(0, 0, Z.doors); scene.add(doors);
 const DOOR_DEFS = [
   { label: 'Edits', go: 'edits', color: 0xff6a13, thumb: '/media/vid/edit1.jpg' },
-  { label: 'AI films', go: 'ai', color: 0x2f7bff, thumb: '/media/vid/ai2.jpg' },
+  { label: 'AI films', go: 'ai', color: 0x2f7bff, thumb: '/media/vid/promo.jpg' },
   { label: 'Posters', go: 'posters', color: 0x8b5cff, thumb: '/media/img/poster-tarang.webp' },
   { label: 'Say hi', go: 'contact', color: 0x19c79a, thumb: '/media/img/ash-studio.webp' },
 ];
@@ -140,7 +141,7 @@ function makeDoor(def) {
 function layoutDoors() {
   const stacked = cam.aspect < .95, n = DOOR_DEFS.length;
   doorObjs.forEach((g, i) => {
-    if (stacked) { g.position.set((i % 2 ? 1 : -1) * 1.85, 1.0 - ((i / 2) | 0) * 3.15 - DH / 2 * .7, 0); g.scale.setScalar(.7); }
+    if (stacked) { g.position.set((i % 2 ? 1 : -1) * 1.3, .4 - ((i / 2) | 0) * 2.75, 0); g.scale.setScalar(.5); }
     else { g.position.set((i - (n - 1) / 2) * (DW + .85), -DH / 2 + .2, 0); g.scale.setScalar(Math.min(1, cam.aspect * .62)); }
   });
 }
@@ -176,8 +177,8 @@ function setVideo(it, on) {
 
 /* ───────────── poster room (you stand in the middle) ───────────── */
 const room = new THREE.Group(); room.position.set(0, 0, Z.posters); scene.add(room);
-const RR = 9.5, posterMeshes = [];
-const NOTES = { 'poster-tarang': 'Event poster: Tarang 26', 'poster-tarang2': 'Event poster: Tarang 26', 'poster-ebs': 'Admission orientation poster', 'poster-fail': 'Plus Two tuition poster', 'poster-times': 'Faculty hiring poster', 'poster-tuition': '8th Std tuition poster', 'poster-faculty': 'Faculty required poster', 'poster-future': 'Admissions open poster', 'poster-scholarship': 'Scholarship poster', 'poster-ivy': 'Ivy League mentorship poster', 'poster-bca': 'BCA, BSc AI and B.Ed admissions', 'poster-abroad': 'Study abroad orientation poster', 'poster-brillianton': 'Brillianton campaign poster', 'poster-resort': 'Emerald Hotels and Resorts poster', 'poster-ramadan': 'Ramadan special program poster', 'poster-ramayanam': 'Ramayanam event poster', 'poster-hiring': 'School hiring poster', 'poster-emerald-kids': 'Emerald International School campaign', 'poster-inline-marketing': 'Digital marketing course poster', 'logo-electus': 'Logo: Electus 26' };
+const RR = Math.max(9.5, POSTERS.length * 2.9 / (2 * Math.PI)), posterMeshes = [];
+const NOTES = { 'poster-hook': 'Social media campaign creative', 'poster-sheep': 'Marketing creative: ignore noise', 'poster-battery': 'Marketing creative: low budget, high creativity', 'poster-superhero': 'Superhero Day poster', 'poster-onam': 'Onam celebration poster', 'poster-childrens': "Children's Day poster", 'poster-uae': 'UAE National Day poster', 'poster-landcruiser': 'Car coating ad: 3M Car Care', 'poster-plus2-way': 'Plus Two tuition poster', 'poster-plus2-marks': 'Plus Two tuition poster', 'poster-aplus': 'A+ tuition poster', 'poster-ff-global': 'Brillianton Future Fellows', 'poster-ff-abroad': 'Brillianton Future Fellows', 'poster-hiroshima': 'Hiroshima Day poster', 'poster-tarang': 'Event poster: Tarang 26', 'poster-tarang2': 'Event poster: Tarang 26', 'poster-ebs': 'Admission orientation poster', 'poster-fail': 'Plus Two tuition poster', 'poster-times': 'Faculty hiring poster', 'poster-tuition': '8th Std tuition poster', 'poster-faculty': 'Faculty required poster', 'poster-future': 'Admissions open poster', 'poster-scholarship': 'Scholarship poster', 'poster-ivy': 'Ivy League mentorship poster', 'poster-bca': 'BCA, BSc AI and B.Ed admissions', 'poster-abroad': 'Study abroad orientation poster', 'poster-brillianton': 'Brillianton campaign poster', 'poster-resort': 'Emerald Hotels and Resorts poster', 'poster-ramadan': 'Ramadan special program poster', 'poster-ramayanam': 'Ramayanam event poster', 'poster-hiring': 'School hiring poster', 'poster-emerald-kids': 'Emerald International School campaign', 'poster-inline-marketing': 'Digital marketing course poster', 'logo-electus': 'Logo: Electus 26' };
 function noteTex(text) {
   // the note sits in the peeled corner (bottom-right), so it is right-aligned, short lines, anchored to the bottom
   const c = mk('canvas', { width: 256, height: 358 }), x = c.getContext('2d'); x.fillStyle = '#12131a'; x.fillRect(0, 0, 256, 358);
@@ -216,7 +217,7 @@ let deskScreen, deskVid = null, deskTex = null;
   add(new THREE.BoxGeometry(3.4, .1, 1.5), dark, 0, 0, 0);
   add(new THREE.BoxGeometry(.1, 1.7, 1.3), dark, -1.55, -.9, 0); add(new THREE.BoxGeometry(.1, 1.7, 1.3), dark, 1.55, -.9, 0);
   add(new THREE.BoxGeometry(2.04, 1.24, .07), black, 0, 1.05, -.35);
-  deskScreen = add(new THREE.PlaneGeometry(1.92, 1.12), new THREE.MeshBasicMaterial({ map: loadTex('/media/vid/edit1.jpg'), toneMapped: false }), 0, 1.05, -.31);
+  deskScreen = add(new THREE.PlaneGeometry(1.92, 1.12), new THREE.MeshBasicMaterial({ map: loadTex('/media/vid/promo.jpg'), toneMapped: false }), 0, 1.05, -.31);
   deskScreen.userData.desk = true;
   add(new THREE.BoxGeometry(.12, .5, .1), black, 0, .35, -.37); add(new THREE.BoxGeometry(.8, .04, .45), black, 0, .08, -.3);
   add(new THREE.BoxGeometry(1.1, .03, .32), black, 0, .07, .38);
@@ -227,30 +228,23 @@ let deskScreen, deskVid = null, deskTex = null;
   add(new THREE.CircleGeometry(.1, 24), new THREE.MeshBasicMaterial({ color: 0x2f7bff }), 1.15, .27, .425);
   const glow = new THREE.Mesh(new THREE.PlaneGeometry(4.6, 3.2), additive(0xff6a13, .35)); glow.position.set(0, 1.05, -.6); desk.add(glow);
 }
+const DESK = ['promo', 'ai1', 'ai4']; let deskI = 0;
 function deskVideo(on) {
   if (LITE) return;
-  if (on && !deskVid) { deskVid = mk('video', { src: '/media/vid/edit1.mp4', loop: true, muted: true, playsInline: true }); deskVid.setAttribute('muted', ''); deskVid.play().catch(() => {}); deskTex = new THREE.VideoTexture(deskVid); deskTex.colorSpace = THREE.SRGBColorSpace; deskScreen.material.map = deskTex; deskScreen.material.needsUpdate = true; }
-  else if (!on && deskVid) { deskVid.pause(); deskTex.dispose(); deskVid = deskTex = null; deskScreen.material.map = loadTex('/media/vid/edit1.jpg'); deskScreen.material.needsUpdate = true; }
+  if (on && !deskVid) { deskVid = mk('video', { src: `/media/vid/${DESK[deskI]}.mp4`, muted: true, playsInline: true }); deskVid.setAttribute('muted', ''); deskVid.onended = () => { deskI = (deskI + 1) % DESK.length; deskVid.src = `/media/vid/${DESK[deskI]}.mp4`; deskVid.play().catch(() => {}); }; deskVid.play().catch(() => {}); deskTex = new THREE.VideoTexture(deskVid); deskTex.colorSpace = THREE.SRGBColorSpace; deskScreen.material.map = deskTex; deskScreen.material.needsUpdate = true; }
+  else if (!on && deskVid) { deskVid.pause(); deskTex.dispose(); deskVid = deskTex = null; deskScreen.material.map = loadTex('/media/vid/promo.jpg'); deskScreen.material.needsUpdate = true; }
 }
 
-/* (old rope sprite kept hidden) */
-const mini = new THREE.Group(); mini.visible = false;
-{
-  const h = 3.2, m = new THREE.Mesh(new THREE.PlaneGeometry(h * .592, h), new THREE.MeshBasicMaterial({ map: loadTex('/media/img/ash-mini.webp'), transparent: true, toneMapped: false, depthWrite: false }));
-  m.position.y = -h / 2; m.userData.mini = true; mini.add(m); mini.userData = { a: 0, w: 0, mesh: m };
-}
 
-/* real 3D mini Ashique (Blender): waits at the contact desk, looks at your cursor */
-const mc = new THREE.Group(); mc.visible = false; scene.add(mc);
-let mcHead, mcArmR, mcArmL, mcLegR, mcLegL, jumpT = 0, waveT = 2;
-new GLTFLoader().load('/models/mini-ashique.glb', (g) => {
-  const m = g.scene; m.scale.setScalar(1.9); mc.add(m);
-  mcHead = m.getObjectByName('Head'); mcArmR = m.getObjectByName('ArmR'); mcArmL = m.getObjectByName('ArmL'); mcLegR = m.getObjectByName('LegR'); mcLegL = m.getObjectByName('LegL');
-  m.traverse((o) => { if (o.isMesh) { o.userData.mini = true; o.frustumCulled = false; } });
+/* animated 3D character: greets you at the doors, then hangs around About and Contact */
+const pet = new THREE.Group(); pet.visible = false; scene.add(pet); let petMixer = null;
+new GLTFLoader().load('/models/hero.glb', (g) => {
+  const m = g.scene, box = new THREE.Box3().setFromObject(m), k = 2.2 / box.getSize(new THREE.Vector3()).y;
+  m.scale.setScalar(k); box.setFromObject(m); const c = box.getCenter(new THREE.Vector3()); m.position.set(-c.x, -box.min.y, -c.z);
+  m.traverse((o) => { if (o.isMesh) o.frustumCulled = false; });
+  if (g.animations[0]) { petMixer = new THREE.AnimationMixer(m); petMixer.clipAction(g.animations[0]).play(); }
+  pet.add(m);
 });
-const mcLight = new THREE.PointLight(0xff8a3a, 30, 12); mcLight.position.set(0, 2, Z.end + 3); scene.add(mcLight);
-const mcLight2 = new THREE.PointLight(0xffa060, 22, 10); mcLight2.position.set(-3, 1, Z.doors + 5); scene.add(mcLight2);
-
 /* ───────────── sound (synthesized, off until you switch it on) ───────────── */
 let ac, master, sndOn = false;
 function initAudio() {
@@ -290,18 +284,40 @@ addEventListener('pointermove', (e) => {
   const nx = e.clientX / innerWidth * 2 - 1; ptr.vx = nx - ptr.x; ptr.x = nx; ptr.y = -(e.clientY / innerHeight * 2 - 1); ptr.px = e.clientX; ptr.py = e.clientY;
   if (drag) { ringVel = (e.clientX - drag.x) * .0035; ringDrag += ringVel; drag.moved += Math.abs(e.clientX - drag.x); drag.x = e.clientX; }
 });
-addEventListener('pointerdown', (e) => { if (e.target === canvas) drag = { x: e.clientX, moved: 0 }; });
-addEventListener('pointerup', () => { if (drag && drag.moved < 8 && hovered) activate(hovered); drag = null; });
+addEventListener('pointerdown', (e) => { ptr.x = e.clientX / innerWidth * 2 - 1; ptr.y = -(e.clientY / innerHeight * 2 - 1); ptr.px = e.clientX; ptr.py = e.clientY; if (e.target === canvas) drag = { x: e.clientX, moved: 0 }; });
+addEventListener('pointerup', () => {
+  if (drag && drag.moved < 8) {
+    if (IDS[sectionIndex()] === 'doors') { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); const hh = ray.intersectObjects(doorObjs.map((g) => g.userData.hit), false)[0]; hovered = hh ? { door: hh.object.userData.door } : null; }
+    if (hovered) activate(hovered);
+  }
+  drag = null;
+});
 function activate(h) {
-  if (h.door) { sfx('click'); goTo(h.door.userData.def.go); }
+  if (h.door) { const g = h.door; g.userData.force = true; sfx('click'); setTimeout(() => { g.userData.force = false; goTo(g.userData.def.go); }, 520); }
   else if (h.tunnel) openVideo(h.tunnel.v.id);
   else if (h.poster) openImage(h.poster);
-  else if (h.mini) { jumpT = 1; waveT = 2; }
-  else if (h.desk) openVideo('edit1');
+  else if (h.desk) openVideo(DESK[deskI]);
 }
 function goTo(id) { scrollTo({ top: tops[IDS.indexOf(id)], behavior: 'smooth' }); }
 document.querySelectorAll('[data-go]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); goTo(a.dataset.go); }));
 $('.mark').addEventListener('click', (e) => { e.preventDefault(); goTo('hero'); });
+
+/* ───────────── page furniture: role card, stats, grade cord, form ───────────── */
+{
+  const words = ['Video editor', 'AI filmmaker', 'Poster designer'], card = $('#roleCard'), word = $('#roleWord'); let wi = 0;
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) setInterval(() => { card.classList.add('flip'); setTimeout(() => { wi = (wi + 1) % words.length; word.textContent = words[wi]; }, 275); setTimeout(() => card.classList.remove('flip'), 560); }, 2800);
+  const st = [[EDITS.length + AI.length, 'Videos on this site'], [POSTERS.length, 'Creatives and posters'], [4, 'Ways I can help']];
+  $('#stats').innerHTML = st.map(([n, l]) => `<li><b data-n="${n}">0</b><span>${l}</span></li>`).join('');
+  const cio = new IntersectionObserver((es) => es.forEach((e) => { if (!e.isIntersecting) return; cio.unobserve(e.target); const el = e.target, n = +el.dataset.n, t0 = performance.now(); (function f() { const k = clamp((performance.now() - t0) / 1200); el.textContent = Math.round(n * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(f); })(); }), { threshold: .6 });
+  document.querySelectorAll('#stats b').forEach((b) => cio.observe(b));
+  const cord = $('#cord'); cord.addEventListener('click', () => { const cool = document.documentElement.classList.toggle('cool'); cord.setAttribute('aria-pressed', cool); cord.classList.add('pull'); setTimeout(() => cord.classList.remove('pull'), 180); sfx('click'); });
+  $('#back').addEventListener('click', () => goTo('doors'));
+  $('#brief').addEventListener('submit', (e) => {
+    e.preventDefault(); const f = e.target, n = f.n.value.trim(), b = f.b.value.trim(), err = $('#briefErr');
+    if (!n || !b) { err.textContent = !n ? 'Add your name so I know who to reply to.' : 'Add a line about the project.'; return; }
+    err.textContent = ''; open(`https://wa.me/919947045212?text=${encodeURIComponent(`Hi Ashique, I'm ${n}. I need: ${f.t.value}.\n${b}`)}`, '_blank', 'noopener');
+  });
+}
 
 /* ───────────── timeline ───────────── */
 const rail = $('#rail'), head = $('#head'), tcode = $('#tcode'), ticks = [];
@@ -327,6 +343,8 @@ new ResizeObserver(() => { const t = total; measure(); if (Math.abs(t - total) >
 const clock = new THREE.Clock(), camLook = new THREE.Vector3(), camTarget = new THREE.Vector3(), lookTarget = new THREE.Vector3(0, 0, -10), mouseUv = new THREE.Vector2();
 cam.position.set(0, 0, 6);
 let shownCh = '', focusKey = '';
+const heroH1 = $('h1'); let heroFx = .5, heroP = 50;
+addEventListener('pointermove', (e) => { heroFx = e.clientX / innerWidth; });
 const sectionIndex = () => { const mid = scrollY + innerHeight * .5; let i = 0; tops.forEach((t, k) => { if (t <= mid) i = k; }); return i; };
 const pick = (objs) => { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); const h = ray.intersectObjects(objs, false)[0]; return h ? h.object.userData : null; };
 
@@ -350,48 +368,43 @@ function tick() {
   heroMat.uniforms.uTime.value = t;
   heroMat.uniforms.uMouse.value.lerp(mouseUv.set(.5 + ptr.x * .32, .55 + ptr.y * .3), .08);
   hero.rotation.y = lerp(hero.rotation.y, ptr.x * .1, .06); hero.rotation.x = lerp(hero.rotation.x, -ptr.y * .05, .06);
+  { const cool = document.documentElement.classList.contains('cool'), G = cool ? GRADE.cool : GRADE.warm; halo.material.color.lerp(G[0], .06); haloBlue.material.color.lerp(G[1], .06); ring.material.color.lerp(G[2], .06); ring2.material.color.lerp(G[3], .06); }
   ring2.rotation.z = -t * .5; ring.rotation.z = t * .1; halo.material.opacity = .75 + Math.sin(t * 1.6) * .1;
 
   // doors open toward you on hover
   const hit = id === 'doors' ? pick(doorObjs.map((g) => g.userData.hit)) : null;
-  doorObjs.forEach((g) => { const u = g.userData, want = hit && hit.door === g ? 1 : 0; const was = u.open; u.open = lerp(u.open, want, 1 - Math.exp(-dt * 6)); if (was < .25 && u.open >= .25) sfx('open'); u.pivot.rotation.y = -u.open * 1.55; u.inner.material.color.setScalar(.2 + u.open * .8); u.glow.material.opacity = u.open * .8; u.light.intensity = u.open * 55; });
+  doorObjs.forEach((g) => { const u = g.userData, want = (hit && hit.door === g) || u.force ? 1 : 0; const was = u.open; u.open = lerp(u.open, want, 1 - Math.exp(-dt * 6)); if (was < .25 && u.open >= .25) sfx('open'); u.pivot.rotation.y = -u.open * 1.55; u.inner.material.color.setScalar(.2 + u.open * .8); u.glow.material.opacity = u.open * .8; u.light.intensity = u.open * 55; });
 
   // corridors: only the video in front of you plays
   for (const key of ['edits', 'ai']) {
     const T = tunnels[key], on = id === key; let best = 0, bd = 1e9;
     T.items.forEach((it, n) => { const d = Math.abs(it.z - (cam.position.z - 5.5)); if (d < bd) { bd = d; best = n; } });
-    T.items.forEach((it, n) => { setVideo(it, on && Math.abs(n - best) <= (LITE ? 0 : 1)); it.g.scale.setScalar(lerp(it.g.scale.x, on && hovered?.tunnel === it ? 1.07 : 1, .15)); });
+    T.items.forEach((it, n) => { setVideo(it, on && Math.abs(n - best) <= (LITE ? 0 : 1)); const dz = cam.position.z - it.z, sIn = on && dz > 0 ? clamp(1.25 - dz / 40, .5, 1) : 1; it.g.scale.setScalar(lerp(it.g.scale.x, (on && hovered?.tunnel === it ? 1.07 : 1) * sIn, .15)); });
     if (on) { const f = T.items[best], fk = key + best; if (fk !== focusKey) { focusKey = fk; $('#caption b').textContent = f.v.t; $('#caption span').textContent = 'Click to open'; } hovered = pick(T.items.map((it) => it.m)); }
   }
   // posters
   if (id === 'posters') { room.rotation.y = prog * Math.PI * 2 * .95 + ringDrag; ringVel *= .92; if (!drag) ringDrag += ringVel; hovered = pick(posterMeshes); }
   posterMeshes.forEach((m) => { const h = id === 'posters' && hovered?.poster === m.userData.poster; m.position.z = lerp(m.position.z, m.userData.base + (h ? 1.2 : 0), .14); m.scale.setScalar(lerp(m.scale.x, h ? 1.06 : 1, .14)); const u = m.material.uniforms.uPeel; u.value = lerp(u.value, h ? 1 : 0, .1); });
   if (id === 'doors') hovered = hit ? { door: hit.door } : null;
-  else if (id === 'contact') { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); hovered = mcHead && ray.intersectObject(mc, true).length ? { mini: true } : desk.visible && ray.intersectObject(deskScreen, false).length ? { desk: true } : null; }
+  else if (id === 'contact') { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); hovered = desk.visible && ray.intersectObject(deskScreen, false).length ? { desk: true } : null; }
   else if (id === 'hero' || id === 'about') hovered = null;
 
-  // mini Ashique: greets you at the doors, then waits at About and Contact
-  { const doorsView = id === 'doors', dist = doorsView ? 6.4 - 2.6 : 5, th = Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)) * dist, hw = th * cam.aspect;
-    mc.visible = !!mcHead && (doorsView || id === 'contact' || (id === 'about' && prog > .6));
-    const zPos = doorsView ? Z.doors + 2.6 : Z.end, sc = (doorsView ? .5 : .88) * (cam.aspect > 1 ? 1 : .7);
-    if (mc.visible && !mc.userData.was) waveT = 2.2; mc.userData.was = mc.visible;
-    mc.position.set(doorsView ? -hw * .72 : hw * (cam.aspect > 1 ? .8 : .38), -th * (doorsView ? .8 : .78) + Math.sin(t * 2) * .02 + (jumpT > 0 ? Math.sin((1 - jumpT) * Math.PI) * .5 : 0), zPos);
-    { const dd = 6.2, dth = Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)) * dd, dhw = dth * cam.aspect, showDesk = id === 'contact' && cam.aspect > 1;
-      desk.visible = showDesk; deskVideo(showDesk); desk.position.set(dhw * .34, -dth * .6, Z.end - 1.2); desk.scale.setScalar(.8); desk.rotation.y = -.25 + ptr.x * .06; }
-    jumpT = Math.max(0, jumpT - dt * 1.5); waveT = Math.max(0, waveT - dt);
-    mc.scale.setScalar(sc); mc.rotation.y = lerp(mc.rotation.y, (doorsView ? .45 : -.35) + ptr.x * .25, .08);
-    if (mcHead) {
-      mcHead.rotation.y = lerp(mcHead.rotation.y, clamp(ptr.x * .9 - (doorsView ? -.2 : .3), -.8, .8), .1); mcHead.rotation.x = lerp(mcHead.rotation.x, clamp(-ptr.y * .4, -.4, .4), .1); mcHead.rotation.z = Math.sin(t * 1.3) * .03;
-      mcArmR.rotation.z = lerp(mcArmR.rotation.z, waveT > 0 ? 2.6 + Math.sin(t * 12) * .3 : .1 + Math.sin(t * 1.5) * .03, .15);
-      mcArmL.rotation.z = lerp(mcArmL.rotation.z, -.1 - Math.sin(t * 1.5) * .03, .1);
-    } }
+  { const doorsView = id === 'doors' && cam.aspect > .95, th = Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)) * (doorsView ? 3.8 : 5), hw = th * cam.aspect;
+    pet.visible = doorsView || id === 'contact' || (id === 'about' && prog > .6);
+    pet.position.set(doorsView ? -hw * .62 : hw * (cam.aspect > 1 ? .64 : .4), -th * (doorsView ? .72 : .78), doorsView ? Z.doors + 2.6 : Z.end);
+    pet.scale.setScalar((doorsView ? .55 : .8) * (cam.aspect > 1 ? 1 : .7)); pet.rotation.y = lerp(pet.rotation.y, (doorsView ? .5 : -.45) + ptr.x * .3, .08); petMixer?.update(dt); }
+  // editing desk (Contact)
+  { const dth = Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)) * 6.2, dhw = dth * cam.aspect, showDesk = id === 'contact' && cam.aspect > 1;
+    desk.visible = showDesk; deskVideo(showDesk); desk.position.set(dhw * .34, -dth * .6, Z.end - 1.2); desk.scale.setScalar(.8); desk.rotation.y = -.25 + ptr.x * .06; }
+  $('#back').classList.toggle('on', id === 'edits' || id === 'ai' || id === 'posters');
+  if (id === 'hero') { heroP = lerp(heroP, 50 + 34 * Math.sin(t * .45) + (heroFx - .5) * 40, .03); heroH1.style.backgroundPosition = heroP + '% 0'; }
   // overlays
   const ch = CHAPTERS[id], want = ch ? id : '';
   if (want !== shownCh) { shownCh = want; const el = $('#chapter'); el.classList.remove('on'); if (ch) setTimeout(() => { if (shownCh === id) { el.querySelector('h2').textContent = ch[0]; el.querySelector('p').textContent = ch[1]; el.classList.add('on'); } }, 250); }
   $('#caption').classList.toggle('on', id === 'edits' || id === 'ai');
   ticks.forEach((b, n) => b.classList.toggle('on', n === i));
   head.style.left = (scrollY / total * 100) + '%'; tcode.textContent = tc(scrollY / total);
-  if (hovered && (hovered.door || hovered.tunnel || hovered.poster || hovered.mini || hovered.desk)) { hov.hidden = false; hov.textContent = hovered.door ? hovered.door.userData.def.label : hovered.tunnel || hovered.desk ? 'Play' : hovered.poster ? 'Zoom' : 'Poke'; hov.style.left = ptr.px + 'px'; hov.style.top = ptr.py + 'px'; canvas.style.cursor = 'pointer'; }
+  if (hovered && (hovered.door || hovered.tunnel || hovered.poster || hovered.desk)) { hov.hidden = false; hov.textContent = hovered.door ? hovered.door.userData.def.label : hovered.tunnel || hovered.desk ? 'Play' : 'Zoom'; hov.style.left = ptr.px + 'px'; hov.style.top = ptr.py + 'px'; canvas.style.cursor = 'pointer'; }
   else { hov.hidden = true; canvas.style.cursor = id === 'posters' ? 'grab' : ''; }
 
   drawFx();

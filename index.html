@@ -16,6 +16,8 @@
 <div id="leak" aria-hidden="true"></div>
 <div id="grain" aria-hidden="true"></div>
 
+<button id="cord" class="cord" type="button" aria-pressed="false" aria-label="Pull to switch the colour grade"><i></i></button>
+<button id="back" class="back" type="button">Back to the doors</button>
 <header class="top">
   <a href="#hero" class="mark">Ashique</a>
   <div class="right"><button id="snd" class="snd" type="button" aria-pressed="false" aria-label="Toggle sound"><i></i><span>Sound off</span></button><a href="#contact" class="hire" data-go="contact">Hire me</a></div>
@@ -30,7 +32,8 @@
     <div class="heroTx">
       <h1><span>Muhammed</span><span>Ashique</span></h1>
       <div class="lower">
-        <p class="roles">Video editor. AI filmmaker. Designer.</p>
+        <p class="avail"><i></i>Available for new projects</p>
+        <div class="role"><small>I'm a</small><div class="card" id="roleCard"><span class="rings" aria-hidden="true"></span><b id="roleWord">Video editor</b></div></div>
         <p class="blurb">Reels, AI films and posters for schools, brands and events.</p>
         <div class="cta"><a class="btn" href="#doors" data-go="doors">Open a door</a><a class="btn ghost" href="#contact" data-go="contact">Message me</a></div>
       </div>
@@ -44,19 +47,27 @@
     <div class="aboutTx">
       <h2>I cut things people can't stop watching.</h2>
       <p>I'm Ashique. I edit short-form video, generate cinematic AI films and design the posters and brand marks that schools and businesses put in front of their audience.</p>
+      <ul class="stats" id="stats"></ul>
+      <p class="clients">Creatives made for Inline, Emerald International School, Brillianton, Catchyvids, Tarang '26 and Electus '26.</p>
       <ul class="svc">
         <li><b>Video editing</b><span>Reels and promos cut for the first three seconds</span></li>
         <li><b>AI films</b><span>Cinematic scenes and characters, directed by prompt</span></li>
         <li><b>Posters and social</b><span>Admissions, events, hiring and launches</span></li>
         <li><b>Brand marks</b><span>Logos and identity, like Electus'26</span></li>
       </ul>
-      <img class="portrait" src="/media/img/ash-portrait.webp" alt="Muhammed Ashique smiling in front of an orange wall" loading="lazy">
+      <figure class="polaroid"><i class="tape"></i><img src="/media/img/ash-portrait.webp" alt="Muhammed Ashique smiling in front of an orange wall" loading="lazy"><figcaption>Muhammed Ashique</figcaption></figure>
     </div>
   </section>
   <section id="contact" data-ch="Contact">
     <div class="contactTx">
       <h2>Got a project? Send the idea.</h2>
-      <p>Scan the code to message me on WhatsApp. Tell me what you're making and when you need it.</p>
+      <p>Tell me what you're making. This opens WhatsApp with your message ready to send.</p>
+      <form id="brief" class="brief" novalidate>
+        <label>Your name<input name="n" autocomplete="name" required></label>
+        <label>What do you need?<select name="t"><option>Reel or video edit</option><option>AI film or promo</option><option>Poster or social creatives</option><option>Logo or brand</option><option>Something else</option></select></label>
+        <label>About the project<textarea name="b" rows="3" required placeholder="What are you making, and when do you need it?"></textarea></label>
+        <button class="btn" type="submit">Send on WhatsApp</button><p class="err" id="briefErr" role="alert"></p>
+      </form>
       <div class="cta"><a class="btn" href="https://wa.me/919947045212" target="_blank" rel="noopener">WhatsApp me</a><a class="btn ghost" href="https://instagram.com/ashique__o" target="_blank" rel="noopener">@ashique__o</a><a class="btn ghost" href="mailto:ashiquemuhammed057@gmail.com">Email</a></div>
       <div class="qr"><img src="/media/img/whatsapp-qr.webp" alt="WhatsApp QR code for Muhammed Ashique" loading="lazy"></div>
       <small>© <span id="yr"></span> Muhammed Ashique. Built with Three.js.</small>

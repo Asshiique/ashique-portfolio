@@ -1,4 +1,4 @@
-:root{--void:#05060a;--ink:#f2efe9;--dim:#9b968e;--or:#ff6a13;--bl:#2f7bff;--vi:#8b5cff;--gr:#19c79a;--gold:#e8b657}
+:root{--orRGB:255,106,19;--blRGB:47,123,255;--void:#05060a;--ink:#f2efe9;--dim:#9b968e;--or:#ff6a13;--bl:#2f7bff;--vi:#8b5cff;--gr:#19c79a;--gold:#e8b657}
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
 body{background:var(--void);color:var(--ink);font:400 17px/1.55 "Hanken Grotesk",system-ui,sans-serif;overflow-x:hidden}
@@ -26,7 +26,7 @@ main a,main button,main img,main .qr,main h1,main h2,main p,main li{pointer-even
 /* hero */
 #hero{height:125vh}
 .heroTx{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 clamp(18px,5vw,72px) clamp(90px,12vh,130px);mix-blend-mode:normal}
-h1{font:900 clamp(70px,12.6vw,240px)/.8 "Big Shoulders Display";text-transform:uppercase;letter-spacing:-.012em;mix-blend-mode:difference;color:#fff}
+h1{font:900 clamp(70px,12.6vw,240px)/.8 "Big Shoulders Display";text-transform:uppercase;letter-spacing:-.012em;color:transparent;background:linear-gradient(100deg,#f2efe9 0,#f2efe9 24%,#ffd58a 36%,#ff9a47 48%,#3fd6c4 62%,#f2efe9 76%,#f2efe9 100%);background-size:260% 100%;background-position:50% 0;-webkit-background-clip:text;background-clip:text}
 h1 span{display:block}h1 span+span{padding-left:.22em}
 .lower{margin-top:clamp(18px,3vh,34px);max-width:520px}
 .roles{font:800 clamp(22px,2.6vw,34px)/1.1 "Big Shoulders Display";letter-spacing:.03em;text-transform:uppercase;color:var(--or)}
@@ -47,7 +47,7 @@ h1 span{display:block}h1 span+span{padding-left:.22em}
 .svc li:last-child{border-bottom:1px solid #ffffff24}
 .svc b{font:800 22px "Big Shoulders Display";letter-spacing:.03em;text-transform:uppercase;white-space:nowrap}
 .svc span{color:var(--dim);text-align:right;font-size:15px}
-.portrait{position:absolute;right:0;top:0;width:min(34vw,380px);aspect-ratio:4/5;object-fit:cover;border-radius:4px;box-shadow:0 30px 90px #000a;transform:rotate(2.5deg)}
+.portraitOLD{position:absolute;right:0;top:0;width:min(34vw,380px);aspect-ratio:4/5;object-fit:cover;border-radius:4px;box-shadow:0 30px 90px #000a;transform:rotate(2.5deg)}
 #contact{min-height:110vh;display:flex;align-items:center;padding:12vh 0}
 .contactTx p{max-width:460px;margin:22px 0}
 .qr{width:168px;padding:10px;background:#fff;border-radius:18px;box-shadow:0 0 90px #ff6a1366;margin-bottom:34px}.qr img{border-radius:10px}
@@ -95,7 +95,7 @@ h1 span{display:block}h1 span+span{padding-left:.22em}
 .snd[aria-pressed=true] i{opacity:1;animation:eq .9s ease-in-out infinite alternate}
 @keyframes eq{to{transform:scaleY(.4)}}
 #fx{position:fixed;inset:0;width:100%;height:100%;z-index:4;pointer-events:none}
-#leak{position:fixed;inset:0;z-index:4;pointer-events:none;mix-blend-mode:screen;background:radial-gradient(540px circle at var(--mx,70%) var(--my,30%),rgba(255,106,19,.2),transparent 62%),radial-gradient(720px circle at calc(100% - var(--mx,70%)) calc(100% - var(--my,30%)),rgba(47,123,255,.11),transparent 62%)}
+#leak{position:fixed;inset:0;z-index:4;pointer-events:none;mix-blend-mode:screen;background:radial-gradient(540px circle at var(--mx,70%) var(--my,30%),rgba(var(--orRGB),.2),transparent 62%),radial-gradient(720px circle at calc(100% - var(--mx,70%)) calc(100% - var(--my,30%)),rgba(var(--blRGB),.11),transparent 62%)}
 #grain{position:fixed;inset:-50%;z-index:5;pointer-events:none;opacity:.08;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");animation:gr .7s steps(6) infinite}
 @keyframes gr{0%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-3%)}60%{transform:translate(-2%,-1%)}80%{transform:translate(3%,3%)}100%{transform:translate(0,0)}}
 .lite #fx,.lite #leak,.lite #grain{display:none}
@@ -103,3 +103,50 @@ h1 span{display:block}h1 span+span{padding-left:.22em}
 .wa:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 14px 50px #25d36699}
 @media(max-width:760px){.wa span{display:none}.wa{padding:15px;bottom:84px}.snd span{display:none}.snd{padding:10px 12px}}
 @media(prefers-reduced-motion:reduce){#grain{animation:none}}
+
+/* grade switch: swaps the two accent colours */
+:root.cool{--or:#2f7bff;--bl:#ff6a13;--orRGB:47,123,255;--blRGB:255,106,19}
+.cord{position:fixed;top:0;right:clamp(150px,17vw,230px);z-index:30;width:28px;height:84px;background:none;border:0;cursor:pointer;transform-origin:top;transition:transform .15s}
+.cord::before{content:"";position:absolute;left:13px;top:0;width:2px;height:66px;background:linear-gradient(#ffffff55,#fff)}
+.cord i{position:absolute;left:5px;top:62px;width:18px;height:18px;border-radius:50%;background:var(--or);box-shadow:0 0 16px var(--or)}
+.cord.pull{transform:translateY(12px)}
+@media(max-width:760px){.cord{right:auto;left:50%;margin-left:-14px}}
+/* back to the doors */
+.back{position:fixed;right:clamp(18px,4vw,48px);top:78px;z-index:22;padding:9px 16px;border-radius:99px;border:1.5px solid #fff5;background:#05060acc;color:var(--ink);font:700 14px "Hanken Grotesk";cursor:pointer;backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:.3s}
+.back.on{opacity:1;pointer-events:auto}.back:hover{border-color:var(--or);color:var(--or)}
+/* hero role card */
+.avail{display:flex;align-items:center;gap:9px;font-weight:700;font-size:14px;color:#d9d4cb}
+.avail i{width:9px;height:9px;border-radius:50%;background:#25d366;box-shadow:0 0 0 0 #25d36699;animation:ping 2s infinite}
+@keyframes ping{70%{box-shadow:0 0 0 10px #25d36600}100%{box-shadow:0 0 0 0 #25d36600}}
+.role{display:flex;align-items:center;gap:14px;margin:14px 0 4px}
+.role small{font:800 clamp(22px,2.6vw,32px) "Big Shoulders Display";text-transform:uppercase;letter-spacing:.04em;color:var(--ink)}
+.role .card{position:relative;padding:14px 22px 10px;background:#f2efe9;color:#101014;border-radius:6px;transform:rotate(-2deg);transform-origin:top;box-shadow:0 14px 40px #0009;min-width:min(260px,60vw)}
+.role .card b{display:block;font:900 clamp(26px,3vw,38px)/1 "Big Shoulders Display";text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
+.role .rings{position:absolute;left:10px;right:10px;top:-7px;height:14px;background:radial-gradient(circle at 6px 7px,#05060a 0 3px,#999 3.5px 5px,transparent 5.5px) 0 0/16px 14px repeat-x}
+.role .card.flip{animation:flip .55s ease}
+@keyframes flip{0%{transform:rotate(-2deg) rotateX(0)}50%{transform:rotate(-2deg) rotateX(88deg)}100%{transform:rotate(-2deg) rotateX(0)}}
+/* about: polaroid + stats + glass services */
+.polaroid{position:absolute;right:0;top:-10px;width:min(30vw,330px);padding:14px 14px 12px;background:#f2efe9;color:#101014;box-shadow:0 30px 80px #000b;transform:rotate(3.5deg);transform-origin:50% 0;transition:transform .5s;animation:sway 6s ease-in-out infinite}
+.polaroid:hover{animation-play-state:paused;transform:rotate(0)}
+.polaroid img{width:100%;aspect-ratio:4/5;object-fit:cover;box-shadow:none;border-radius:0;transform:none}
+.polaroid figcaption{font:800 22px "Big Shoulders Display";text-transform:uppercase;letter-spacing:.05em;text-align:center;padding-top:10px}
+.polaroid .tape{position:absolute;left:50%;top:-14px;width:96px;height:28px;margin-left:-48px;background:#e8b65799;transform:rotate(-3deg)}
+@keyframes sway{50%{transform:rotate(1.5deg)}}
+.stats{display:flex;gap:clamp(18px,3vw,40px);list-style:none;margin:0 0 18px;max-width:560px}
+.stats li{display:flex;flex-direction:column}
+.stats b{font:900 clamp(40px,5vw,64px)/1 "Big Shoulders Display";color:var(--or);font-variant-numeric:tabular-nums}
+.stats span{font-size:14px;color:var(--dim)}
+.clients{max-width:520px;color:#d9d4cb;margin-bottom:26px;font-size:15px}
+.svc{padding:6px 22px;border-radius:14px;background:#ffffff0c;border:1px solid #ffffff1c;backdrop-filter:blur(10px)}
+.svc li{border-color:#ffffff1c;transition:background .25s,padding .25s}
+.svc li:hover{background:#ffffff0a;padding-left:8px}
+/* contact form */
+.brief{display:grid;gap:12px;width:min(440px,100%);padding:20px;border-radius:16px;background:#ffffff0d;border:1px solid #ffffff22;backdrop-filter:blur(12px);margin-bottom:22px}
+.brief label{display:grid;gap:5px;font-size:13px;color:var(--dim);font-weight:700}
+.brief input,.brief select,.brief textarea{font:500 16px "Hanken Grotesk";color:var(--ink);background:#05060acc;border:1px solid #ffffff2a;border-radius:10px;padding:11px 13px;width:100%}
+.brief input:focus,.brief select:focus,.brief textarea:focus{outline:2px solid var(--or);outline-offset:1px}
+.brief .btn{border:0;cursor:pointer;font:700 16px "Hanken Grotesk";justify-self:start}
+.brief .err{color:#ff8a7a;font-size:14px;min-height:1.2em;margin:0}
+.contactTx p{max-width:460px}
+@media(max-width:760px){.polaroid{position:relative;width:min(78%,300px);margin:34px auto 0;right:auto}.stats{flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){.polaroid{animation:none}.role .card.flip{animation:none}.avail i{animation:none}}
