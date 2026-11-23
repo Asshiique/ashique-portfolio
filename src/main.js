@@ -3,8 +3,8 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 /* ───────────── content ───────────── */
 const V = (id, t, wide = false) => ({ id, t, wide });
-const EDITS = [V('edit1', 'Edit 01'), V('edit6', 'Edit 02'), V('content1', 'Edit 03')];
-const AI = [V('promo', 'AI promo', true), V('ai2', 'AI film 01'), V('ai1', 'AI film 02', true), V('ai3', 'AI film 03'), V('ai3d', 'AI 3D'), V('ai4', 'AI film 04', true), V('ai5', 'AI film 05'), V('ai6', 'AI film 06'), V('ai7', 'AI film 07'), V('ai8', 'AI film 08')];
+const EDITS = [V('edit1', 'Edit 01'), V('editA', 'Edit 02'), V('editB', 'Edit 03'), V('editC', 'Edit 04', true), V('edit6', 'Edit 05'), V('content1', 'Edit 06')];
+const AI = [V('promo', 'AI promo', true), V('ai2', 'AI film 01'), V('ai1', 'AI film 02', true), V('lumina', 'AI promo 02', true), V('ai3', 'AI film 03'), V('ai3d', 'AI 3D'), V('ai4', 'AI film 04', true), V('ai5', 'AI film 05'), V('ai6', 'AI film 06'), V('ai7', 'AI film 07'), V('ai8', 'AI film 08')];
 const POSTERS = ['poster-tarang', 'poster-hook', 'poster-sheep', 'poster-battery', 'poster-superhero', 'poster-onam', 'poster-childrens', 'poster-uae', 'poster-landcruiser', 'poster-plus2-way', 'poster-plus2-marks', 'poster-aplus', 'poster-tarang2', 'poster-ebs', 'poster-fail', 'poster-ff-global', 'poster-ff-abroad', 'poster-ivy', 'poster-brillianton', 'poster-resort', 'poster-emerald-kids', 'poster-hiroshima', 'poster-ramadan', 'poster-times', 'poster-bca', 'poster-inline-marketing', 'logo-electus'];
 const CHAPTERS = {
   doors: ['Pick a door', 'Magic happens behind them. Hover to peek, click to walk in.'],
@@ -18,6 +18,7 @@ const Z = { doors: -60, edits: -125, ai: -225, cinema: -325, posters: -395, end:
 
 const $ = (s) => document.querySelector(s);
 // lite mode: phones, touch screens and data-saver get fewer effects so the page loads and runs fast
+const FEED = matchMedia('(max-width:760px)').matches;
 const LITE = matchMedia('(pointer:coarse)').matches || innerWidth < 760 || !!navigator.connection?.saveData;
 document.body.classList.toggle('lite', LITE);
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
@@ -56,33 +57,44 @@ const sun = new THREE.DirectionalLight(0xfff0dd, 2.4); sun.position.set(2, 4, 8)
 
 const mgr = new THREE.LoadingManager();
 mgr.onProgress = (_, a, b) => { const f = Math.round(a / b * 72); $('#ldtime').textContent = '00:0' + Math.floor(f / 24) + ':' + String(f % 24).padStart(2, '0'); };
-mgr.onLoad = () => setTimeout(() => $('#loader').classList.add('done'), 250);
+let introT0 = -1;
+function startIntro() {
+  if (scrollY > 400 || matchMedia('(prefers-reduced-motion: reduce)').matches) { introT0 = -2; return; }
+  introT0 = performance.now(); document.body.classList.add('intro');
+}
+mgr.onLoad = () => setTimeout(() => { $('#loader').classList.add('done'); if (introT0 === -1) startIntro(); }, 250);
 const texLoader = new THREE.TextureLoader(mgr);
 const loadTex = (url) => { const t = texLoader.load(url); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = LITE ? 2 : 8; return t; };
 
+let dustMat;
 // dust that streaks past while you fly between rooms
 {
   const N = LITE ? 700 : 2600, p = new Float32Array(N * 3), c = new Float32Array(N * 3), col = [new THREE.Color(0xff6a13), new THREE.Color(0x2f7bff), new THREE.Color(0xffffff)];
   for (let i = 0; i < N; i++) { p.set([(Math.random() - .5) * 60, (Math.random() - .5) * 28, 14 - Math.random() * 520], i * 3); const k = col[(Math.random() * 3) | 0]; c.set([k.r, k.g, k.b], i * 3); }
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(p, 3)); g.setAttribute('color', new THREE.BufferAttribute(c, 3));
-  scene.add(new THREE.Points(g, new THREE.PointsMaterial({ size: .07, vertexColors: true, transparent: true, opacity: .8, depthWrite: false, blending: THREE.AdditiveBlending })));
+  scene.add(new THREE.Points(g, dustMat = new THREE.PointsMaterial({ size: .07, vertexColors: true, transparent: true, opacity: .8, depthWrite: false, blending: THREE.AdditiveBlending })));
 }
 const haloTex = (() => { const c = mk('canvas', { width: 128, height: 128 }), x = c.getContext('2d'), g = x.createRadialGradient(64, 64, 0, 64, 64, 64); g.addColorStop(0, '#fff'); g.addColorStop(.35, '#fff8'); g.addColorStop(1, '#fff0'); x.fillStyle = g; x.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c); })();
-const additive = (color, opacity) => new THREE.MeshBasicMaterial({ map: haloTex, color, transparent: true, opacity, depthWrite: false, blending: THREE.AdditiveBlending });
+const GLOWS = [], GRIDS = [];
+const additive = (color, opacity) => { const m = new THREE.MeshBasicMaterial({ map: haloTex, color, transparent: true, opacity, depthWrite: false, blending: THREE.AdditiveBlending }); GLOWS.push({ m, o: opacity }); return m; };
 
 /* ───────────── hero: glowing halo + portrait lit by the cursor ───────────── */
-const hero = new THREE.Group(); scene.add(hero);
+const hero = new THREE.Group(); scene.add(hero); hero.scale.setScalar(1.1);
+const heroDark = loadTex('/media/img/ash-hero2.webp'), heroCut = loadTex('/media/img/ash-cutout.webp');
 const heroMat = new THREE.ShaderMaterial({
   transparent: true, depthWrite: false,
-  uniforms: { uTex: { value: loadTex('/media/img/ash-hero.webp') }, uMouse: { value: new THREE.Vector2(.5, .6) }, uTime: { value: 0 } },
+  uniforms: { uTex: { value: loadTex('/media/img/ash-hero2.webp') }, uLight: { value: 0 }, uTint: { value: new THREE.Color(0xff6a13) }, uTintAmt: { value: 0 }, uBlur: { value: .014 }, uDof: { value: .0012 }, uMouse: { value: new THREE.Vector2(.5, .6) }, uTime: { value: 0 } },
   vertexShader: 'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
-  fragmentShader: `varying vec2 vUv;uniform sampler2D uTex;uniform vec2 uMouse;uniform float uTime;
+  fragmentShader: `varying vec2 vUv;uniform sampler2D uTex;uniform vec2 uMouse;uniform float uTime;uniform float uLight;uniform vec3 uTint;uniform float uTintAmt;uniform float uBlur;uniform float uDof;
   void main(){
     vec2 uv=vUv; float d=distance(uv*vec2(.7,1.),uMouse*vec2(.7,1.)); float spot=smoothstep(.6,.0,d);
     vec2 o=(uv-uMouse)*.014*spot;
     vec3 c=vec3(texture2D(uTex,uv+o*1.8+vec2(.003,0.)*spot).r,texture2D(uTex,uv+o).g,texture2D(uTex,uv+o*.3-vec2(.003,0.)*spot).b);
-    c*=.62+.7*spot;
-    vec2 e=smoothstep(0.,.16,uv)*smoothstep(1.,.84,uv); float a=e.x*e.y;
+    float bl=uBlur+uDof*smoothstep(.18,.8,d);
+    if(bl>.0004){ vec3 s=c; for(int i=0;i<8;i++){ float an=float(i)*.785398; vec2 dir=vec2(cos(an),sin(an)*1.3); s+=texture2D(uTex,uv+dir*bl).rgb; s+=texture2D(uTex,uv+dir*bl*2.).rgb; } c=mix(c,s/17.,clamp(bl*300.,0.,1.)); }
+    c*=mix(.62+.7*spot,1.,uLight);
+    c=mix(c,c*(uTint*1.7+.12)+uTint*.05,.55*uTintAmt);
+    vec2 e=smoothstep(0.,.16,uv)*smoothstep(1.,.84,uv); float a=e.x*e.y*texture2D(uTex,uv).a;
     float n=fract(sin(dot(uv*vec2(1000.,700.)+uTime,vec2(12.9898,78.233)))*43758.5453); c+=(n-.5)*.025;
     gl_FragColor=vec4(c,a);
     #include <colorspace_fragment>
@@ -94,13 +106,59 @@ const haloBlue = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), additive(0x2f7bff
 const neon = (color, arc) => new THREE.Mesh(new THREE.RingGeometry(.985, 1, 128, 1, 0, arc), new THREE.MeshBasicMaterial({ color, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
 const ring = neon(0xffa24a, Math.PI * 2), ring2 = neon(0x4d93ff, Math.PI * 1.1);
 hero.add(haloBlue, halo, ring, ring2, portrait);
+let heroLight = false;
 function layoutHero() {
   const visH = 2 * 6 * Math.tan(THREE.MathUtils.degToRad(19)), visW = visH * cam.aspect, wide = cam.aspect > 1;
-  const h = visH * (wide ? 1.12 : .8), w = h * 933 / 1400, x = wide ? visW * .22 : 0, y = wide ? -.1 : visH * .08;
+  const AR = heroLight ? 1023 / 1537 : 1.5; let w, h, x, y, hx, hy;
+  if (heroLight) { h = visH * (wide ? 1.12 : .8); w = h * AR; x = wide ? visW * .22 : 0; y = wide ? -.1 : visH * .08; hx = x; hy = y + h * .17; }
+  else if (wide) { w = visW * .58; h = w / AR; x = visW * .21; y = -.05; hx = x; hy = y + h * .18; }
+  else { w = visW * 1.12; h = w / AR; x = 0; y = visH * .2; hx = x; hy = y + h * .18; }
   portrait.scale.set(w, h, 1); portrait.position.set(x, y, 0);
-  const R = h * .36, hy = y + h * .17;
-  halo.scale.setScalar(R * 3.4); halo.position.set(x, hy, -.4); haloBlue.scale.setScalar(R * 4.4); haloBlue.position.set(x - R * .5, hy + R * .3, -.5);
-  ring.scale.setScalar(R); ring.position.set(x, hy, -.3); ring2.scale.setScalar(R * 1.12); ring2.position.set(x, hy, -.25);
+  const R = (heroLight ? h : visH) * .36;
+  [halo, haloBlue, ring, ring2].forEach((m) => { m.visible = heroLight; });
+  halo.scale.setScalar(R * 3.4); halo.position.set(hx, hy, -.4); haloBlue.scale.setScalar(R * 4.4); haloBlue.position.set(hx - R * .5, hy + R * .3, -.5);
+  ring.scale.setScalar(R); ring.position.set(hx, hy, -.3); ring2.scale.setScalar(R * 1.12); ring2.position.set(hx, hy, -.25);
+  fxItems[0].userData.fx = .36; fxItems[0].userData.fy = .32;
+  fxItems.forEach((o) => { const u = o.userData; u.bx = x + u.fx * w; u.by = y + u.fy * h; o.position.set(u.bx, u.by, u.z); o.scale.setScalar(u.sf(w, h)); });
+}
+
+/* hero backdrop: a colour wheel made of the site's own colours; pick one to grade the whole hero */
+const heroBack = new THREE.Group(); scene.add(heroBack); const fxItems = [];
+const fxPut = (obj, fx, fy, z, sf, rx, ry, rz = 0, flags = {}) => { obj.userData = { fx, fy, z, sf, rx, ry, rz, ...flags, ph: Math.random() * 6, bx: 0, by: 0 }; heroBack.add(obj); fxItems.push(obj); return obj; };
+const SW = [0xff6a13, 0xdc143c, 0x8b4a2b, 0xffc46b, 0x19c79a, 0x2f7bff, 0x8b5cff], SEG = 360 / SW.length;
+let gradeIdx = null, tintAmt = 0, wheel, puck, puckFill; const tintC = new THREE.Color(0xff6a13);
+{
+  const c = mk('canvas', { width: 512, height: 512 }), x = c.getContext('2d');
+  SW.forEach((hex, i) => { const a0 = i * SEG + 1.5, a1 = (i + 1) * SEG - 1.5; x.beginPath(); x.moveTo(256, 256); x.arc(256, 256, 250, -a1 * Math.PI / 180, -a0 * Math.PI / 180); x.closePath(); x.fillStyle = '#' + hex.toString(16).padStart(6, '0'); x.fill(); });
+  x.globalCompositeOperation = 'destination-out'; x.beginPath(); x.arc(256, 256, 156, 0, 6.3); x.fill();
+  const wt = new THREE.CanvasTexture(c); wt.colorSpace = THREE.SRGBColorSpace; wt.anisotropy = 4;
+  const wg = new THREE.Group(); wg.add(new THREE.Mesh(new THREE.PlaneGeometry(2.4, 2.4), new THREE.MeshBasicMaterial({ map: wt, transparent: true, toneMapped: false, opacity: .95 })));
+  wheel = wg.children[0];
+  puck = new THREE.Group(); puckFill = new THREE.Mesh(new THREE.CircleGeometry(.1, 32), new THREE.MeshBasicMaterial({ color: 0xff6a13 })); puck.add(puckFill, new THREE.Mesh(new THREE.RingGeometry(.1, .15, 32), new THREE.MeshBasicMaterial({ color: 0xffffff }))); puck.position.z = .02; wg.add(puck);
+  fxPut(wg, .38, .33, .12, (w) => w * (heroLight ? .28 : .17) / 2.4, 0, 0, 0, { deskOnly: true });
+}
+// projector beam (dark mode only: light does nothing on a white page)
+{
+  const cw = 128, chh = 256, cv = mk('canvas', { width: cw, height: chh }), cx = cv.getContext('2d'), im = cx.createImageData(cw, chh);
+  for (let y = 0; y < chh; y++) for (let x = 0; x < cw; x++) { const u = Math.abs(x / (cw - 1) * 2 - 1), v = y / (chh - 1), a = Math.pow(1 - u, 2.2) * Math.sin(Math.PI * Math.pow(v, .8)), i = (y * cw + x) * 4; im.data[i] = 255; im.data[i + 1] = 226; im.data[i + 2] = 180; im.data[i + 3] = Math.max(0, a) * 255; }
+  cx.putImageData(im, 0, 0); const bt = new THREE.CanvasTexture(cv); bt.colorSpace = THREE.SRGBColorSpace;
+  const beam = new THREE.Mesh(new THREE.PlaneGeometry(.55, 1.4), new THREE.MeshBasicMaterial({ map: bt, transparent: true, opacity: .2, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false }));
+  const grp = new THREE.Group(); grp.add(beam); fxPut(grp, -.12, .06, .3, (w, h) => h, 0, 0, .5, { lightOff: true });
+}
+const wheelOn = () => heroBack.visible && cam.aspect > .95;
+const rgbOf = (col) => col.getStyle().match(/\d+/g).slice(0, 3).join(',');
+function applyGradeCss() {
+  const root = document.documentElement.style;
+  if (gradeIdx === null) { root.removeProperty('--orRGB'); root.removeProperty('--blRGB'); return; }
+  root.setProperty('--orRGB', rgbOf(new THREE.Color(SW[gradeIdx]))); root.setProperty('--blRGB', rgbOf(new THREE.Color(SW[(gradeIdx + 4) % SW.length])));
+}
+function heroBackTick(t, id, dt) {
+  heroBack.visible = id === 'hero'; if (!heroBack.visible) return;
+  fxItems.forEach((o) => { const u = o.userData; o.visible = !(u.deskOnly && cam.aspect <= .95) && !(u.lightOff && heroLight); o.position.set(u.bx + ptr.x * .1 * (1 + u.z), u.by + Math.sin(t * .8 + u.ph) * .05, u.z); o.rotation.set(u.rx - ptr.y * .08, u.ry + ptr.x * .12, u.rz + (u.lightOff ? Math.sin(t * .25) * .05 : 0)); });
+  tintAmt = lerp(tintAmt, gradeIdx === null ? 0 : 1, .08);
+  const idx = gradeIdx === null ? 0 : gradeIdx; tintC.set(SW[idx]);
+  const a = (idx + .5) * SEG * Math.PI / 180; puck.position.set(Math.cos(a) * .95, Math.sin(a) * .95, .02); puckFill.material.color.copy(tintC);
+  heroMat.uniforms.uTint.value.copy(tintC); heroMat.uniforms.uTintAmt.value = tintAmt;
 }
 
 const GRADE = { warm: [0xff5a10, 0x2f7bff, 0xffa24a, 0x4d93ff], cool: [0x2f7bff, 0xff6a13, 0x6fa8ff, 0xff9a4a] }; for (const k in GRADE) GRADE[k] = GRADE[k].map((c) => new THREE.Color(c));
@@ -149,7 +207,7 @@ function layoutDoors() {
 document.fonts.load('800 40px "Big Shoulders Display"').finally(() => { DOOR_DEFS.forEach(makeDoor); layoutDoors(); });
 const floor = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.MeshStandardMaterial({ color: 0x0a0b12, roughness: .7, metalness: .1 }));
 floor.rotation.x = -Math.PI / 2; floor.position.set(0, -2.1, Z.doors); scene.add(floor);
-const grid = (zc, len) => { const g = new THREE.GridHelper(len, len / 2, 0xff6a13, 0x2f7bff); g.material.transparent = true; g.material.opacity = .28; g.position.set(0, -2.3, zc); scene.add(g); };
+const grid = (zc, len) => { const g = new THREE.GridHelper(len, len / 2, 0xff6a13, 0x2f7bff); g.material.transparent = true; g.material.opacity = .28; GRIDS.push(g.material); g.position.set(0, -2.3, zc); scene.add(g); };
 grid(Z.doors, 60);
 
 /* ───────────── video corridors ───────────── */
@@ -169,6 +227,7 @@ function buildTunnel(key, list, z0) {
   tunnels[key] = { items, z0, end: z0 - (list.length - 1) * STEP };
 }
 buildTunnel('edits', EDITS, Z.edits); buildTunnel('ai', AI, Z.ai);
+if (FEED) Object.values(tunnels).forEach((T) => T.items.forEach((it) => { it.g.visible = false; }));
 function setVideo(it, on) {
   if (on && !it.vid) {
     const v = mk('video', { src: `/media/vid/${it.v.id}.mp4`, loop: true, muted: true, playsInline: true, preload: 'auto' }); v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
@@ -333,13 +392,40 @@ $('.mark').addEventListener('click', (e) => { e.preventDefault(); goTo('hero'); 
   $('#stats').innerHTML = st.map(([n, l]) => `<li><b data-n="${n}">0</b><span>${l}</span></li>`).join('');
   const cio = new IntersectionObserver((es) => es.forEach((e) => { if (!e.isIntersecting) return; cio.unobserve(e.target); const el = e.target, n = +el.dataset.n, t0 = performance.now(); (function f() { const k = clamp((performance.now() - t0) / 1200); el.textContent = Math.round(n * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(f); })(); }), { threshold: .6 });
   document.querySelectorAll('#stats b').forEach((b) => cio.observe(b));
-  const cord = $('#cord'); cord.addEventListener('click', () => { const cool = document.documentElement.classList.toggle('cool'); cord.setAttribute('aria-pressed', cool); cord.classList.add('pull'); setTimeout(() => cord.classList.remove('pull'), 180); sfx('click'); });
+  const cord = $('#cord'); cord.addEventListener('click', () => { const light = document.documentElement.classList.toggle('light'); cord.setAttribute('aria-pressed', light); cord.classList.add('pull'); setTimeout(() => cord.classList.remove('pull'), 180); sfx('click'); });
   $('#back').addEventListener('click', () => goTo('doors'));
   $('#brief').addEventListener('submit', (e) => {
     e.preventDefault(); const f = e.target, n = f.n.value.trim(), b = f.b.value.trim(), err = $('#briefErr');
     if (!n || !b) { err.textContent = !n ? 'Add your name so I know who to reply to.' : 'Add a line about the project.'; return; }
     err.textContent = ''; open(`https://wa.me/919947045212?text=${encodeURIComponent(`Hi Ashique, I'm ${n}. I need: ${f.t.value}.\n${b}`)}`, '_blank', 'noopener');
   });
+}
+
+/* ───────────── phones: swipe feed (autoplays the card in view; tap for the full video with sound) ───────────── */
+if (FEED) {
+  const el = (h) => { const t = document.createElement('template'); t.innerHTML = h.trim(); return t.content.firstChild; };
+  const io = new IntersectionObserver((es) => es.forEach((e) => { const v = e.target.querySelector('video'); if (e.isIntersecting) { if (!v.src) v.src = v.dataset.src; v.play().catch(() => {}); } else v.pause(); }), { threshold: .6 });
+  [['edits', EDITS, 'Edits', 'Swipe through. Tap one to watch it full screen with sound.'], ['ai', AI, 'AI films', 'Swipe through. Tap one to watch it with sound.']].forEach(([id, list, title, sub]) => {
+    const sec = $('#' + id); sec.classList.add('feed'); sec.innerHTML = `<div class="feedHead"><h2>${title}</h2><p>${sub}</p></div><div class="strip"></div>`;
+    list.forEach((v) => { const c = el(`<button class="fcard ${v.wide ? 'wide' : ''}" type="button" aria-label="Play ${v.t}"><video muted loop playsinline preload="none" poster="/media/vid/${v.id}.jpg" data-src="/media/vid/${v.id}.mp4"></video><span class="ftag">${v.t}</span><span class="fplay">Tap to watch</span></button>`); c.addEventListener('click', () => openVideo(v.id)); sec.querySelector('.strip').append(c); io.observe(c); });
+  });
+}
+function fitName() {
+  const h = $('h1'); if (innerWidth >= 760) { h.style.fontSize = ''; return; }
+  h.style.fontSize = '100px'; const w = Math.max(...[...h.children].map((sp) => { const r = document.createRange(); r.selectNodeContents(sp); return r.getBoundingClientRect().width; })), box = h.parentElement, cs = getComputedStyle(box), avail = box.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  h.style.fontSize = Math.floor(100 * avail / w * .99) + 'px';
+}
+document.fonts.ready.then(fitName);
+
+/* colour wheel: press or drag on it to grade the hero; double-click to reset */
+{
+  let wd = false; const v3 = new THREE.Vector3();
+  const hitWheel = (e) => { if (!wheelOn() || e.target !== canvas || IDS[sectionIndex()] !== 'hero') return false; v2.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight * 2 - 1)); ray.setFromCamera(v2, cam); return ray.intersectObject(wheel, false).length > 0; };
+  const grade = (e) => { wheel.getWorldPosition(v3); v3.project(cam); const a = Math.atan2(-(e.clientY - (1 - v3.y) / 2 * innerHeight), e.clientX - (v3.x + 1) / 2 * innerWidth); gradeIdx = Math.floor((((a * 180 / Math.PI) % 360) + 360) % 360 / SEG) % SW.length; applyGradeCss(); };
+  addEventListener('pointerdown', (e) => { if (hitWheel(e)) { wd = true; grade(e); } });
+  addEventListener('pointermove', (e) => { if (wd) grade(e); });
+  addEventListener('pointerup', () => { wd = false; });
+  addEventListener('dblclick', (e) => { if (hitWheel(e)) { gradeIdx = null; applyGradeCss(); } });
 }
 
 /* ───────────── timeline ───────────── */
@@ -358,14 +444,14 @@ rail.addEventListener('pointermove', (e) => railDrag && scrub(e)); rail.addEvent
 const tc = (p) => { const f = Math.floor(p * 180 * 24); return `00:${String(Math.floor(f / 1440)).padStart(2, '0')}:${String(Math.floor(f / 24) % 60).padStart(2, '0')}:${String(f % 24).padStart(2, '0')}`; };
 
 /* ───────────── resize ───────────── */
-function resize() { fx.width = innerWidth; fx.height = innerHeight; renderer.setSize(innerWidth, innerHeight, false); cam.aspect = innerWidth / innerHeight; cam.updateProjectionMatrix(); measure(); layoutHero(); layoutDoors(); buildTicks(); }
+function resize() { fitName(); fx.width = innerWidth; fx.height = innerHeight; renderer.setSize(innerWidth, innerHeight, false); cam.aspect = innerWidth / innerHeight; cam.updateProjectionMatrix(); measure(); layoutHero(); layoutDoors(); buildTicks(); }
 addEventListener('resize', resize);
 new ResizeObserver(() => { const t = total; measure(); if (Math.abs(t - total) > 4) buildTicks(); }).observe(document.body);
 
 /* ───────────── loop ───────────── */
 const clock = new THREE.Clock(), camLook = new THREE.Vector3(), camTarget = new THREE.Vector3(), lookTarget = new THREE.Vector3(0, 0, -10), mouseUv = new THREE.Vector2();
 cam.position.set(0, 0, 6);
-let shownCh = '', focusKey = '';
+let shownCh = '', focusKey = '', lightK = 0; const bgC = new THREE.Color(), LIGHTC = new THREE.Color(0xf4f1ea), FLOORL = new THREE.Color(0xe4e0d6);
 const heroH1 = $('h1'); let heroFx = .5, heroP = 50;
 addEventListener('pointermove', (e) => { heroFx = e.clientX / innerWidth; });
 const sectionIndex = () => { const mid = scrollY + innerHeight * .5; let i = 0; tops.forEach((t, k) => { if (t <= mid) i = k; }); return i; };
@@ -379,7 +465,7 @@ function tick() {
   let fov = 50;
   if (id === 'hero') { camTarget.set(ptr.x * .25, ptr.y * .12, 6); lookTarget.set(0, 0, 0); fov = 38; }
   else if (id === 'doors') { camTarget.set(ptr.x * .35, .2 + ptr.y * .15, Z.doors + (cam.aspect < .95 ? 11 : 6.4)); lookTarget.set(0, 0, Z.doors); }
-  else if (id === 'edits' || id === 'ai') { const T = tunnels[id], z = lerp(T.z0 + 4.6, T.end + 3, prog); camTarget.set(ptr.x * .45, ptr.y * .25, z); lookTarget.set(ptr.x * .8, ptr.y * .3, z - 10); }
+  else if (id === 'edits' || id === 'ai') { const T = tunnels[id], z = lerp(T.z0 + 11, T.end + 3, prog); camTarget.set(ptr.x * .45, ptr.y * .25, z); lookTarget.set(ptr.x * .8, ptr.y * .3, z - 10); }
   else if (id === 'cinema') { camTarget.set(ptr.x * .5, .3 + ptr.y * .25, Z.cinema + lerp(22, 17, prog)); lookTarget.set(ptr.x * .8, ptr.y * .3, Z.cinema); }
   else if (id === 'posters') { camTarget.set(0, ptr.y * .2, Z.posters); lookTarget.set(ptr.x * 1.2 * 0, ptr.y * .6, Z.posters - 10); }
   else { camTarget.set(ptr.x * .4, ptr.y * .2, Z.end + 5); lookTarget.set(0, 0, Z.end); fov = 46; }
@@ -388,6 +474,18 @@ function tick() {
   const speed = Math.abs(cam.position.z - prevZ) / Math.max(dt, .001);
   cam.fov = lerp(cam.fov, fov + Math.min(speed * .25, 16), .12); cam.updateProjectionMatrix();
 
+  // white mode: background, fog, glows, floor and the hero photo ease over together
+  { const lt = document.documentElement.classList.contains('light'); lightK = lerp(lightK, lt ? 1 : 0, .07);
+    bgC.set(0x05060a).lerp(LIGHTC, lightK); renderer.setClearColor(bgC); scene.fog.color.copy(bgC);
+    const normal = lightK > .5, bl = normal ? THREE.NormalBlending : THREE.AdditiveBlending;
+    GLOWS.forEach((g) => { if (g.m.blending !== bl) { g.m.blending = bl; g.m.needsUpdate = true; } g.m.opacity = g.o * (normal ? .5 : 1); });
+    [dustMat, ring.material, ring2.material].forEach((m) => { if (m.blending !== bl) { m.blending = bl; m.needsUpdate = true; } }); dustMat.opacity = normal ? .55 : .8;
+    GRIDS.forEach((m) => { m.opacity = normal ? .4 : .28; }); floor.material.color.set(0x0a0b12).lerp(FLOORL, lightK);
+    heroMat.uniforms.uLight.value = lightK; const want = normal ? heroCut : heroDark; if (heroMat.uniforms.uTex.value !== want) { heroMat.uniforms.uTex.value = want; heroLight = normal; layoutHero(); } }
+  heroBackTick(t, id, dt);
+  // opening: the photo pulls into focus while the camera eases in
+  if (introT0 > 0) { const k = clamp((performance.now() - introT0 - 500) / 2400), e = 1 - Math.pow(1 - k, 3); heroMat.uniforms.uBlur.value = .014 * (1 - e); hero.scale.setScalar(1 + .1 * (1 - e)); if (k >= 1) introT0 = -2; }
+  else if (introT0 === -2 && heroMat.uniforms.uBlur.value !== 0) { heroMat.uniforms.uBlur.value = 0; hero.scale.setScalar(1); }
   // hero
   heroMat.uniforms.uTime.value = t;
   heroMat.uniforms.uMouse.value.lerp(mouseUv.set(.5 + ptr.x * .32, .55 + ptr.y * .3), .08);
@@ -401,7 +499,7 @@ function tick() {
 
   // corridors: only the video in front of you plays
   for (const key of ['edits', 'ai']) {
-    const T = tunnels[key], on = id === key; let best = 0, bd = 1e9;
+    const T = tunnels[key], on = id === key && !FEED; let best = 0, bd = 1e9;
     T.items.forEach((it, n) => { const d = Math.abs(it.z - (cam.position.z - 5.5)); if (d < bd) { bd = d; best = n; } });
     T.items.forEach((it, n) => { setVideo(it, on && Math.abs(n - best) <= (LITE ? 0 : 1)); const dz = cam.position.z - it.z, sIn = on && dz > 0 ? clamp(1.25 - dz / 40, .5, 1) : 1; it.g.scale.setScalar(lerp(it.g.scale.x, (on && hovered?.tunnel === it ? 1.07 : 1) * sIn, .15)); });
     if (on) { const f = T.items[best], fk = key + best; if (fk !== focusKey) { focusKey = fk; $('#caption b').textContent = f.v.t; $('#caption span').textContent = 'Click to open'; } hovered = pick(T.items.map((it) => it.m)); }
@@ -412,7 +510,8 @@ function tick() {
   if (id === 'doors') hovered = hit ? { door: hit.door } : null;
   else if (id === 'cinema') { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); hovered = ray.intersectObject(cineScreen, false).length ? { screen: true } : null; }
   else if (id === 'contact') { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); hovered = desk.visible && ray.intersectObject(deskScreen, false).length ? { desk: true } : null; }
-  else if (id === 'hero' || id === 'about') hovered = null;
+  else if (id === 'hero') { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); hovered = wheelOn() && ray.intersectObject(wheel, false).length ? { wheel: true } : null; }
+  else if (id === 'about') hovered = null;
 
   { const doorsView = id === 'doors' && cam.aspect > .95, th = Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)) * (doorsView ? 3.8 : 5), hw = th * cam.aspect;
     pet.visible = doorsView || id === 'contact' || (id === 'about' && prog > .6);
@@ -426,12 +525,12 @@ function tick() {
   $('#back').classList.toggle('on', id === 'edits' || id === 'ai' || id === 'cinema' || id === 'posters');
   if (id === 'hero') { heroP = lerp(heroP, 50 + 34 * Math.sin(t * .45) + (heroFx - .5) * 40, .03); heroH1.style.backgroundPosition = heroP + '% 0'; }
   // overlays
-  const ch = CHAPTERS[id], want = ch ? id : '';
+  const ch = FEED && (id === 'edits' || id === 'ai') ? null : CHAPTERS[id], want = ch ? id : '';
   if (want !== shownCh) { shownCh = want; const el = $('#chapter'); el.classList.remove('on'); if (ch) setTimeout(() => { if (shownCh === id) { el.querySelector('h2').textContent = ch[0]; el.querySelector('p').textContent = ch[1]; el.classList.add('on'); } }, 250); }
-  $('#caption').classList.toggle('on', id === 'edits' || id === 'ai');
+  $('#caption').classList.toggle('on', (id === 'edits' || id === 'ai') && !FEED);
   ticks.forEach((b, n) => b.classList.toggle('on', n === i));
   head.style.left = (scrollY / total * 100) + '%'; tcode.textContent = tc(scrollY / total);
-  if (hovered && (hovered.door || hovered.tunnel || hovered.poster || hovered.desk || hovered.screen)) { hov.hidden = false; hov.textContent = hovered.door ? hovered.door.userData.def.label : hovered.tunnel || hovered.desk || hovered.screen ? 'Play' : 'Zoom'; hov.style.left = ptr.px + 'px'; hov.style.top = ptr.py + 'px'; canvas.style.cursor = 'pointer'; }
+  if (hovered && (hovered.door || hovered.tunnel || hovered.poster || hovered.desk || hovered.screen || hovered.wheel)) { hov.hidden = false; hov.textContent = hovered.door ? hovered.door.userData.def.label : hovered.wheel ? 'Drag to colour-grade' : hovered.tunnel || hovered.desk || hovered.screen ? 'Play' : 'Zoom'; hov.style.left = ptr.px + 'px'; hov.style.top = ptr.py + 'px'; canvas.style.cursor = 'pointer'; }
   else { hov.hidden = true; canvas.style.cursor = id === 'posters' ? 'grab' : ''; }
 
   drawFx();
