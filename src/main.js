@@ -433,6 +433,8 @@ const YT = 'https://www.youtube-nocookie.com', YT_SRC = YT + '/embed/dQw4w9WgXcQ
 let party = false, tvFrame = null, tvMuted = true, tvState = -1; const tunes = mk('div', { id: 'tunes', hidden: true });
 tunes.innerHTML = '<button type="button" aria-label="Stop the song">×</button><div class="slot"></div><p>Never Gonna Give You Up, Rick Astley (official video, via YouTube)</p>'; document.body.append(tunes);
 const partyBtn = $('#party');
+const TV_LINES = ['Never Gonna Give You Up,', '<em>never gonna let your deadline down</em>']; let capT = 0, capLast = 0;
+const tvCap = mk('div', { id: 'tvcap', hidden: true }); document.body.append(tvCap);
 function partyLabel() { partyBtn.textContent = tvFrame ? (tvState === 1 ? (tvMuted ? 'Turn the sound on' : 'Pause') : 'Play') : party ? 'Stop the music' : 'Make him dance'; partyBtn.setAttribute('aria-pressed', party); }
 const ytCmd = (f, func) => f?.contentWindow?.postMessage(JSON.stringify({ event: 'command', func, args: [] }), YT);
 function tvOn() {
@@ -465,10 +467,16 @@ tunes.querySelector('button').addEventListener('click', stopParty);
 // pin the iframe onto the 3D monitor: map its rectangle to the screen quad (perspective included)
 const tvCorners = [[-.72, .54], [.72, .54], [.72, -.54], [-.72, -.54]], tvV = new THREE.Vector3();
 function placeTv() {
-  if (!tvFrame) return; const ok = desk.visible && Math.abs(cam.position.z - (Z.end + 5)) < 1.6; tvFrame.style.visibility = ok ? 'visible' : 'hidden'; if (!ok) return;
+  if (!tvFrame) { tvCap.hidden = true; return; } const ok = desk.visible && Math.abs(cam.position.z - (Z.end + 5)) < 1.6; tvFrame.style.visibility = ok ? 'visible' : 'hidden'; tvCap.hidden = !ok; if (!ok) return;
   const P = tvCorners.map(([x, y]) => { tvV.set(x * .995, y * .995, 0); deskScreen.localToWorld(tvV); tvV.project(cam); return [(tvV.x + 1) / 2 * innerWidth, (1 - tvV.y) / 2 * innerHeight]; });
   const [[x0, y0], [x1, y1], [x2, y2], [x3, y3]] = P, W = 480, H = 360, dx1 = x1 - x2, dx2 = x3 - x2, sx = x0 - x1 + x2 - x3, dy1 = y1 - y2, dy2 = y3 - y2, sy = y0 - y1 + y2 - y3, den = dx1 * dy2 - dx2 * dy1;
   const g = (sx * dy2 - dx2 * sy) / den, h = (dx1 * sy - sx * dy1) / den, a = x1 - x0 + g * x1, b = x3 - x0 + h * x3, d = y1 - y0 + g * y1, e = y3 - y0 + h * y3;
+  // one line at a time, like lyrics, only while the video is playing; anchored to the TV's right edge so it stays clear of Spider-Man
+  const nowS = performance.now() / 1000; if (party) capT += Math.min(.1, nowS - capLast); capLast = nowS;
+  const p = capT % 5.4, line = p < 2.7 ? 0 : 1, loc = line ? p - 2.7 : p;
+  if (tvCap.dataset.l !== String(line)) { tvCap.dataset.l = line; tvCap.innerHTML = TV_LINES[line]; }
+  tvCap.classList.toggle('on', party && loc > .2 && loc < 2.4);
+  tvCap.style.transform = `translate(${Math.max(x0, x1) + 6}px,${Math.min(y0, y1) - 12}px) translate(-100%,-100%)`;
   tvFrame.style.transform = `matrix3d(${a / W},${d / W},0,${g / W},${b / H},${e / H},0,${h / H},0,0,1,0,${x0},${y0},0,1)`;
 }
 

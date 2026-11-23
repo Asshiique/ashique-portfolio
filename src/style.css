@@ -218,3 +218,9 @@ body.intro .lower{animation:lowerIn 1.2s ease 1.5s both}
 /* the song plays on the 3D TV: this iframe is pinned onto the monitor by the script */
 iframe.tv{position:fixed;left:0;top:0;width:480px;height:360px;transform-origin:0 0;border:0;z-index:26;background:#000;visibility:hidden}
 @media(max-width:760px){#contact{padding-bottom:58vh}}
+
+/* caption above the TV */
+#tvcap{position:fixed;left:0;top:0;z-index:27;pointer-events:none;text-align:right;width:max-content;max-width:min(340px,70vw);opacity:0;transition:opacity .35s;font:800 clamp(18px,2.2vw,28px)/1.05 "Big Shoulders Display";text-transform:uppercase;letter-spacing:.04em;color:var(--ink);text-shadow:0 2px 14px #000b}
+#tvcap[hidden]{display:none}#tvcap em{font-style:normal;color:var(--or)}
+.light #tvcap{text-shadow:none}
+#tvcap.on{opacity:1}
