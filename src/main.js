@@ -4,16 +4,17 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 /* ───────────── content ───────────── */
 const V = (id, t, wide = false) => ({ id, t, wide });
 const EDITS = [V('edit1', 'Edit 01'), V('edit2', 'Edit 02'), V('edit4', 'Edit 03'), V('edit6', 'Edit 04'), V('content1', 'Content 01')];
-const AI = [V('promo', 'AI promo', true), V('ai2', 'AI film 01'), V('ai1', 'AI film 02', true), V('ai3d', 'AI 3D'), V('ai4', 'AI film 03', true), V('ai5', 'AI film 04'), V('ai6', 'AI film 05'), V('ai7', 'AI film 06'), V('ai8', 'AI film 07')];
+const AI = [V('promo', 'AI promo', true), V('ai2', 'AI film 01'), V('ai1', 'AI film 02', true), V('ai3', 'AI film 03'), V('ai3d', 'AI 3D'), V('ai4', 'AI film 04', true), V('ai5', 'AI film 05'), V('ai6', 'AI film 06'), V('ai7', 'AI film 07'), V('ai8', 'AI film 08')];
 const POSTERS = ['poster-tarang', 'poster-hook', 'poster-sheep', 'poster-battery', 'poster-superhero', 'poster-onam', 'poster-childrens', 'poster-uae', 'poster-landcruiser', 'poster-plus2-way', 'poster-plus2-marks', 'poster-aplus', 'poster-tarang2', 'poster-ebs', 'poster-fail', 'poster-ff-global', 'poster-ff-abroad', 'poster-ivy', 'poster-brillianton', 'poster-resort', 'poster-emerald-kids', 'poster-hiroshima', 'poster-ramadan', 'poster-times', 'poster-bca', 'poster-inline-marketing', 'logo-electus'];
 const CHAPTERS = {
   doors: ['Pick a door', 'Magic happens behind them. Hover to peek, click to walk in.'],
   edits: ['Edits', 'Short-form cuts built to hold attention. Scroll to walk through.'],
   ai: ['AI films', 'Scenes that were never filmed. Keep scrolling.'],
+  cinema: ['Cinema', 'A short film, on the big screen. Click the screen to play it with sound.'],
   posters: ['Posters', 'Admissions, events and launches. Scroll or drag to spin the room.'],
 };
-const IDS = ['hero', 'doors', 'edits', 'ai', 'posters', 'about', 'contact'];
-const Z = { doors: -60, edits: -125, ai: -225, posters: -345, end: -430 };
+const IDS = ['hero', 'doors', 'edits', 'ai', 'cinema', 'posters', 'about', 'contact'];
+const Z = { doors: -60, edits: -125, ai: -225, cinema: -325, posters: -395, end: -480 };
 
 const $ = (s) => document.querySelector(s);
 // lite mode: phones, touch screens and data-saver get fewer effects so the page loads and runs fast
@@ -62,7 +63,7 @@ const loadTex = (url) => { const t = texLoader.load(url); t.colorSpace = THREE.S
 // dust that streaks past while you fly between rooms
 {
   const N = LITE ? 700 : 2600, p = new Float32Array(N * 3), c = new Float32Array(N * 3), col = [new THREE.Color(0xff6a13), new THREE.Color(0x2f7bff), new THREE.Color(0xffffff)];
-  for (let i = 0; i < N; i++) { p.set([(Math.random() - .5) * 60, (Math.random() - .5) * 28, 14 - Math.random() * 470], i * 3); const k = col[(Math.random() * 3) | 0]; c.set([k.r, k.g, k.b], i * 3); }
+  for (let i = 0; i < N; i++) { p.set([(Math.random() - .5) * 60, (Math.random() - .5) * 28, 14 - Math.random() * 520], i * 3); const k = col[(Math.random() * 3) | 0]; c.set([k.r, k.g, k.b], i * 3); }
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(p, 3)); g.setAttribute('color', new THREE.BufferAttribute(c, 3));
   scene.add(new THREE.Points(g, new THREE.PointsMaterial({ size: .07, vertexColors: true, transparent: true, opacity: .8, depthWrite: false, blending: THREE.AdditiveBlending })));
 }
@@ -173,6 +174,32 @@ function setVideo(it, on) {
     const v = mk('video', { src: `/media/vid/${it.v.id}.mp4`, loop: true, muted: true, playsInline: true, preload: 'auto' }); v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
     v.play().catch(() => {}); it.vid = v; it.tex = new THREE.VideoTexture(v); it.tex.colorSpace = THREE.SRGBColorSpace; it.m.material.map = it.tex; it.m.material.needsUpdate = true;
   } else if (!on && it.vid) { it.vid.pause(); it.vid.removeAttribute('src'); it.vid.load(); it.tex.dispose(); it.vid = it.tex = null; it.m.material.map = it.poster; it.m.material.needsUpdate = true; }
+}
+
+/* ───────────── cinema: the short film, shown like a theatre ───────────── */
+const cinema = new THREE.Group(); cinema.position.set(0, 0, Z.cinema); scene.add(cinema);
+let cineScreen, cineVid = null, cineTex = null, cineOpen = 0; const curtains = [];
+{
+  const std = (c, r = .85) => new THREE.MeshStandardMaterial({ color: c, roughness: r });
+  const add = (geo, m, x, y, z, rx = 0) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.rotation.x = rx; cinema.add(o); return o; };
+  add(new THREE.PlaneGeometry(9.4, 5.6), new THREE.MeshBasicMaterial({ color: 0x050507 }), 0, 0, -.06);
+  cineScreen = add(new THREE.PlaneGeometry(8.8, 4.95), new THREE.MeshBasicMaterial({ map: loadTex('/media/vid/film.jpg'), toneMapped: false }), 0, 0, 0);
+  cineScreen.userData.screen = true;
+  add(new THREE.PlaneGeometry(18, 10), additive(0xff6a13, .16), 0, 0, -.6);
+  [-1, 1].forEach((side) => { const c = add(new THREE.PlaneGeometry(4.7, 5.9), std(0x4a0d12, .9), side * 2.35, 0, .3); c.userData.side = side; curtains.push(c); });
+  add(new THREE.BoxGeometry(11.4, .7, .5), std(0x3a0a0e), 0, 3.1, .35);
+  const seat = std(0x2b0b0f, .8);
+  for (let r = 0; r < 4; r++) for (let i = -5; i <= 5; i++) {
+    const x = i * .95, z = 8.8 + r * 2.4, y = -2.15 - r * .05;
+    add(new THREE.BoxGeometry(.8, .5, .8), seat, x, y, z); add(new THREE.BoxGeometry(.8, 1, .16), seat, x, y + .55, z + .36);
+  }
+  add(new THREE.PlaneGeometry(60, 60), std(0x0a0a0f, .9), 0, -2.45, 0, -Math.PI / 2);
+  const beam = add(new THREE.ConeGeometry(4.8, 20, 40, 1, true), new THREE.MeshBasicMaterial({ color: 0xdfe8ff, transparent: true, opacity: .05, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide }), 0, 1.2, 10, Math.PI / 2);
+}
+function cinemaVideo(on) {
+  if (LITE) return;
+  if (on && !cineVid) { cineVid = mk('video', { src: '/media/vid/film.mp4', loop: true, muted: true, playsInline: true }); cineVid.setAttribute('muted', ''); cineVid.play().catch(() => {}); cineTex = new THREE.VideoTexture(cineVid); cineTex.colorSpace = THREE.SRGBColorSpace; cineScreen.material.map = cineTex; cineScreen.material.needsUpdate = true; }
+  else if (!on && cineVid) { cineVid.pause(); cineTex.dispose(); cineVid = cineTex = null; cineScreen.material.map = loadTex('/media/vid/film.jpg'); cineScreen.material.needsUpdate = true; }
 }
 
 /* ───────────── poster room (you stand in the middle) ───────────── */
@@ -297,6 +324,7 @@ function activate(h) {
   else if (h.tunnel) openVideo(h.tunnel.v.id);
   else if (h.poster) openImage(h.poster);
   else if (h.desk) openVideo(DESK[deskI]);
+  else if (h.screen) openVideo('film');
 }
 function goTo(id) { scrollTo({ top: tops[IDS.indexOf(id)], behavior: 'smooth' }); }
 document.querySelectorAll('[data-go]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); goTo(a.dataset.go); }));
@@ -357,6 +385,7 @@ function tick() {
   if (id === 'hero') { camTarget.set(ptr.x * .25, ptr.y * .12, 6); lookTarget.set(0, 0, 0); fov = 38; }
   else if (id === 'doors') { camTarget.set(ptr.x * .35, .2 + ptr.y * .15, Z.doors + (cam.aspect < .95 ? 11 : 6.4)); lookTarget.set(0, 0, Z.doors); }
   else if (id === 'edits' || id === 'ai') { const T = tunnels[id], z = lerp(T.z0 + 4.6, T.end + 3, prog); camTarget.set(ptr.x * .45, ptr.y * .25, z); lookTarget.set(ptr.x * .8, ptr.y * .3, z - 10); }
+  else if (id === 'cinema') { camTarget.set(ptr.x * .5, .3 + ptr.y * .25, Z.cinema + lerp(22, 17, prog)); lookTarget.set(ptr.x * .8, ptr.y * .3, Z.cinema); }
   else if (id === 'posters') { camTarget.set(0, ptr.y * .2, Z.posters); lookTarget.set(ptr.x * 1.2 * 0, ptr.y * .6, Z.posters - 10); }
   else { camTarget.set(ptr.x * .4, ptr.y * .2, Z.end + 5); lookTarget.set(0, 0, Z.end); fov = 46; }
   const k = 1 - Math.exp(-dt * (id === 'edits' || id === 'ai' ? 6 : 3.2)), prevZ = cam.position.z;
@@ -386,6 +415,7 @@ function tick() {
   if (id === 'posters') { room.rotation.y = prog * Math.PI * 2 * .95 + ringDrag; ringVel *= .92; if (!drag) ringDrag += ringVel; hovered = pick(posterMeshes); }
   posterMeshes.forEach((m) => { const h = id === 'posters' && hovered?.poster === m.userData.poster; m.position.z = lerp(m.position.z, m.userData.base + (h ? 1.2 : 0), .14); m.scale.setScalar(lerp(m.scale.x, h ? 1.06 : 1, .14)); const u = m.material.uniforms.uPeel; u.value = lerp(u.value, h ? 1 : 0, .1); });
   if (id === 'doors') hovered = hit ? { door: hit.door } : null;
+  else if (id === 'cinema') { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); hovered = ray.intersectObject(cineScreen, false).length ? { screen: true } : null; }
   else if (id === 'contact') { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); hovered = desk.visible && ray.intersectObject(deskScreen, false).length ? { desk: true } : null; }
   else if (id === 'hero' || id === 'about') hovered = null;
 
@@ -393,10 +423,12 @@ function tick() {
     pet.visible = doorsView || id === 'contact' || (id === 'about' && prog > .6);
     pet.position.set(doorsView ? -hw * .62 : hw * (cam.aspect > 1 ? .64 : .4), -th * (doorsView ? .72 : .78), doorsView ? Z.doors + 2.6 : Z.end);
     pet.scale.setScalar((doorsView ? .55 : .8) * (cam.aspect > 1 ? 1 : .7)); pet.rotation.y = lerp(pet.rotation.y, (doorsView ? .5 : -.45) + ptr.x * .3, .08); petMixer?.update(dt); }
+  { const on = id === 'cinema'; cinemaVideo(on); cineOpen = lerp(cineOpen, on ? 1 : 0, 1 - Math.exp(-dt * 1.5));
+    curtains.forEach((c) => { const sc = lerp(1, .12, cineOpen), outer = 4.7 + (1 - sc) * .9; c.scale.x = sc; c.position.x = c.userData.side * (outer - 2.35 * sc); }); }
   // editing desk (Contact)
   { const dth = Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)) * 6.2, dhw = dth * cam.aspect, showDesk = id === 'contact' && cam.aspect > 1;
     desk.visible = showDesk; deskVideo(showDesk); desk.position.set(dhw * .34, -dth * .6, Z.end - 1.2); desk.scale.setScalar(.8); desk.rotation.y = -.25 + ptr.x * .06; }
-  $('#back').classList.toggle('on', id === 'edits' || id === 'ai' || id === 'posters');
+  $('#back').classList.toggle('on', id === 'edits' || id === 'ai' || id === 'cinema' || id === 'posters');
   if (id === 'hero') { heroP = lerp(heroP, 50 + 34 * Math.sin(t * .45) + (heroFx - .5) * 40, .03); heroH1.style.backgroundPosition = heroP + '% 0'; }
   // overlays
   const ch = CHAPTERS[id], want = ch ? id : '';
@@ -404,7 +436,7 @@ function tick() {
   $('#caption').classList.toggle('on', id === 'edits' || id === 'ai');
   ticks.forEach((b, n) => b.classList.toggle('on', n === i));
   head.style.left = (scrollY / total * 100) + '%'; tcode.textContent = tc(scrollY / total);
-  if (hovered && (hovered.door || hovered.tunnel || hovered.poster || hovered.desk)) { hov.hidden = false; hov.textContent = hovered.door ? hovered.door.userData.def.label : hovered.tunnel || hovered.desk ? 'Play' : 'Zoom'; hov.style.left = ptr.px + 'px'; hov.style.top = ptr.py + 'px'; canvas.style.cursor = 'pointer'; }
+  if (hovered && (hovered.door || hovered.tunnel || hovered.poster || hovered.desk || hovered.screen)) { hov.hidden = false; hov.textContent = hovered.door ? hovered.door.userData.def.label : hovered.tunnel || hovered.desk || hovered.screen ? 'Play' : 'Zoom'; hov.style.left = ptr.px + 'px'; hov.style.top = ptr.py + 'px'; canvas.style.cursor = 'pointer'; }
   else { hov.hidden = true; canvas.style.cursor = id === 'posters' ? 'grab' : ''; }
 
   drawFx();

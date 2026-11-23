@@ -36,7 +36,7 @@ h1 span{display:block}h1 span+span{padding-left:.22em}
 .btn:hover{background:var(--ink);transform:translateY(-2px)}
 .btn.ghost{background:transparent;color:var(--ink);border:1.5px solid #fff5}.btn.ghost:hover{border-color:var(--ink);background:transparent}
 
-#doors{height:150vh}#edits{height:520vh}#ai{height:560vh}#posters{height:460vh}
+#cinema{height:230vh}#doors{height:150vh}#edits{height:520vh}#ai{height:560vh}#posters{height:460vh}
 #about{min-height:130vh;padding:15vh 0}
 .aboutTx,.contactTx{width:min(1100px,100% - clamp(36px,8vw,120px));margin:0 auto}
 .aboutTx{position:relative}
@@ -128,7 +128,7 @@ h1 span{display:block}h1 span+span{padding-left:.22em}
 /* about: polaroid + stats + glass services */
 .polaroid{position:absolute;right:0;top:-10px;width:min(30vw,330px);padding:14px 14px 12px;background:#f2efe9;color:#101014;box-shadow:0 30px 80px #000b;transform:rotate(3.5deg);transform-origin:50% 0;transition:transform .5s;animation:sway 6s ease-in-out infinite}
 .polaroid:hover{animation-play-state:paused;transform:rotate(0)}
-.polaroid img{width:100%;aspect-ratio:4/5;object-fit:cover;box-shadow:none;border-radius:0;transform:none}
+.polaroid img{width:100%;aspect-ratio:4/5;object-fit:cover;object-position:50% 30%;box-shadow:none;border-radius:0;transform:none}
 .polaroid figcaption{font:800 22px "Big Shoulders Display";text-transform:uppercase;letter-spacing:.05em;text-align:center;padding-top:10px}
 .polaroid .tape{position:absolute;left:50%;top:-14px;width:96px;height:28px;margin-left:-48px;background:#e8b65799;transform:rotate(-3deg)}
 @keyframes sway{50%{transform:rotate(1.5deg)}}
