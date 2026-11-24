@@ -19,7 +19,7 @@ const Z = { doors: -60, edits: -125, ai: -225, cinema: -325, posters: -395, end:
 const $ = (s) => document.querySelector(s);
 // lite mode: phones, touch screens and data-saver get fewer effects so the page loads and runs fast
 const FEED = matchMedia('(max-width:760px)').matches;
-const LITE = matchMedia('(pointer:coarse)').matches || innerWidth < 760 || !!navigator.connection?.saveData;
+const LITE = matchMedia('(pointer:coarse)').matches || innerWidth < 760 || !!navigator.connection?.saveData || /^(slow-2g|2g|3g)$/.test(navigator.connection?.effectiveType || '');
 document.body.classList.toggle('lite', LITE);
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -72,9 +72,19 @@ function startIntro() {
   if (scrollY > 400 || matchMedia('(prefers-reduced-motion: reduce)').matches) { introT0 = -2; return; }
   introT0 = performance.now(); document.body.classList.add('intro');
 }
-mgr.onLoad = () => setTimeout(() => { $('#loader').classList.add('done'); if (introT0 === -1) startIntro(); }, 250);
+function hideLoader() {
+  if (heroDone) return; heroDone = true;
+  setTimeout(() => { $('#loader').classList.add('done'); if (introT0 === -1) startIntro(); }, 250);
+  setTimeout(() => deferred.splice(0).forEach((f) => f()), 600);
+}
+mgr.onLoad = hideLoader; setTimeout(hideLoader, 4500);   // never keep anyone on the loading screen longer than 4.5 s
 const texLoader = new THREE.TextureLoader(mgr);
-const loadTex = (url) => { const t = texLoader.load(url); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = LITE ? 2 : 8; return t; };
+let heroDone = false; const deferred = [], imgLoader = new THREE.ImageLoader(), later = (f) => (heroDone ? f() : deferred.push(f));
+const loadTex = (url, hi = false) => {
+  if (hi) { const t = texLoader.load(url); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = LITE ? 2 : 8; return t; }
+  const t = new THREE.Texture(); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = LITE ? 2 : 8;
+  later(() => imgLoader.load(url, (img) => { t.image = img; t.needsUpdate = true; })); return t;   // low priority: starts after the hero is on screen
+};
 
 let dustMat;
 // dust that streaks past while you fly between rooms
@@ -90,10 +100,10 @@ const additive = (color, opacity) => { const m = new THREE.MeshBasicMaterial({ m
 
 /* ───────────── hero: glowing halo + portrait lit by the cursor ───────────── */
 const hero = new THREE.Group(); scene.add(hero); hero.scale.setScalar(1.1);
-const heroDark = loadTex('/media/img/ash-hero2.webp'), heroCut = loadTex('/media/img/ash-cutout.webp');
+const HERO_SRC = LITE ? '/media/img/ash-hero2-s.webp' : '/media/img/ash-hero2.webp', heroDark = loadTex(HERO_SRC, true), heroCut = loadTex('/media/img/ash-cutout.webp');
 const heroMat = new THREE.ShaderMaterial({
   transparent: true, depthWrite: false,
-  uniforms: { uTex: { value: loadTex('/media/img/ash-hero2.webp') }, uLight: { value: 0 }, uTint: { value: new THREE.Color(0xff6a13) }, uTintAmt: { value: 0 }, uBlur: { value: .014 }, uDof: { value: .0012 }, uMouse: { value: new THREE.Vector2(.5, .6) }, uTime: { value: 0 } },
+  uniforms: { uTex: { value: heroDark }, uLight: { value: 0 }, uTint: { value: new THREE.Color(0xff6a13) }, uTintAmt: { value: 0 }, uBlur: { value: .014 }, uDof: { value: .0012 }, uMouse: { value: new THREE.Vector2(.5, .6) }, uTime: { value: 0 } },
   vertexShader: 'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
   fragmentShader: `varying vec2 vUv;uniform sampler2D uTex;uniform vec2 uMouse;uniform float uTime;uniform float uLight;uniform vec3 uTint;uniform float uTintAmt;uniform float uBlur;uniform float uDof;
   void main(){
@@ -103,7 +113,7 @@ const heroMat = new THREE.ShaderMaterial({
     float bl=uBlur+uDof*smoothstep(.18,.8,d);
     if(bl>.0004){ vec3 s=c; for(int i=0;i<8;i++){ float an=float(i)*.785398; vec2 dir=vec2(cos(an),sin(an)*1.3); s+=texture2D(uTex,uv+dir*bl).rgb; s+=texture2D(uTex,uv+dir*bl*2.).rgb; } c=mix(c,s/17.,clamp(bl*300.,0.,1.)); }
     c*=mix(.62+.7*spot,1.,uLight);
-    c=mix(c,c*(uTint*1.7+.12)+uTint*.05,.55*uTintAmt);
+    c=mix(c,c*(uTint*1.7+.12)+uTint*.05,mix(.55,.9,uLight)*uTintAmt);
     vec2 e=smoothstep(0.,.16,uv)*smoothstep(1.,.84,uv); float a=e.x*e.y*texture2D(uTex,uv).a;
     float n=fract(sin(dot(uv*vec2(1000.,700.)+uTime,vec2(12.9898,78.233)))*43758.5453); c+=(n-.5)*.025;
     gl_FragColor=vec4(c,a);
@@ -136,7 +146,7 @@ function layoutHero() {
 const heroBack = new THREE.Group(); scene.add(heroBack); const fxItems = [];
 const fxPut = (obj, fx, fy, z, sf, rx, ry, rz = 0, flags = {}) => { obj.userData = { fx, fy, z, sf, rx, ry, rz, ...flags, ph: Math.random() * 6, bx: 0, by: 0 }; heroBack.add(obj); fxItems.push(obj); return obj; };
 const SW = [0xff6a13, 0xdc143c, 0x8b4a2b, 0xffc46b, 0x19c79a, 0x2f7bff, 0x8b5cff], SEG = 360 / SW.length;
-let gradeIdx = null, tintAmt = 0, wheel, puck, puckFill; const tintC = new THREE.Color(0xff6a13);
+let gradeIdx = null, tintAmt = 0, wheel, puck, puckFill; const tintC = new THREE.Color(0xff6a13), gradeComp = new THREE.Color();
 {
   const c = mk('canvas', { width: 512, height: 512 }), x = c.getContext('2d');
   SW.forEach((hex, i) => { const a0 = i * SEG + 1.5, a1 = (i + 1) * SEG - 1.5; x.beginPath(); x.moveTo(256, 256); x.arc(256, 256, 250, -a1 * Math.PI / 180, -a0 * Math.PI / 180); x.closePath(); x.fillStyle = '#' + hex.toString(16).padStart(6, '0'); x.fill(); });
@@ -300,6 +310,7 @@ POSTERS.forEach((p, i) => {
 });
 
 /* ───────────── editing desk (Contact): the monitor plays an edit ───────────── */
+const deskParts = [];   // monitor pieces hidden behind the gift box until it is opened
 const desk = new THREE.Group(); desk.visible = false; scene.add(desk);
 let deskScreen, deskVid = null, deskTex = null;
 {
@@ -307,10 +318,10 @@ let deskScreen, deskVid = null, deskTex = null;
   const add = (geo, mat, x, y, z, rx = 0) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.rotation.x = rx; desk.add(m); return m; };
   add(new THREE.BoxGeometry(3.4, .1, 1.5), dark, 0, 0, 0);
   add(new THREE.BoxGeometry(.1, 1.7, 1.3), dark, -1.55, -.9, 0); add(new THREE.BoxGeometry(.1, 1.7, 1.3), dark, 1.55, -.9, 0);
-  add(new THREE.BoxGeometry(1.56, 1.2, .07), black, 0, 1.05, -.35);
+  deskParts.push(add(new THREE.BoxGeometry(1.56, 1.2, .07), black, 0, 1.05, -.35));
   deskScreen = add(new THREE.PlaneGeometry(1.44, 1.08), new THREE.MeshBasicMaterial({ map: loadTex('/media/vid/promo.jpg'), toneMapped: false }), 0, 1.05, -.31);
   deskScreen.userData.desk = true;
-  add(new THREE.BoxGeometry(.12, .5, .1), black, 0, .35, -.37); add(new THREE.BoxGeometry(.8, .04, .45), black, 0, .08, -.3);
+  deskParts.push(add(new THREE.BoxGeometry(.12, .5, .1), black, 0, .35, -.37), add(new THREE.BoxGeometry(.8, .04, .45), black, 0, .08, -.3));
   add(new THREE.BoxGeometry(1.1, .03, .32), black, 0, .07, .38);
   add(new THREE.BoxGeometry(.95, .04, .62), black, -1.1, .08, .15, -.12);
   add(new THREE.PlaneGeometry(.86, .54), new THREE.MeshBasicMaterial({ color: 0x2f7bff }), -1.1, .106, .15, -Math.PI / 2 - .12);
@@ -328,14 +339,29 @@ function deskVideo(on) {
 
 
 /* animated 3D character: greets you at the doors, then hangs around About and Contact */
-const pet = new THREE.Group(); pet.visible = false; scene.add(pet); let petMixer = null;
-new GLTFLoader().load('/models/hero.glb', (g) => {
+const pet = new THREE.Group(); pet.visible = false; scene.add(pet); let petMixer = null, petX = null, movesReady = false, curMove = '', faceAlpha = 0, pointAlpha = 0;   // faceAlpha: the yaw his model naturally faces
+const moves = {}, DANCES = ['shuffling', 'silly_dancing', 'ymca_dance'];
+function playMove(k, fade = .45) { if (k === curMove || !moves[k]) return; moves[k].reset().fadeIn(fade).play(); moves[curMove]?.fadeOut(fade); curMove = k; }
+later(() => new GLTFLoader().load('/models/hero.glb', (g) => {
   const m = g.scene, box = new THREE.Box3().setFromObject(m), k = 2.2 / box.getSize(new THREE.Vector3()).y;
   m.scale.setScalar(k); box.setFromObject(m); const c = box.getCenter(new THREE.Vector3()); m.position.set(-c.x, -box.min.y, -c.z);
   m.traverse((o) => { if (o.isMesh) o.frustumCulled = false; });
-  if (g.animations[0]) { petMixer = new THREE.AnimationMixer(m); petMixer.clipAction(g.animations[0]).play(); }
+  petMixer = new THREE.AnimationMixer(m); const bones = {}; m.traverse((o) => { const mm = /^mixamorig(.+)_\d+$/.exec(o.name); if (mm) bones[mm[1]] = o.name; });
+  if (g.animations[0]) petMixer.clipAction(g.animations[0]).play();   // his own dance until the new clips arrive
+  fetch('/models/moves.json').then((r) => r.json()).then((mv) => {   // the clips were exported from Mixamo; bone names carry a numeric suffix in this model
+    for (const [k, c] of Object.entries(mv)) {
+      const tracks = c.tracks.map((t) => { const [b, prop] = t.name.split('.'), n = bones[b.replace('mixamorig', '')]; return n ? new THREE.QuaternionKeyframeTrack(`${n}.${prop}`, t.times, t.values) : null; }).filter(Boolean);
+      moves[k] = petMixer.clipAction(new THREE.AnimationClip(k, c.duration, tracks));
+    }
+    // measure, once, which way he faces (legs) and which way the pointing arm extends, so turning toward a door is always aimed correctly
+    const bone = (n) => m.getObjectByName(bones[n]), wp = (o) => pet.worldToLocal(o.getWorldPosition(new THREE.Vector3()));
+    const pose = (k, f) => { moves[k].reset().play(); moves[k].time = moves[k].getClip().duration * f; petMixer.update(0); pet.updateMatrixWorld(true); };
+    pose('waving', .1); { const r = wp(bone('RightUpLeg')).sub(wp(bone('LeftUpLeg'))); faceAlpha = Math.atan2(r.z, -r.x); } moves.waving.stop();
+    pose('kneeling_pointing', .6); { const best = ['Left', 'Right'].map((sd) => { const a = wp(bone(sd + 'Arm')), h = wp(bone(sd + 'Hand')); return [h.x - a.x, h.z - a.z]; }).sort((p, q) => Math.hypot(q[0], q[1]) - Math.hypot(p[0], p[1]))[0]; pointAlpha = Math.atan2(best[0], best[1]); } moves.kneeling_pointing.stop();
+    petMixer.stopAllAction(); movesReady = true;
+  }).catch(() => {});
   pet.add(m);
-});
+}));
 /* ───────────── sound (synthesized, off until you switch it on) ───────────── */
 let ac, master, sndOn = false;
 function initAudio() {
@@ -379,6 +405,7 @@ addEventListener('pointerdown', (e) => { ptr.x = e.clientX / innerWidth * 2 - 1;
 addEventListener('pointerup', () => {
   if (drag && drag.moved < 8) {
     if (IDS[sectionIndex()] === 'doors') { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); const hh = ray.intersectObjects(doorObjs.map((g) => g.userData.hit), false)[0]; hovered = hh ? { door: hh.object.userData.door } : null; }
+    if (IDS[sectionIndex()] === 'contact' && desk.visible && !giftUsed) { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); if (ray.intersectObject(desk, true).length || ray.intersectObject(pet, true).length) hovered = { gift: true }; }
     if (hovered) activate(hovered);
   }
   drag = null;
@@ -387,7 +414,7 @@ function activate(h) {
   if (h.door) { const g = h.door; g.userData.force = true; sfx('click'); setTimeout(() => { g.userData.force = false; goTo(g.userData.def.go); }, 520); }
   else if (h.tunnel) openVideo(h.tunnel.v.id);
   else if (h.poster) openImage(h.poster);
-  else if (h.desk) openVideo(DESK[deskI]);
+  else if (h.gift || h.desk) { if (!giftUsed) gift.click(); }
   else if (h.screen) openVideo('film');
 }
 function goTo(id) { scrollTo({ top: tops[IDS.indexOf(id)], behavior: 'smooth' }); }
@@ -417,7 +444,7 @@ if (FEED) {
   const io = new IntersectionObserver((es) => es.forEach((e) => { const v = e.target.querySelector('video'); if (e.isIntersecting) { if (!v.src) v.src = v.dataset.src; v.play().catch(() => {}); } else v.pause(); }), { threshold: .6 });
   [['edits', EDITS, 'Edits', 'Swipe through. Tap one to watch it full screen with sound.'], ['ai', AI, 'AI films', 'Swipe through. Tap one to watch it with sound.']].forEach(([id, list, title, sub]) => {
     const sec = $('#' + id); sec.classList.add('feed'); sec.innerHTML = `<div class="feedHead"><h2>${title}</h2><p>${sub}</p></div><div class="strip"></div>`;
-    list.forEach((v) => { const c = el(`<button class="fcard ${v.wide ? 'wide' : ''}" type="button" aria-label="Play ${v.t}"><video muted loop playsinline preload="none" poster="/media/vid/${v.id}.jpg" data-src="/media/vid/${v.id}.mp4"></video><span class="ftag">${v.t}</span><span class="fplay">Tap to watch</span></button>`); c.addEventListener('click', () => openVideo(v.id)); sec.querySelector('.strip').append(c); io.observe(c); });
+    list.forEach((v) => { const c = el(`<button class="fcard ${v.wide ? 'wide' : ''}" type="button" aria-label="Play ${v.t}"><video muted loop playsinline preload="none" poster="/media/vid/${v.id}.jpg" data-src="/media/vid/m/${v.id}.mp4"></video><span class="ftag">${v.t}</span><span class="fplay">Tap to watch</span></button>`); c.addEventListener('click', () => openVideo(v.id)); sec.querySelector('.strip').append(c); io.observe(c); });
   });
 }
 function fitName() {
@@ -429,22 +456,26 @@ document.fonts.ready.then(fitName);
 
 /* the song: official video in YouTube's own player (no audio file is hosted). Desktop: it plays on the 3D TV at Contact, muted at first
    (browsers require that for autoplay), with YouTube's controls to pause or unmute. Phones: the button opens a small player. Spider-Man dances while it plays. */
-const YT = 'https://www.youtube-nocookie.com', YT_SRC = YT + '/embed/dQw4w9WgXcQ?rel=0&playsinline=1&enablejsapi=1&controls=1&modestbranding=1&start=81&cc_load_policy=1&cc_lang_pref=en&hl=en&origin=' + encodeURIComponent(location.origin);
+const YT = 'https://www.youtube-nocookie.com', YT_SRC = YT + '/embed/dQw4w9WgXcQ?rel=0&playsinline=1&enablejsapi=1&controls=1&modestbranding=1&start=85&cc_load_policy=1&cc_lang_pref=en&hl=en&origin=' + encodeURIComponent(location.origin);
 let party = false, tvFrame = null, tvMuted = true, tvState = -1; const tunes = mk('div', { id: 'tunes', hidden: true });
 tunes.innerHTML = '<button type="button" aria-label="Stop the song">×</button><div class="slot"></div><p>Never Gonna Give You Up, Rick Astley (official video, via YouTube)</p>'; document.body.append(tunes);
 const partyBtn = $('#party');
 const TV_LINES = ['Never Gonna Give You Up,', '<em>never gonna let your deadline down</em>']; let capT = 0, capLast = 0;
 const tvCap = mk('div', { id: 'tvcap', hidden: true }); document.body.append(tvCap);
+// gift box beside the TV: "Click for reward". The click is the tap the browser needs to start the song with sound (reloading the player inside the tap is what makes it start)
+let giftUsed = false;
+const gift = mk('button', { id: 'gift', type: 'button', hidden: true, ariaLabel: 'Click for a secret: play the song with sound', innerHTML: '<span class="g-art"><span class="g-lid"><i></i></span><span class="g-box"></span></span><b>Click for a secret</b>' }); document.body.append(gift);
+gift.addEventListener('click', () => {
+  if (!tvFrame) return; giftUsed = true; gift.classList.add('open'); tvMuted = false; tvState = -1; tvFrame.src = YT_SRC + '&autoplay=1'; partyLabel();
+  setTimeout(() => { gift.classList.remove('open'); if (tvState !== 1 || tvMuted) giftUsed = false; }, 3500);   // browser still blocked it: let them try again
+});
 function partyLabel() { partyBtn.textContent = tvFrame ? (tvState === 1 ? (tvMuted ? 'Turn the sound on' : 'Pause') : 'Play') : party ? 'Stop the music' : 'Make him dance'; partyBtn.setAttribute('aria-pressed', party); }
 const ytCmd = (f, func) => f?.contentWindow?.postMessage(JSON.stringify({ event: 'command', func, args: [] }), YT);
 function tvOn() {
-  if (tvFrame) return; const loud = !!navigator.userActivation?.hasBeenActive; tvMuted = !loud; tvState = -1;   // sound only if the visitor has already interacted with the page
-  tvFrame = mk('iframe', { className: 'tv', title: 'Never Gonna Give You Up (official video) on the TV', allow: 'autoplay; encrypted-media; picture-in-picture', src: YT_SRC + '&autoplay=1' + (loud ? '' : '&mute=1') });
+  if (tvFrame) return; tvMuted = false; tvState = -1;   // nothing plays until the gift box is clicked
+  tvFrame = mk('iframe', { className: 'tv', title: 'Never Gonna Give You Up (official video) on the TV', allow: 'autoplay; encrypted-media; picture-in-picture', src: YT_SRC });
   tvFrame.addEventListener('load', () => tvFrame?.contentWindow?.postMessage(JSON.stringify({ event: 'listening', id: 1, channel: 'widget' }), YT));
-  document.body.append(tvFrame); partyLabel(); const f = tvFrame;
-  if (loud) setTimeout(() => { if (tvFrame === f && tvState !== 1) { ytCmd(f, 'mute'); ytCmd(f, 'playVideo'); tvMuted = true; partyLabel(); } }, 3500);   // browser blocked sound: fall back to muted playback
-  const once = () => { removeEventListener('pointerdown', once); removeEventListener('keydown', once); setTimeout(() => { if (tvFrame === f && tvMuted) { ytCmd(f, 'unMute'); ytCmd(f, 'playVideo'); tvMuted = false; partyLabel(); } }, 150); };
-  addEventListener('pointerdown', once); addEventListener('keydown', once);   // first click, tap or key anywhere turns the sound on
+  document.body.append(tvFrame); partyLabel();
 }
 function tvOff() { if (!tvFrame) return; tvFrame.remove(); tvFrame = null; tvState = -1; party = false; partyLabel(); }
 addEventListener('message', (e) => {
@@ -460,14 +491,14 @@ function stopParty() {
   if (!party || tvFrame) return; party = false; tunes.querySelector('.slot').innerHTML = ''; tunes.hidden = true; partyLabel(); if (ac && sndOn) master.gain.linearRampToValueAtTime(.6, ac.currentTime + .6);
 }
 partyBtn.addEventListener('click', () => {
-  if (true) { if (!tvFrame) return tvOn(); if (tvMuted) { ytCmd(tvFrame, 'unMute'); ytCmd(tvFrame, 'playVideo'); tvMuted = false; partyLabel(); } else ytCmd(tvFrame, tvState === 1 ? 'pauseVideo' : 'playVideo'); }
+  if (true) { if (!tvFrame) return tvOn(); if (!giftUsed) return gift.click(); if (tvMuted) { ytCmd(tvFrame, 'unMute'); ytCmd(tvFrame, 'playVideo'); tvMuted = false; partyLabel(); } else ytCmd(tvFrame, tvState === 1 ? 'pauseVideo' : 'playVideo'); }
   else party ? stopParty() : startParty();
 });
 tunes.querySelector('button').addEventListener('click', stopParty);
 // pin the iframe onto the 3D monitor: map its rectangle to the screen quad (perspective included)
 const tvCorners = [[-.72, .54], [.72, .54], [.72, -.54], [-.72, -.54]], tvV = new THREE.Vector3();
 function placeTv() {
-  if (!tvFrame) { tvCap.hidden = true; return; } const ok = desk.visible && Math.abs(cam.position.z - (Z.end + 5)) < 1.6; tvFrame.style.visibility = ok ? 'visible' : 'hidden'; tvCap.hidden = !ok; if (!ok) return;
+  if (!tvFrame) { tvCap.hidden = true; gift.hidden = true; return; } const ok = desk.visible && Math.abs(cam.position.z - (Z.end + 5)) < 1.6; tvFrame.style.visibility = ok ? 'visible' : 'hidden'; tvFrame.style.opacity = giftUsed ? 1 : 0; tvCap.hidden = !ok || !giftUsed; gift.hidden = !(ok && !giftUsed && (tvState !== 1 || tvMuted)) && !gift.classList.contains('open'); if (!ok) return;
   const P = tvCorners.map(([x, y]) => { tvV.set(x * .995, y * .995, 0); deskScreen.localToWorld(tvV); tvV.project(cam); return [(tvV.x + 1) / 2 * innerWidth, (1 - tvV.y) / 2 * innerHeight]; });
   const [[x0, y0], [x1, y1], [x2, y2], [x3, y3]] = P, W = 480, H = 360, dx1 = x1 - x2, dx2 = x3 - x2, sx = x0 - x1 + x2 - x3, dy1 = y1 - y2, dy2 = y3 - y2, sy = y0 - y1 + y2 - y3, den = dx1 * dy2 - dx2 * dy1;
   const g = (sx * dy2 - dx2 * sy) / den, h = (dx1 * sy - sx * dy1) / den, a = x1 - x0 + g * x1, b = x3 - x0 + h * x3, d = y1 - y0 + g * y1, e = y3 - y0 + h * y3;
@@ -478,6 +509,8 @@ function placeTv() {
   tvCap.classList.toggle('on', party && loc > .2 && loc < 2.4);
   tvCap.style.transform = `translate(${Math.max(x0, x1) + 6}px,${Math.min(y0, y1) - 12}px) translate(-100%,-100%)`;
   tvFrame.style.transform = `matrix3d(${a / W},${d / W},0,${g / W},${b / H},${e / H},0,${h / H},0,0,1,0,${x0},${y0},0,1)`;
+  gift.style.setProperty('--k', (Math.hypot(x1 - x0, y1 - y0) * 1.05 / 68).toFixed(3));   // the box is drawn 68px wide; scale it to cover the TV
+  gift.style.transform = `translate(${(x0 + x1 + x2 + x3) / 4}px,${Math.max(y2, y3) + 34}px) translate(-50%,-100%)`;
 }
 
 /* colour wheel: press or drag on it to grade the hero; double-click to reset */
@@ -553,7 +586,7 @@ function tick() {
   heroMat.uniforms.uTime.value = t;
   heroMat.uniforms.uMouse.value.lerp(mouseUv.set(.5 + ptr.x * .32, .55 + ptr.y * .3), .08);
   hero.rotation.y = lerp(hero.rotation.y, ptr.x * .1, .06); hero.rotation.x = lerp(hero.rotation.x, -ptr.y * .05, .06);
-  { const cool = document.documentElement.classList.contains('cool'), G = cool ? GRADE.cool : GRADE.warm; halo.material.color.lerp(G[0], .06); haloBlue.material.color.lerp(G[1], .06); ring.material.color.lerp(G[2], .06); ring2.material.color.lerp(G[3], .06); }
+  { const G = gradeIdx === null ? GRADE.warm : [tintC, gradeComp.set(SW[(gradeIdx + 4) % SW.length]), tintC, gradeComp]; halo.material.color.lerp(G[0], .06); haloBlue.material.color.lerp(G[1], .06); ring.material.color.lerp(G[2], .06); ring2.material.color.lerp(G[3], .06); }
   ring2.rotation.z = -t * .5; ring.rotation.z = t * .1; halo.material.opacity = .75 + Math.sin(t * 1.6) * .1;
 
   // doors open toward you on hover
@@ -572,19 +605,23 @@ function tick() {
   posterMeshes.forEach((m) => { const h = id === 'posters' && hovered?.poster === m.userData.poster; m.position.z = lerp(m.position.z, m.userData.base + (h ? 1.2 : 0), .14); m.scale.setScalar(lerp(m.scale.x, h ? 1.06 : 1, .14)); const u = m.material.uniforms.uPeel; u.value = lerp(u.value, h ? 1 : 0, .1); });
   if (id === 'doors') hovered = hit ? { door: hit.door } : null;
   else if (id === 'cinema') { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); hovered = ray.intersectObject(cineScreen, false).length ? { screen: true } : null; }
-  else if (id === 'contact') { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); hovered = desk.visible && ray.intersectObject(deskScreen, false).length ? { desk: true } : null; }
+  else if (id === 'contact') { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); hovered = desk.visible && !giftUsed && (ray.intersectObject(desk, true).length || ray.intersectObject(pet, true).length) ? { gift: true } : desk.visible && ray.intersectObject(deskScreen, false).length ? { desk: true } : null; }
   else if (id === 'hero') { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); hovered = wheelOn() && ray.intersectObject(wheel, false).length ? { wheel: true } : null; }
   else if (id === 'about') hovered = null;
 
   { const doorsView = id === 'doors' && cam.aspect > .95, th = Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)) * (doorsView ? 3.8 : 5), hw = th * cam.aspect;
     pet.visible = doorsView || id === 'contact' || (id === 'about' && prog > .6);
-    pet.position.set(doorsView ? -hw * .62 : hw * (cam.aspect > 1 ? .64 : .55), -th * (doorsView ? .72 : cam.aspect > 1 ? .78 : .64), doorsView ? Z.doors + 2.6 : Z.end);
-    pet.scale.setScalar((doorsView ? .55 : .8) * (cam.aspect > 1 ? 1 : .62)); pet.rotation.y = lerp(pet.rotation.y, (doorsView ? .5 : -.45) + ptr.x * .3, .08); petMixer?.update(dt * (party ? 1.7 : 1)); if (party) { pet.position.y += Math.abs(Math.sin(t * 6)) * .1; pet.rotation.z = Math.sin(t * 3) * .06; } else pet.rotation.z = 0; if (id !== 'contact' && (party || tvFrame)) { if (tvFrame) tvOff(); else stopParty(); } }
+    const clicked = doorObjs.some((g) => g.userData.force), hd = doorsView && !clicked ? hovered?.door : null, baseX = -hw * .62;
+    petX = lerp(petX ?? baseX, hd ? baseX + (hd.position.x - baseX) * .3 : baseX, .08);   // he drifts toward the door you hover
+    const mirror = curMove === 'kneeling_pointing' && !!hd && hd.position.x > petX;   // the pointing clip reaches to his left, so for a door on his right he is mirrored
+    pet.position.set(doorsView ? petX : hw * (cam.aspect > 1 ? .64 : .55), -th * (doorsView ? .72 : cam.aspect > 1 ? .78 : .64), doorsView ? Z.doors + 2.6 : Z.end);
+    pet.scale.setScalar((doorsView ? .55 : .8) * (cam.aspect > 1 ? 1 : .62)); pet.scale.x *= mirror ? -1 : 1; pet.rotation.y = lerp(pet.rotation.y, (doorsView ? (hd ? clamp((hd.position.x - petX) * .5, -1.3, 1.3) : .35) : -.45) - (curMove === 'kneeling_pointing' ? (mirror ? -pointAlpha : pointAlpha) : faceAlpha) + ptr.x * .15, .08);   // turns to the hovered door
+    if (movesReady && pet.visible) playMove(doorsView ? (clicked ? 'charge' : hd ? 'kneeling_pointing' : 'waving') : id === 'contact' ? (giftUsed ? DANCES[Math.floor(t / 8) % DANCES.length] : 'waving') : 'waving'); petMixer?.update(movesReady ? dt : dt * (party ? 1.7 : 1)); if (party && !movesReady) { pet.position.y += Math.abs(Math.sin(t * 6)) * .1; pet.rotation.z = Math.sin(t * 3) * .06; } else pet.rotation.z = 0; if (id !== 'contact' && (party || tvFrame)) { if (tvFrame) tvOff(); else stopParty(); } }
   { const on = id === 'cinema'; cinemaVideo(on); cineOpen = lerp(cineOpen, on ? 1 : 0, 1 - Math.exp(-dt * 1.5));
     curtains.forEach((c) => { const sc = lerp(1, .12, cineOpen), outer = 4.7 + (1 - sc) * .9; c.scale.x = sc; c.position.x = c.userData.side * (outer - 2.35 * sc); }); }
   // editing desk (Contact)
   { const dth = Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)) * 6.2, dhw = dth * cam.aspect, showDesk = id === 'contact', wideV = cam.aspect > 1;
-    desk.visible = showDesk; deskScreen.visible = !tvFrame; deskVideo(showDesk && !tvFrame); if (showDesk && !tvFrame) tvOn(); desk.position.set(wideV ? dhw * .34 : -dhw * .1, wideV ? -dth * .6 : -dth * .42, Z.end - 1.2); desk.scale.setScalar(wideV ? .8 : .6); desk.rotation.y = (wideV ? -.25 : -.12) + ptr.x * .06; }
+    desk.visible = showDesk; deskScreen.visible = !tvFrame; deskParts.forEach((o) => { o.visible = giftUsed || !tvFrame; }); deskVideo(showDesk && !tvFrame); if (showDesk && !tvFrame) tvOn(); desk.position.set(wideV ? dhw * .34 : -dhw * .1, wideV ? -dth * .6 : -dth * .42, Z.end - 1.2); desk.scale.setScalar(wideV ? .8 : .6); desk.rotation.y = (wideV ? -.25 : -.12) + ptr.x * .06; }
   $('#back').classList.toggle('on', id === 'edits' || id === 'ai' || id === 'cinema' || id === 'posters');
   if (id === 'hero') { heroP = lerp(heroP, 50 + 34 * Math.sin(t * .45) + (heroFx - .5) * 40, .03); heroH1.style.backgroundPosition = heroP + '% 0'; }
   // overlays
@@ -593,7 +630,7 @@ function tick() {
   $('#caption').classList.toggle('on', (id === 'edits' || id === 'ai') && !FEED);
   ticks.forEach((b, n) => b.classList.toggle('on', n === i));
   head.style.left = (scrollY / total * 100) + '%'; tcode.textContent = tc(scrollY / total);
-  if (hovered && (hovered.door || hovered.tunnel || hovered.poster || hovered.desk || hovered.screen || hovered.wheel)) { hov.hidden = false; hov.textContent = hovered.door ? hovered.door.userData.def.label : hovered.wheel ? 'Drag to colour-grade' : hovered.tunnel || hovered.desk || hovered.screen ? 'Play' : 'Zoom'; hov.style.left = ptr.px + 'px'; hov.style.top = ptr.py + 'px'; canvas.style.cursor = 'pointer'; }
+  if (hovered && (hovered.door || hovered.tunnel || hovered.poster || hovered.desk || hovered.screen || hovered.wheel || hovered.gift)) { hov.hidden = false; hov.textContent = hovered.door ? hovered.door.userData.def.label : hovered.gift ? 'Click for a secret' : hovered.wheel ? 'Drag to colour-grade' : hovered.tunnel || hovered.desk || hovered.screen ? 'Play' : 'Zoom'; hov.style.left = ptr.px + 'px'; hov.style.top = ptr.py + 'px'; canvas.style.cursor = 'pointer'; }
   else { hov.hidden = true; canvas.style.cursor = id === 'posters' ? 'grab' : ''; }
 
   drawFx();
