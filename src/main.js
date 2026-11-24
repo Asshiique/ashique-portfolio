@@ -395,7 +395,7 @@ function drawFx() {
 
 /* ───────────── input ───────────── */
 const ptr = { x: 0, y: 0, px: 0, py: 0, vx: 0 };
-const ray = new THREE.Raycaster(), v2 = new THREE.Vector2(), hov = $('#hover');
+const pv = new THREE.Vector3(), ray = new THREE.Raycaster(), v2 = new THREE.Vector2(), hov = $('#hover');
 let ringDrag = 0, ringVel = 0, drag = null, hovered = null, scrollV = 0, lastY = scrollY;
 addEventListener('pointermove', (e) => {
   const nx = e.clientX / innerWidth * 2 - 1; ptr.vx = nx - ptr.x; ptr.x = nx; ptr.y = -(e.clientY / innerHeight * 2 - 1); ptr.px = e.clientX; ptr.py = e.clientY;
@@ -421,6 +421,17 @@ function goTo(id) { scrollTo({ top: tops[IDS.indexOf(id)], behavior: 'smooth' })
 document.querySelectorAll('[data-go]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); goTo(a.dataset.go); }));
 $('.mark').addEventListener('click', (e) => { e.preventDefault(); goTo('hero'); });
 
+/* ───────────── mouse reactions (mice only): a trailing ring cursor and magnetic buttons ───────────── */
+if (matchMedia('(pointer:fine)').matches) {
+  const cur = mk('div', { id: 'cur', ariaHidden: 'true' }); document.body.append(cur); let cx = -99, cy = -99, cs = 1, over = false;
+  const mag = [...document.querySelectorAll('.btn, .hire, .snd, .back, .wa')];
+  addEventListener('pointermove', (e) => {
+    over = !!e.target.closest?.('a,button,input,select,textarea,label');
+    for (const b of mag) { const r = b.getBoundingClientRect(), dx = e.clientX - (r.x + r.width / 2), dy = e.clientY - (r.y + r.height / 2), near = Math.abs(dx) < r.width / 2 + 40 && Math.abs(dy) < r.height / 2 + 40; b.style.translate = near ? `${dx * .25}px ${dy * .35}px` : ''; }
+  });
+  document.addEventListener('pointerleave', () => { cur.style.opacity = 0; });
+  (function loop() { cx = lerp(cx, ptr.px, .2); cy = lerp(cy, ptr.py, .2); cs = lerp(cs, !hov.hidden ? .35 : over ? 1.7 : 1, .15); cur.style.opacity = ptr.px ? 1 : 0; cur.style.transform = `translate(${cx}px,${cy}px) scale(${cs})`; requestAnimationFrame(loop); })();
+}
 /* ───────────── page furniture: role card, stats, grade cord, form ───────────── */
 {
   const words = ['Video editor', 'AI filmmaker', 'Poster designer'], card = $('#roleCard'), word = $('#roleWord'); let wi = 0;
@@ -609,7 +620,8 @@ function tick() {
   }
   // posters
   if (id === 'posters') { room.rotation.y = prog * Math.PI * 2 * .95 + ringDrag; ringVel *= .92; if (!drag) ringDrag += ringVel; hovered = pick(posterMeshes); }
-  posterMeshes.forEach((m) => { const h = id === 'posters' && hovered?.poster === m.userData.poster; m.position.z = lerp(m.position.z, m.userData.base + (h ? 1.2 : 0), .14); m.scale.setScalar(lerp(m.scale.x, h ? 1.06 : 1, .14)); const u = m.material.uniforms.uPeel; u.value = lerp(u.value, h ? 1 : 0, .1); });
+  posterMeshes.forEach((m) => { const h = id === 'posters' && hovered?.poster === m.userData.poster; let w = 0; if (id === 'posters' && !LITE) { m.getWorldPosition(pv).project(cam); if (pv.z < 1) { const dx = (pv.x - ptr.x) * cam.aspect, dy = pv.y - ptr.y; w = Math.exp(-(dx * dx + dy * dy) * 6); } }
+  m.position.z = lerp(m.position.z, m.userData.base + (h ? 1.2 : 0) + w * 1.1, .14); m.scale.setScalar(lerp(m.scale.x, h ? 1.06 : 1, .14)); const u = m.material.uniforms.uPeel; u.value = lerp(u.value, h ? 1 : 0, .1); });
   if (id === 'doors') hovered = hit ? { door: hit.door } : null;
   else if (id === 'cinema') { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); hovered = ray.intersectObject(cineScreen, false).length ? { screen: true } : null; }
   else if (id === 'contact') { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); hovered = desk.visible && !giftUsed && (ray.intersectObject(desk, true).length || ray.intersectObject(pet, true).length) ? { gift: true } : desk.visible && ray.intersectObject(deskScreen, false).length ? { desk: true } : null; }
