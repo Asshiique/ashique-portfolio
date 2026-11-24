@@ -19,7 +19,7 @@ const Z = { doors: -60, edits: -125, ai: -225, cinema: -325, posters: -395, end:
 const $ = (s) => document.querySelector(s);
 // lite mode: phones, touch screens and data-saver get fewer effects so the page loads and runs fast
 const FEED = matchMedia('(max-width:760px)').matches;
-const LITE = matchMedia('(pointer:coarse)').matches || innerWidth < 760 || !!navigator.connection?.saveData || /^(slow-2g|2g|3g)$/.test(navigator.connection?.effectiveType || '');
+const LITE = !/[?&]full/.test(location.search) && (matchMedia('(pointer:coarse)').matches || innerWidth < 760 || !!navigator.connection?.saveData || /^(slow-2g|2g|3g)$/.test(navigator.connection?.effectiveType || ''));
 document.body.classList.toggle('lite', LITE);
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -103,9 +103,9 @@ const hero = new THREE.Group(); scene.add(hero); hero.scale.setScalar(1.1);
 const HERO_SRC = LITE ? '/media/img/ash-hero2-s.webp' : '/media/img/ash-hero2.webp', heroDark = loadTex(HERO_SRC, true), heroCut = loadTex('/media/img/ash-cutout.webp');
 const heroMat = new THREE.ShaderMaterial({
   transparent: true, depthWrite: false,
-  uniforms: { uTex: { value: heroDark }, uLight: { value: 0 }, uTint: { value: new THREE.Color(0xff6a13) }, uTintAmt: { value: 0 }, uBlur: { value: .014 }, uDof: { value: .0012 }, uMouse: { value: new THREE.Vector2(.5, .6) }, uTime: { value: 0 } },
+  uniforms: { uTex: { value: heroDark }, uLight: { value: 0 }, uTint: { value: new THREE.Color(0xff6a13) }, uTintAmt: { value: 0 }, uBlur: { value: .014 }, uDof: { value: .0012 }, uMouse: { value: new THREE.Vector2(.5, .6) }, uTime: { value: 0 }, uBat: { value: null }, uBatOn: { value: 0 }, uRev: { value: 0 }, uRevPos: { value: new THREE.Vector2(.5, .5) }, uRad: { value: .12 } },
   vertexShader: 'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
-  fragmentShader: `varying vec2 vUv;uniform sampler2D uTex;uniform vec2 uMouse;uniform float uTime;uniform float uLight;uniform vec3 uTint;uniform float uTintAmt;uniform float uBlur;uniform float uDof;
+  fragmentShader: `varying vec2 vUv;uniform sampler2D uTex;uniform vec2 uMouse;uniform float uTime;uniform float uLight;uniform vec3 uTint;uniform float uTintAmt;uniform float uBlur;uniform float uDof;uniform sampler2D uBat;uniform float uBatOn;uniform float uRev;uniform vec2 uRevPos;uniform float uRad;
   void main(){
     vec2 uv=vUv; float d=distance(uv*vec2(.7,1.),uMouse*vec2(.7,1.)); float spot=smoothstep(.6,.0,d);
     vec2 o=(uv-uMouse)*.014*spot;
@@ -114,12 +114,19 @@ const heroMat = new THREE.ShaderMaterial({
     if(bl>.0004){ vec3 s=c; for(int i=0;i<8;i++){ float an=float(i)*.785398; vec2 dir=vec2(cos(an),sin(an)*1.3); s+=texture2D(uTex,uv+dir*bl).rgb; s+=texture2D(uTex,uv+dir*bl*2.).rgb; } c=mix(c,s/17.,clamp(bl*300.,0.,1.)); }
     c*=mix(.62+.7*spot,1.,uLight);
     c=mix(c,c*(uTint*1.7+.12)+uTint*.05,mix(.55,.9,uLight)*uTintAmt);
+    if(uBatOn>.5&&uRev>.001){ float dd=distance(uv*vec2(1.5,1.),uRevPos*vec2(1.5,1.)); float r=uRev*(1.-smoothstep(uRad*.72,uRad,dd)); c=mix(c,texture2D(uBat,uv).rgb,r); c+=vec3(1.,.42,.08)*r*(1.-r)*.9*step(uRad,.8); }
     vec2 e=smoothstep(0.,.16,uv)*smoothstep(1.,.84,uv); float a=e.x*e.y*texture2D(uTex,uv).a;
     float n=fract(sin(dot(uv*vec2(1000.,700.)+uTime,vec2(12.9898,78.233)))*43758.5453); c+=(n-.5)*.025;
     gl_FragColor=vec4(c,a);
     #include <colorspace_fragment>
   }`,
 });
+/* Gotham mode: locking the Batman look changes the name, adds rain, fog, flying bats and the bat-signal */
+const gotham = mk('div', { id: 'gotham', ariaHidden: 'true', innerHTML: '<i class="fog"></i><i class="flash"></i><div class="signal"><svg viewBox="0 0 64 32" class="bat"><path d="M32 6 28 0l-2 8C20 4 10 4 0 10c8 0 12 4 14 10 4-4 8-4 12 0l6 10 6-10c4-4 8-4 12 0 2-6 6-10 14-10C54 4 44 4 38 8l-2-8z"/></svg></div><svg viewBox="0 0 64 32" class="bat b1"><path d="M32 6 28 0l-2 8C20 4 10 4 0 10c8 0 12 4 14 10 4-4 8-4 12 0l6 10 6-10c4-4 8-4 12 0 2-6 6-10 14-10C54 4 44 4 38 8l-2-8z"/></svg><svg viewBox="0 0 64 32" class="bat b2"><path d="M32 6 28 0l-2 8C20 4 10 4 0 10c8 0 12 4 14 10 4-4 8-4 12 0l6 10 6-10c4-4 8-4 12 0 2-6 6-10 14-10C54 4 44 4 38 8l-2-8z"/></svg><svg viewBox="0 0 64 32" class="bat b3"><path d="M32 6 28 0l-2 8C20 4 10 4 0 10c8 0 12 4 14 10 4-4 8-4 12 0l6 10 6-10c4-4 8-4 12 0 2-6 6-10 14-10C54 4 44 4 38 8l-2-8z"/></svg><svg viewBox="0 0 64 32" class="bat b4"><path d="M32 6 28 0l-2 8C20 4 10 4 0 10c8 0 12 4 14 10 4-4 8-4 12 0l6 10 6-10c4-4 8-4 12 0 2-6 6-10 14-10C54 4 44 4 38 8l-2-8z"/></svg>' }); document.body.append(gotham);
+const batHint = mk('div', { id: 'batHint', hidden: true, innerHTML: '<svg viewBox="0 0 64 32"><path d="M32 6 28 0l-2 8C20 4 10 4 0 10c8 0 12 4 14 10 4-4 8-4 12 0l6 10 6-10c4-4 8-4 12 0 2-6 6-10 14-10C54 4 44 4 38 8l-2-8z"/></svg>Click to lock' }); document.body.append(batHint);
+const h1s = [...document.querySelectorAll('#hero h1 span')], h1Name = h1s.map((e) => e.textContent); let gothamOn = false;
+const heroRev = { inside: false, locked: false, ready: false };   // Batman reveal under the cursor (mice only)
+if (!LITE) { const bt = new THREE.Texture(); bt.colorSpace = THREE.SRGBColorSpace; heroMat.uniforms.uBat.value = bt; later(() => imgLoader.load('/media/img/ash-batman.webp', (img) => { bt.image = img; bt.needsUpdate = true; heroMat.uniforms.uBatOn.value = 1; heroRev.ready = true; })); }
 const portrait = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), heroMat);
 const halo = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), additive(0xff5a10, .85));
 const haloBlue = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), additive(0x2f7bff, .55));
@@ -401,11 +408,13 @@ addEventListener('pointermove', (e) => {
   const nx = e.clientX / innerWidth * 2 - 1; ptr.vx = nx - ptr.x; ptr.x = nx; ptr.y = -(e.clientY / innerHeight * 2 - 1); ptr.px = e.clientX; ptr.py = e.clientY;
   if (drag) { ringVel = (e.clientX - drag.x) * .0035; ringDrag += ringVel; drag.moved += Math.abs(e.clientX - drag.x); drag.x = e.clientX; }
 });
-addEventListener('pointerdown', (e) => { ptr.x = e.clientX / innerWidth * 2 - 1; ptr.y = -(e.clientY / innerHeight * 2 - 1); ptr.px = e.clientX; ptr.py = e.clientY; if (e.target === canvas) drag = { x: e.clientX, moved: 0 }; });
+// on the hero the headline box sits over the face, so a tap there counts too
+addEventListener('pointerdown', (e) => { ptr.x = e.clientX / innerWidth * 2 - 1; ptr.y = -(e.clientY / innerHeight * 2 - 1); ptr.px = e.clientX; ptr.py = e.clientY; if (e.target === canvas || (heroRev.inside && !e.target.closest?.('a,button,input,select,textarea,label'))) drag = { x: e.clientX, moved: 0 }; });
 addEventListener('pointerup', () => {
   if (drag && drag.moved < 8) {
     if (IDS[sectionIndex()] === 'doors') { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); const hh = ray.intersectObjects(doorObjs.map((g) => g.userData.hit), false)[0]; hovered = hh ? { door: hh.object.userData.door } : null; }
     if (IDS[sectionIndex()] === 'contact' && desk.visible && !giftUsed) { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); if (ray.intersectObject(desk, true).length || ray.intersectObject(pet, true).length) hovered = { gift: true }; }
+    if (IDS[sectionIndex()] === 'hero' && heroRev.inside && !hovered) heroRev.locked = !heroRev.locked;
     if (hovered) activate(hovered);
   }
   drag = null;
@@ -602,6 +611,12 @@ function tick() {
   else if (introT0 === -2 && heroMat.uniforms.uBlur.value !== 0) { heroMat.uniforms.uBlur.value = 0; hero.scale.setScalar(1); }
   // hero
   heroMat.uniforms.uTime.value = t;
+  { const U = heroMat.uniforms, on = id === 'hero' && heroRev.ready && !heroLight && cam.aspect > 1;
+    heroRev.inside = false; if (on) { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); const hit = ray.intersectObject(portrait, false)[0]; if (hit) { heroRev.inside = true; U.uRevPos.value.lerp(hit.uv, .35); } }
+    if (!on) heroRev.locked = false;
+    if (gothamOn !== heroRev.locked) { gothamOn = heroRev.locked; document.documentElement.classList.toggle('gotham', gothamOn); const w = gothamOn ? ['I am', 'Batman'] : h1Name; h1s.forEach((e, n) => { e.textContent = w[n]; }); }
+    batHint.hidden = !(on && !heroRev.locked && !heroRev.inside);
+    U.uRev.value = lerp(U.uRev.value, on && (heroRev.inside || heroRev.locked) ? 1 : 0, .12); U.uRad.value = lerp(U.uRad.value, heroRev.locked ? 1.7 : .12, .07); }
   heroMat.uniforms.uMouse.value.lerp(mouseUv.set(.5 + ptr.x * .32, .55 + ptr.y * .3), .08);
   hero.rotation.y = lerp(hero.rotation.y, ptr.x * .1, .06); hero.rotation.x = lerp(hero.rotation.x, -ptr.y * .05, .06);
   { const G = gradeIdx === null ? GRADE.warm : [tintC, gradeComp.set(SW[(gradeIdx + 4) % SW.length]), tintC, gradeComp]; halo.material.color.lerp(G[0], .06); haloBlue.material.color.lerp(G[1], .06); ring.material.color.lerp(G[2], .06); ring2.material.color.lerp(G[3], .06); }
@@ -620,8 +635,8 @@ function tick() {
   }
   // posters
   if (id === 'posters') { room.rotation.y = prog * Math.PI * 2 * .95 + ringDrag; ringVel *= .92; if (!drag) ringDrag += ringVel; hovered = pick(posterMeshes); }
-  posterMeshes.forEach((m) => { const h = id === 'posters' && hovered?.poster === m.userData.poster; let w = 0; if (id === 'posters' && !LITE) { m.getWorldPosition(pv).project(cam); if (pv.z < 1) { const dx = (pv.x - ptr.x) * cam.aspect, dy = pv.y - ptr.y; w = Math.exp(-(dx * dx + dy * dy) * 6); } }
-  m.position.z = lerp(m.position.z, m.userData.base + (h ? 1.2 : 0) + w * 2.4, .14); m.scale.setScalar(lerp(m.scale.x, (h ? 1.06 : 1) + w * .1, .14)); const u = m.material.uniforms.uPeel; u.value = lerp(u.value, h ? 1 : 0, .1); });
+  posterMeshes.forEach((m) => { const h = id === 'posters' && hovered?.poster === m.userData.poster; let w = 0; if (id === 'posters' && !LITE) { m.getWorldPosition(pv).project(cam); if (pv.z < 1) { const dx = (pv.x - ptr.x) * cam.aspect, dy = pv.y - ptr.y; w = Math.exp(-(dx * dx + dy * dy) * 2.5); } }
+  m.position.z = lerp(m.position.z, m.userData.base + (h ? 1.2 : 0) + w * 6, .14); m.scale.setScalar(lerp(m.scale.x, (h ? 1.06 : 1) + w * .22, .14)); const u = m.material.uniforms.uPeel; u.value = lerp(u.value, h ? 1 : 0, .1); });
   if (id === 'doors') hovered = hit ? { door: hit.door } : null;
   else if (id === 'cinema') { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); hovered = ray.intersectObject(cineScreen, false).length ? { screen: true } : null; }
   else if (id === 'contact') { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); hovered = desk.visible && !giftUsed && (ray.intersectObject(desk, true).length || ray.intersectObject(pet, true).length) ? { gift: true } : desk.visible && ray.intersectObject(deskScreen, false).length ? { desk: true } : null; }
@@ -649,8 +664,9 @@ function tick() {
   $('#caption').classList.toggle('on', (id === 'edits' || id === 'ai') && !FEED);
   ticks.forEach((b, n) => b.classList.toggle('on', n === i));
   head.style.left = (scrollY / total * 100) + '%'; tcode.textContent = tc(scrollY / total);
-  if (hovered && (hovered.door || hovered.tunnel || hovered.poster || hovered.desk || hovered.screen || hovered.wheel || hovered.gift)) { hov.hidden = false; hov.textContent = hovered.door ? hovered.door.userData.def.label : hovered.gift ? 'Click for a secret' : hovered.wheel ? 'Drag to colour-grade' : hovered.tunnel || hovered.desk || hovered.screen ? 'Play' : 'Zoom'; hov.style.left = ptr.px + 'px'; hov.style.top = ptr.py + 'px'; canvas.style.cursor = 'pointer'; }
-  else { hov.hidden = true; canvas.style.cursor = id === 'posters' ? 'grab' : ''; }
+  if (hovered && (hovered.door || hovered.tunnel || hovered.poster || hovered.desk || hovered.screen || hovered.wheel || hovered.gift)) { hov.classList.remove('bat'); hov.hidden = false; hov.textContent = hovered.door ? hovered.door.userData.def.label : hovered.gift ? 'Click for a secret' : hovered.wheel ? 'Drag to colour-grade' : hovered.tunnel || hovered.desk || hovered.screen ? 'Play' : 'Zoom'; hov.style.left = ptr.px + 'px'; hov.style.top = ptr.py + 'px'; canvas.style.cursor = 'pointer'; }
+  else if (heroRev.inside) { hov.hidden = false; hov.classList.add('bat'); hov.textContent = heroRev.locked ? 'Click to unlock' : 'Click to lock'; hov.style.left = ptr.px + 'px'; hov.style.top = ptr.py + 'px'; canvas.style.cursor = 'pointer'; }
+  else { hov.classList.remove('bat'); hov.hidden = true; canvas.style.cursor = id === 'posters' ? 'grab' : ''; }
 
   drawFx();
   renderer.render(scene, cam); placeTv();
