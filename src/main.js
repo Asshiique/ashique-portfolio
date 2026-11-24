@@ -347,7 +347,7 @@ later(() => new GLTFLoader().load('/models/hero.glb', (g) => {
   m.scale.setScalar(k); box.setFromObject(m); const c = box.getCenter(new THREE.Vector3()); m.position.set(-c.x, -box.min.y, -c.z);
   m.traverse((o) => { if (o.isMesh) o.frustumCulled = false; });
   petMixer = new THREE.AnimationMixer(m); const bones = {}; m.traverse((o) => { const mm = /^mixamorig(.+)_\d+$/.exec(o.name); if (mm) bones[mm[1]] = o.name; });
-  if (g.animations[0]) petMixer.clipAction(g.animations[0]).play();   // his own dance until the new clips arrive
+  if (g.animations[0]) { moves.own = petMixer.clipAction(g.animations[0]); moves.own.play(); curMove = 'own'; }   // his original dance: kept for the Contact scene
   fetch('/models/moves.json').then((r) => r.json()).then((mv) => {   // the clips were exported from Mixamo; bone names carry a numeric suffix in this model
     for (const [k, c] of Object.entries(mv)) {
       const tracks = c.tracks.map((t) => { const [b, prop] = t.name.split('.'), n = bones[b.replace('mixamorig', '')]; return n ? new THREE.QuaternionKeyframeTrack(`${n}.${prop}`, t.times, t.values) : null; }).filter(Boolean);
@@ -358,7 +358,7 @@ later(() => new GLTFLoader().load('/models/hero.glb', (g) => {
     const pose = (k, f) => { moves[k].reset().play(); moves[k].time = moves[k].getClip().duration * f; petMixer.update(0); pet.updateMatrixWorld(true); };
     pose('waving', .1); { const r = wp(bone('RightUpLeg')).sub(wp(bone('LeftUpLeg'))); faceAlpha = Math.atan2(r.z, -r.x); } moves.waving.stop();
     pose('kneeling_pointing', .6); { const best = ['Left', 'Right'].map((sd) => { const a = wp(bone(sd + 'Arm')), h = wp(bone(sd + 'Hand')); return [h.x - a.x, h.z - a.z]; }).sort((p, q) => Math.hypot(q[0], q[1]) - Math.hypot(p[0], p[1]))[0]; pointAlpha = Math.atan2(best[0], best[1]); } moves.kneeling_pointing.stop();
-    petMixer.stopAllAction(); movesReady = true;
+    petMixer.stopAllAction(); curMove = ''; movesReady = true;
   }).catch(() => {});
   pet.add(m);
 }));
@@ -429,7 +429,13 @@ $('.mark').addEventListener('click', (e) => { e.preventDefault(); goTo('hero'); 
   $('#stats').innerHTML = st.map(([n, l]) => `<li><b data-n="${n}">0</b><span>${l}</span></li>`).join('');
   const cio = new IntersectionObserver((es) => es.forEach((e) => { if (!e.isIntersecting) return; cio.unobserve(e.target); const el = e.target, n = +el.dataset.n, t0 = performance.now(); (function f() { const k = clamp((performance.now() - t0) / 1200); el.textContent = Math.round(n * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(f); })(); }), { threshold: .6 });
   document.querySelectorAll('#stats b').forEach((b) => cio.observe(b));
-  const cord = $('#cord'); cord.addEventListener('click', () => { const light = document.documentElement.classList.toggle('light'); cord.setAttribute('aria-pressed', light); cord.classList.add('pull'); setTimeout(() => cord.classList.remove('pull'), 180); sfx('click'); });
+  const cord = $('#cord'); let cy = null, cdy = 0;   // drag the cord down to flip the grade (a tap works too)
+  const flip = () => { const light = document.documentElement.classList.toggle('light'); cord.setAttribute('aria-pressed', light); sfx('click'); cord.classList.remove('snap'); void cord.offsetWidth; cord.classList.add('snap'); };
+  cord.addEventListener('pointerdown', (e) => { cy = e.clientY; cdy = 0; cord.setPointerCapture(e.pointerId); cord.classList.remove('snap'); cord.style.transition = 'none'; });
+  cord.addEventListener('pointermove', (e) => { if (cy === null) return; cdy = Math.max(0, Math.min(46, e.clientY - cy)); cord.style.transform = `translateY(${cdy}px) scaleY(${1 + cdy / 90})`; });
+  const cordUp = () => { if (cy === null) return; cy = null; cord.style.transition = ''; cord.style.transform = ''; if (cdy > 16 || cdy < 4) flip(); cdy = 0; };
+  cord.addEventListener('pointerup', cordUp); cord.addEventListener('pointercancel', cordUp);
+  cord.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); } });
   $('#back').addEventListener('click', () => goTo('doors'));
   $('#brief').addEventListener('submit', (e) => {
     e.preventDefault(); const f = e.target, n = f.n.value.trim(), b = f.b.value.trim(), err = $('#briefErr');
@@ -465,10 +471,11 @@ const tvCap = mk('div', { id: 'tvcap', hidden: true }); document.body.append(tvC
 // gift box beside the TV: "Click for reward". The click is the tap the browser needs to start the song with sound (reloading the player inside the tap is what makes it start)
 let giftUsed = false;
 const gift = mk('button', { id: 'gift', type: 'button', hidden: true, ariaLabel: 'Click for a secret: play the song with sound', innerHTML: '<span class="g-art"><span class="g-lid"><i></i></span><span class="g-box"></span></span><b>Click for a secret</b>' }); document.body.append(gift);
-gift.addEventListener('click', () => {
-  if (!tvFrame) return; giftUsed = true; gift.classList.add('open'); tvMuted = false; tvState = -1; tvFrame.src = YT_SRC + '&autoplay=1'; partyLabel();
-  setTimeout(() => { gift.classList.remove('open'); if (tvState !== 1 || tvMuted) giftUsed = false; }, 3500);   // browser still blocked it: let them try again
-});
+// Phones only start a video when the tap lands INSIDE the player, so the (invisible) player sits on top of the gift box and the tap goes straight to it.
+// This handler covers taps that hit the box outside the player, the button and the clicks around the TV: it commands the player and opens the box at once.
+function revealGift() { if (giftUsed) return; giftUsed = true; gift.classList.add('open'); partyLabel(); setTimeout(() => gift.classList.remove('open'), 900); }
+gift.addEventListener('click', () => { if (!tvFrame) return; tvMuted = false; ytCmd(tvFrame, 'unMute'); ytCmd(tvFrame, 'playVideo'); revealGift(); });
+
 function partyLabel() { partyBtn.textContent = tvFrame ? (tvState === 1 ? (tvMuted ? 'Turn the sound on' : 'Pause') : 'Play') : party ? 'Stop the music' : 'Make him dance'; partyBtn.setAttribute('aria-pressed', party); }
 const ytCmd = (f, func) => f?.contentWindow?.postMessage(JSON.stringify({ event: 'command', func, args: [] }), YT);
 function tvOn() {
@@ -481,7 +488,7 @@ function tvOff() { if (!tvFrame) return; tvFrame.remove(); tvFrame = null; tvSta
 addEventListener('message', (e) => {
   if (e.origin !== YT || !tvFrame || e.source !== tvFrame.contentWindow) return; let d; try { d = JSON.parse(e.data); } catch { return; }
   const st = d.event === 'onStateChange' ? d.info : d.info?.playerState; if (typeof st !== 'number') return;
-  tvState = st; party = st === 1; partyLabel();
+  tvState = st; party = st === 1; partyLabel(); if (st === 1) revealGift();   // it started (their tap hit the player): open the box
 });
 function startParty() {
   party = true; tunes.querySelector('.slot').innerHTML = `<iframe src="${YT_SRC}&autoplay=1" title="Never Gonna Give You Up" allow="autoplay; encrypted-media; picture-in-picture"></iframe>`;
@@ -498,7 +505,7 @@ tunes.querySelector('button').addEventListener('click', stopParty);
 // pin the iframe onto the 3D monitor: map its rectangle to the screen quad (perspective included)
 const tvCorners = [[-.72, .54], [.72, .54], [.72, -.54], [-.72, -.54]], tvV = new THREE.Vector3();
 function placeTv() {
-  if (!tvFrame) { tvCap.hidden = true; gift.hidden = true; return; } const ok = desk.visible && Math.abs(cam.position.z - (Z.end + 5)) < 1.6; tvFrame.style.visibility = ok ? 'visible' : 'hidden'; tvFrame.style.opacity = giftUsed ? 1 : 0; tvCap.hidden = !ok || !giftUsed; gift.hidden = !(ok && !giftUsed && (tvState !== 1 || tvMuted)) && !gift.classList.contains('open'); if (!ok) return;
+  if (!tvFrame) { tvCap.hidden = true; gift.hidden = true; return; } const ok = desk.visible && Math.abs(cam.position.z - (Z.end + 5)) < 1.6; tvFrame.style.visibility = ok ? 'visible' : 'hidden'; tvFrame.style.opacity = giftUsed ? 1 : .01; tvCap.hidden = !ok || !giftUsed; gift.hidden = !(ok && !giftUsed && (tvState !== 1 || tvMuted)) && !gift.classList.contains('open'); if (!ok) return;
   const P = tvCorners.map(([x, y]) => { tvV.set(x * .995, y * .995, 0); deskScreen.localToWorld(tvV); tvV.project(cam); return [(tvV.x + 1) / 2 * innerWidth, (1 - tvV.y) / 2 * innerHeight]; });
   const [[x0, y0], [x1, y1], [x2, y2], [x3, y3]] = P, W = 480, H = 360, dx1 = x1 - x2, dx2 = x3 - x2, sx = x0 - x1 + x2 - x3, dy1 = y1 - y2, dy2 = y3 - y2, sy = y0 - y1 + y2 - y3, den = dx1 * dy2 - dx2 * dy1;
   const g = (sx * dy2 - dx2 * sy) / den, h = (dx1 * sy - sx * dy1) / den, a = x1 - x0 + g * x1, b = x3 - x0 + h * x3, d = y1 - y0 + g * y1, e = y3 - y0 + h * y3;
@@ -616,7 +623,7 @@ function tick() {
     const mirror = curMove === 'kneeling_pointing' && !!hd && hd.position.x > petX;   // the pointing clip reaches to his left, so for a door on his right he is mirrored
     pet.position.set(doorsView ? petX : hw * (cam.aspect > 1 ? .64 : .55), -th * (doorsView ? .72 : cam.aspect > 1 ? .78 : .64), doorsView ? Z.doors + 2.6 : Z.end);
     pet.scale.setScalar((doorsView ? .55 : .8) * (cam.aspect > 1 ? 1 : .62)); pet.scale.x *= mirror ? -1 : 1; pet.rotation.y = lerp(pet.rotation.y, (doorsView ? (hd ? clamp((hd.position.x - petX) * .5, -1.3, 1.3) : .35) : -.45) - (curMove === 'kneeling_pointing' ? (mirror ? -pointAlpha : pointAlpha) : faceAlpha) + ptr.x * .15, .08);   // turns to the hovered door
-    if (movesReady && pet.visible) playMove(doorsView ? (clicked ? 'charge' : hd ? 'kneeling_pointing' : 'waving') : id === 'contact' ? (giftUsed ? DANCES[Math.floor(t / 8) % DANCES.length] : 'waving') : 'waving'); petMixer?.update(movesReady ? dt : dt * (party ? 1.7 : 1)); if (party && !movesReady) { pet.position.y += Math.abs(Math.sin(t * 6)) * .1; pet.rotation.z = Math.sin(t * 3) * .06; } else pet.rotation.z = 0; if (id !== 'contact' && (party || tvFrame)) { if (tvFrame) tvOff(); else stopParty(); } }
+    if (movesReady && pet.visible) playMove(doorsView ? (clicked ? 'charge' : hd ? 'kneeling_pointing' : 'waving') : id === 'contact' ? 'own' : 'waving'); petMixer?.update(curMove === 'own' && party ? dt * 1.7 : dt); if (party && curMove === 'own') { pet.position.y += Math.abs(Math.sin(t * 6)) * .1; pet.rotation.z = Math.sin(t * 3) * .06; } else pet.rotation.z = 0; if (id !== 'contact' && (party || tvFrame)) { if (tvFrame) tvOff(); else stopParty(); } }
   { const on = id === 'cinema'; cinemaVideo(on); cineOpen = lerp(cineOpen, on ? 1 : 0, 1 - Math.exp(-dt * 1.5));
     curtains.forEach((c) => { const sc = lerp(1, .12, cineOpen), outer = 4.7 + (1 - sc) * .9; c.scale.x = sc; c.position.x = c.userData.side * (outer - 2.35 * sc); }); }
   // editing desk (Contact)
