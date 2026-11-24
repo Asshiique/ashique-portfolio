@@ -108,7 +108,9 @@ h1 span{display:block}h1 span+span{padding-left:.22em}
 .cord{position:fixed;top:0;right:clamp(150px,17vw,230px);z-index:30;width:28px;height:84px;background:none;border:0;cursor:pointer;transform-origin:top;transition:transform .15s}
 .cord::before{content:"";position:absolute;left:13px;top:0;width:2px;height:66px;background:linear-gradient(#ffffff55,#fff)}
 .cord i{position:absolute;left:5px;top:62px;width:18px;height:18px;border-radius:50%;background:var(--or);box-shadow:0 0 16px var(--or)}
-.cord.pull{transform:translateY(12px)}
+.cord.snap{animation:cordSnap .7s cubic-bezier(.2,.8,.3,1)}
+@keyframes cordSnap{0%{transform:translateY(34px) scaleY(1.4)}30%{transform:translateY(-8px) scaleY(.9)}55%{transform:translateY(5px) scaleY(1.06)}80%{transform:translateY(-2px)}100%{transform:none}}
+.cord{touch-action:none;transform-origin:top}
 @media(max-width:760px){.cord{right:auto;left:50%;margin-left:-14px}}
 /* back to the doors */
 .back{position:fixed;right:clamp(18px,4vw,48px);top:78px;z-index:22;padding:9px 16px;border-radius:99px;border:1.5px solid #fff5;background:#05060acc;color:var(--ink);font:700 14px "Hanken Grotesk";cursor:pointer;backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:.3s}
@@ -216,7 +218,7 @@ body.intro .lower{animation:lowerIn 1.2s ease 1.5s both}
 @media(max-width:760px){#tunes{right:auto;left:14px;top:auto;bottom:96px}}
 
 /* the song plays on the 3D TV: this iframe is pinned onto the monitor by the script */
-iframe.tv{position:fixed;left:0;top:0;width:480px;height:360px;transform-origin:0 0;border:0;z-index:26;background:#000;visibility:hidden}
+iframe.tv{position:fixed;left:0;top:0;width:480px;height:360px;transform-origin:0 0;border:0;z-index:29;background:#000;visibility:hidden}
 @media(max-width:760px){#contact{padding-bottom:58vh}}
 
 /* caption above the TV */
