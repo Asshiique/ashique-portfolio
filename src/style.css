@@ -250,6 +250,5 @@ iframe.tv{transition:opacity .8s ease .2s}
 #gift::before{content:"";position:absolute;inset:-26px}   /* a generous tap area around the box */
 
 /* trailing ring cursor (mice only; the script only adds it when a fine pointer exists) */
-#cur{position:fixed;left:-17px;top:-17px;width:34px;height:34px;border:1.5px solid var(--or);border-radius:50%;pointer-events:none;z-index:31;transition:opacity .3s,background .25s;will-change:transform}
+#cur{position:fixed;left:-22px;top:-22px;width:44px;height:44px;border:2px solid var(--or);box-shadow:0 0 14px var(--or),inset 0 0 10px #ff6a1355;border-radius:50%;pointer-events:none;z-index:31;transition:opacity .3s,background .25s;will-change:transform}
 .light #cur{border-color:#101014}
-@media(prefers-reduced-motion:reduce){#cur{display:none}}
