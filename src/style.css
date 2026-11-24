@@ -252,3 +252,30 @@ iframe.tv{transition:opacity .8s ease .2s}
 /* trailing ring cursor (mice only; the script only adds it when a fine pointer exists) */
 #cur{position:fixed;left:-22px;top:-22px;width:44px;height:44px;border:2px solid var(--or);box-shadow:0 0 14px var(--or),inset 0 0 10px #ff6a1355;border-radius:50%;pointer-events:none;z-index:31;transition:opacity .3s,background .25s;will-change:transform}
 .light #cur{border-color:#101014}
+
+/* hero Batman reveal: hint chip, bigger hover label, and Gotham mode */
+#batHint,#hover.bat{display:inline-flex;align-items:center;gap:7px;font:400 15px "Bebas Neue","Big Shoulders Display";letter-spacing:.2em;text-transform:uppercase;color:#ffd34e;background:#05070cf2;border:1px solid #ffd34e99;padding:5px 13px 4px;border-radius:3px;box-shadow:0 0 14px #ffd34e44}
+#batHint svg{width:19px;fill:#ffd34e}
+#batHint{position:fixed;left:70%;top:62%;transform:translateX(-50%);z-index:6;pointer-events:none;animation:hintPulse 2s ease-in-out infinite}
+#batHint[hidden]{display:none}
+@keyframes hintPulse{0%,100%{box-shadow:0 0 6px #ffd34e33}50%{box-shadow:0 0 18px #ffd34e99}}
+#gl{transition:filter 1s}
+.gotham #gl{filter:saturate(.75) hue-rotate(-10deg) contrast(1.12) brightness(.92)}
+.gotham h1{background:linear-gradient(100deg,#f2efe9 0,#ffd34e 35%,#9aa4b2 70%,#f2efe9 100%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text}
+#gotham{position:fixed;inset:0;z-index:6;pointer-events:none;overflow:hidden;opacity:0;transition:opacity 1s;background:radial-gradient(ellipse at 50% 40%,transparent 35%,#02040acc 100%),linear-gradient(#0a1424aa,#05080f55)}
+.gotham #gotham{opacity:1}
+#gotham i{position:absolute;inset:0}
+#gotham .fog{background:radial-gradient(60% 40% at 20% 85%,#8fa3c022,transparent),radial-gradient(50% 35% at 80% 95%,#8fa3c01c,transparent);animation:fog 14s ease-in-out infinite alternate}
+@keyframes fog{to{transform:translateX(-6%)}}
+#gotham .flash{background:#cfe0ff;opacity:0;animation:flash 9s infinite}
+@keyframes flash{0%,92%,96%,100%{opacity:0}93%{opacity:.28}94.5%{opacity:.05}95.2%{opacity:.2}}
+#gotham .signal{position:absolute;right:7vw;top:9vh;width:170px;height:104px;border-radius:50%;background:radial-gradient(ellipse,#fff1b0 0,#ffcf4a 55%,#ffb800 62%,transparent 68%);display:grid;place-items:center;filter:drop-shadow(0 0 26px #ffcf4acc)}
+#gotham .signal::before{content:"";position:absolute;left:-140%;top:70%;width:260%;height:160vh;background:linear-gradient(to bottom left,#ffe58a26,transparent 55%);clip-path:polygon(70% 0,100% 0,100% 100%,0 100%);transform-origin:top right;z-index:-1}
+#gotham .signal .bat{width:74px;fill:#05070c;position:static;animation:none}
+#gotham .bat{position:absolute;width:56px;fill:#02030a;filter:drop-shadow(0 0 4px #000);animation:fly 9s linear infinite,flap .22s ease-in-out infinite alternate}
+#gotham .b1{top:18%;left:-80px}#gotham .b2{top:34%;left:-80px;width:36px;animation-delay:2.5s,0s;animation-duration:12s,.18s}
+#gotham .b3{top:52%;left:-80px;width:70px;animation-delay:5s,0s;animation-duration:8s,.25s}#gotham .b4{top:10%;left:-80px;width:30px;animation-delay:7s,0s;animation-duration:14s,.16s}
+@keyframes fly{0%{transform:translateX(0) translateY(0)}25%{transform:translateX(30vw) translateY(-30px)}50%{transform:translateX(60vw) translateY(24px)}75%{transform:translateX(90vw) translateY(-16px)}100%{transform:translateX(125vw) translateY(10px)}}
+@keyframes flap{to{scale:1 .55}}
+@media(prefers-reduced-motion:reduce){#gotham .bat,#gotham .flash,#gotham .fog,#batHint{animation:none}}
+#hero h1,#hero p,#hero .role,#hero small{pointer-events:none}   /* these boxes cover the portrait; let clicks reach it */
