@@ -186,7 +186,7 @@ function layoutHero() {
 /* hero backdrop: a colour wheel made of the site's own colours; pick one to grade the whole hero */
 const heroBack = new THREE.Group(); scene.add(heroBack); const fxItems = [];
 const fxPut = (obj, fx, fy, z, sf, rx, ry, rz = 0, flags = {}) => { obj.userData = { fx, fy, z, sf, rx, ry, rz, ...flags, ph: Math.random() * 6, bx: 0, by: 0 }; heroBack.add(obj); fxItems.push(obj); return obj; };
-const SW = [0xc98d4f, 0x8b4a2b, 0xe8b657, 0xb5472f, 0x6b8f71, 0x7d8a99, 0x9b6b8a], SEG = 360 / SW.length;
+const SW = [0xc98d4f, 0x6b4226, 0xe8b657, 0xb5532f, 0xd9c3a0, 0x7a7447, 0x7a3b3b], SEG = 360 / SW.length;
 let gradeIdx = null, tintAmt = 0, wheel, puck, puckFill; const tintC = new THREE.Color(0xc98d4f), gradeComp = new THREE.Color();
 {
   const c = mk('canvas', { width: 512, height: 512 }), x = c.getContext('2d');
@@ -216,7 +216,7 @@ function applyGradeCss() {
 function heroBackTick(t, id, dt) {
   heroBack.visible = id === 'hero'; if (!heroBack.visible) return;
   fxItems.forEach((o) => { const u = o.userData; o.visible = !(u.deskOnly && cam.aspect <= .95) && !(u.lightOff && heroLight); o.position.set(u.bx + ptr.x * .1 * (1 + u.z), u.by + Math.sin(t * .8 + u.ph) * .05, u.z); o.rotation.set(u.rx - ptr.y * .08, u.ry + ptr.x * .12, u.rz + (u.lightOff ? Math.sin(t * .25) * .05 : 0)); });
-  tintAmt = lerp(tintAmt, gradeIdx === null ? .22 : 1, .08);   // the default look carries a gentle brown grade so the photo's orange sits in the palette
+  tintAmt = lerp(tintAmt, gradeIdx === null ? .4 : 1, .08);   // the default look carries a gentle brown grade so the photo's orange sits in the palette
   const idx = gradeIdx === null ? 0 : gradeIdx; tintC.set(SW[idx]);
   const a = (idx + .5) * SEG * Math.PI / 180; puck.position.set(Math.cos(a) * .95, Math.sin(a) * .95, .02); puckFill.material.color.copy(tintC);
   heroMat.uniforms.uTint.value.copy(tintC); heroMat.uniforms.uTintAmt.value = tintAmt;
