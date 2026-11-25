@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import Lenis from 'lenis';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 /* ───────────── content ───────────── */
@@ -30,8 +31,11 @@ const measure = () => { tops = secEls.map((e) => e.offsetTop); hs = secEls.map((
 
 /* ───────────── lightbox ───────────── */
 const lb = $('#lightbox'), lbb = $('#lbbody');
-const closeLB = () => { lb.hidden = true; lbb.replaceChildren(); };
-const openLB = (node) => { lbb.replaceChildren(node); lb.hidden = false; node.play?.(); };
+// smooth wheel scrolling on desktop; phones and slow links keep the browser's own scroll (shortcut: no touch smoothing)
+const lenis = LITE || matchMedia('(prefers-reduced-motion: reduce)').matches ? null : new Lenis({ lerp: .09, wheelMultiplier: .9 });
+if (lenis) { const raf = (t) => { lenis.raf(t); requestAnimationFrame(raf); }; requestAnimationFrame(raf); }
+const closeLB = () => { lb.hidden = true; lbb.replaceChildren(); lenis?.start(); };
+const openLB = (node) => { lbb.replaceChildren(node); lb.hidden = false; node.play?.(); lenis?.stop(); };
 $('#lbx').onclick = closeLB; lb.onclick = (e) => e.target === lb && closeLB();
 addEventListener('keydown', (e) => e.key === 'Escape' && closeLB());
 // the corridor loops a 9-second preview; clicking opens the full video with sound (falls back to the preview if the full file is missing)
@@ -456,7 +460,7 @@ function activate(h) {
   else if (h.gift || h.desk) { if (!giftUsed) gift.click(); }
   else if (h.screen) openVideo('film');
 }
-function goTo(id) { scrollTo({ top: tops[IDS.indexOf(id)], behavior: 'smooth' }); }
+function goTo(id) { const top = tops[IDS.indexOf(id)]; if (lenis) lenis.scrollTo(top, { duration: 1.6 }); else scrollTo({ top, behavior: 'smooth' }); }
 document.querySelectorAll('[data-go]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); goTo(a.dataset.go); }));
 $('.mark').addEventListener('click', (e) => { e.preventDefault(); goTo('hero'); });
 
@@ -591,7 +595,7 @@ function buildTicks() {
   });
 }
 let railDrag = false;
-const scrub = (e) => { const r = rail.getBoundingClientRect(); scrollTo({ top: clamp((e.clientX - r.left) / r.width) * total, behavior: 'instant' }); };
+const scrub = (e) => { const r = rail.getBoundingClientRect(), top = clamp((e.clientX - r.left) / r.width) * total; if (lenis) lenis.scrollTo(top, { immediate: true }); else scrollTo({ top, behavior: 'instant' }); };
 rail.addEventListener('pointerdown', (e) => { if (e.target.closest('.tick')) return; railDrag = true; rail.setPointerCapture(e.pointerId); scrub(e); });
 rail.addEventListener('pointermove', (e) => railDrag && scrub(e)); rail.addEventListener('pointerup', () => (railDrag = false));
 const tc = (p) => { const f = Math.floor(p * 180 * 24); return `00:${String(Math.floor(f / 1440)).padStart(2, '0')}:${String(Math.floor(f / 24) % 60).padStart(2, '0')}:${String(f % 24).padStart(2, '0')}`; };
