@@ -404,10 +404,11 @@ later(() => new GLTFLoader().load('/models/hero.glb', (g) => {
   pet.add(m);
 }));
 /* ───────────── sound (synthesized, off until you switch it on) ───────────── */
-let ac, master, sndOn = false;
+let ac, master, padLp, windG, windF, sndOn = false;
 function initAudio() {
   ac = new (window.AudioContext || window.webkitAudioContext)(); master = ac.createGain(); master.gain.value = 0; master.connect(ac.destination);
-  const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 700; lp.connect(master);
+  const lp = padLp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 700; lp.connect(master);
+  { const len = ac.sampleRate * 2, buf = ac.createBuffer(1, len, ac.sampleRate), d = buf.getChannelData(0); for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1; const n = ac.createBufferSource(); windF = ac.createBiquadFilter(); windG = ac.createGain(); n.buffer = buf; n.loop = true; windF.type = 'bandpass'; windF.frequency.value = 500; windF.Q.value = .5; windG.gain.value = 0; n.connect(windF); windF.connect(windG); windG.connect(master); n.start(); }   // wind: only audible while you scroll
   const lfo = ac.createOscillator(), lg = ac.createGain(); lfo.frequency.value = .06; lg.gain.value = 320; lfo.connect(lg); lg.connect(lp.frequency); lfo.start();
   [55, 82.41, 110, 164.81, 220.5].forEach((f, i) => { const o = ac.createOscillator(), g = ac.createGain(); o.type = i % 2 ? 'sine' : 'triangle'; o.frequency.value = f; o.detune.value = (i - 2) * 6; g.gain.value = .05 / (1 + i * .35); o.connect(g); g.connect(lp); o.start(); });
 }
@@ -416,12 +417,25 @@ function sfx(kind) {
   if (kind === 'click') { const o = ac.createOscillator(); o.type = 'sine'; o.frequency.setValueAtTime(220, t0); o.frequency.exponentialRampToValueAtTime(55, t0 + .16); g.gain.setValueAtTime(.9, t0); g.gain.exponentialRampToValueAtTime(.001, t0 + .22); o.connect(g); o.start(t0); o.stop(t0 + .25); }
   else { const len = ac.sampleRate * .4, buf = ac.createBuffer(1, len, ac.sampleRate), d = buf.getChannelData(0); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len); const n = ac.createBufferSource(), f = ac.createBiquadFilter(); n.buffer = buf; f.type = 'bandpass'; f.frequency.setValueAtTime(300, t0); f.frequency.exponentialRampToValueAtTime(1800, t0 + .35); g.gain.value = .35; n.connect(f); f.connect(g); n.start(t0); }
 }
+// scroll speed opens the pad's filter and swells the wind; hovering a door or poster rings a short glassy chime
+const SCALE = [659.25, 783.99, 880, 987.77, 1174.66, 1318.51];
+function soundTick(v) { if (!sndOn || !ac) return; const k = Math.min(1, v / 1800), t = ac.currentTime; windG.gain.setTargetAtTime(k * .13, t, .12); windF.frequency.setTargetAtTime(350 + k * 1500, t, .15); padLp.frequency.setTargetAtTime(700 + k * 900, t, .2); }
+let lastChime = 0;
+function chime(i = 0, soft = 1) {
+  if (!sndOn || !ac || performance.now() - lastChime < 140) return; lastChime = performance.now(); const t0 = ac.currentTime, f = SCALE[i % SCALE.length];
+  [1, 2.01, 3.5].forEach((m, n) => { const o = ac.createOscillator(), g = ac.createGain(); o.type = 'sine'; o.frequency.value = f * m; g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.16 * soft / (n + 1), t0 + .008); g.gain.exponentialRampToValueAtTime(.0005, t0 + 1.1 - n * .25); o.connect(g); g.connect(master); o.start(t0); o.stop(t0 + 1.2); });
+}
+let hoverKey = null, hoverN = 0, lastSec = -1;
 const sndBtn = $('#snd');
 sndBtn.addEventListener('click', () => {
   if (!ac) initAudio(); sndOn = !sndOn; ac.resume();
   master.gain.cancelScheduledValues(ac.currentTime); master.gain.linearRampToValueAtTime(sndOn ? .6 : 0, ac.currentTime + .8);
+  try { localStorage.setItem('snd', sndOn ? '1' : '0'); } catch {}
   sndBtn.setAttribute('aria-pressed', sndOn); sndBtn.querySelector('span').textContent = sndOn ? 'Sound on' : 'Sound off'; sfx('click');
 });
+
+// remember the choice: browsers need a gesture, so a saved "on" restarts at the first tap or key press
+try { if (localStorage.getItem('snd') === '1') { const again = () => { removeEventListener('pointerdown', again); removeEventListener('keydown', again); if (!sndOn) sndBtn.click(); }; addEventListener('pointerdown', again); addEventListener('keydown', again); } } catch {}
 
 /* ───────────── film look: light leaks + cursor trail ───────────── */
 const fx = $('#fx'), fxc = fx.getContext('2d'), leak = $('#leak'), trail = []; let lx = .7, ly = .3;
@@ -616,7 +630,7 @@ const pick = (objs) => { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); const
 
 function tick() {
   const dt = Math.min(clock.getDelta(), .05), t = clock.elapsedTime;
-  scrollV = lerp(scrollV, (scrollY - lastY) / Math.max(dt, .001), .15); lastY = scrollY;
+  scrollV = lerp(scrollV, (scrollY - lastY) / Math.max(dt, .001), .15); lastY = scrollY; soundTick(Math.abs(scrollV));
   const i = sectionIndex(), id = IDS[i], prog = clamp((scrollY - tops[i]) / Math.max(1, hs[i] - innerHeight));
 
   let fov = 50;
@@ -701,6 +715,8 @@ function tick() {
   if (want !== shownCh) { shownCh = want; const el = $('#chapter'); el.classList.remove('on'); if (ch) setTimeout(() => { if (shownCh === id) { el.querySelector('h2').textContent = ch[0]; el.querySelector('p').textContent = ch[1]; el.classList.add('on'); } }, 250); }
   $('#caption').classList.toggle('on', (id === 'edits' || id === 'ai') && !FEED);
   ticks.forEach((b, n) => b.classList.toggle('on', n === i));
+  if (i !== lastSec) { if (lastSec >= 0) chime(i, .6); lastSec = i; }
+  { const hk = hovered?.door || hovered?.poster || null; if (hk && hk !== hoverKey) chime(hoverN++, 1); hoverKey = hk; }
   head.style.left = (scrollY / total * 100) + '%'; tcode.textContent = tc(scrollY / total);
   if (hovered && (hovered.door || hovered.tunnel || hovered.poster || hovered.desk || hovered.screen || hovered.wheel || hovered.gift)) { hov.classList.remove('bat'); hov.hidden = false; hov.textContent = hovered.door ? hovered.door.userData.def.label : hovered.gift ? 'Click for a secret' : hovered.wheel ? 'Drag to colour-grade' : hovered.tunnel || hovered.desk || hovered.screen ? 'Play' : 'Zoom'; hov.style.left = ptr.px + 'px'; hov.style.top = ptr.py + 'px'; canvas.style.cursor = 'pointer'; }
   else if (heroRev.inside) { hov.hidden = false; hov.classList.add('bat'); hov.textContent = heroRev.locked ? 'Click to unlock' : 'Click to lock'; hov.style.left = ptr.px + 'px'; hov.style.top = ptr.py + 'px'; canvas.style.cursor = 'pointer'; }
