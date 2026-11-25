@@ -103,9 +103,9 @@ const hero = new THREE.Group(); scene.add(hero); hero.scale.setScalar(1.1);
 const HERO_SRC = LITE ? '/media/img/ash-hero2-s.webp' : '/media/img/ash-hero2.webp', heroDark = loadTex(HERO_SRC, true), heroCut = loadTex('/media/img/ash-cutout.webp');
 const heroMat = new THREE.ShaderMaterial({
   transparent: true, depthWrite: false,
-  uniforms: { uTex: { value: heroDark }, uLight: { value: 0 }, uTint: { value: new THREE.Color(0xff6a13) }, uTintAmt: { value: 0 }, uBlur: { value: .014 }, uDof: { value: .0012 }, uMouse: { value: new THREE.Vector2(.5, .6) }, uTime: { value: 0 }, uBat: { value: null }, uBatOn: { value: 0 }, uRev: { value: 0 }, uRevPos: { value: new THREE.Vector2(.5, .5) }, uRad: { value: .12 } },
+  uniforms: { uTex: { value: heroDark }, uLight: { value: 0 }, uTint: { value: new THREE.Color(0xff6a13) }, uTintAmt: { value: 0 }, uBlur: { value: .014 }, uDof: { value: .0012 }, uMouse: { value: new THREE.Vector2(.5, .6) }, uTime: { value: 0 }, uBat: { value: null }, uBatOn: { value: 0 }, uMask: { value: null }, uRev: { value: 0 }, uRevPos: { value: new THREE.Vector2(.5, .5) }, uRad: { value: .12 } },
   vertexShader: 'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
-  fragmentShader: `varying vec2 vUv;uniform sampler2D uTex;uniform vec2 uMouse;uniform float uTime;uniform float uLight;uniform vec3 uTint;uniform float uTintAmt;uniform float uBlur;uniform float uDof;uniform sampler2D uBat;uniform float uBatOn;uniform float uRev;uniform vec2 uRevPos;uniform float uRad;
+  fragmentShader: `varying vec2 vUv;uniform sampler2D uTex;uniform vec2 uMouse;uniform float uTime;uniform float uLight;uniform vec3 uTint;uniform float uTintAmt;uniform float uBlur;uniform float uDof;uniform sampler2D uBat;uniform sampler2D uMask;uniform float uBatOn;uniform float uRev;uniform vec2 uRevPos;uniform float uRad;
   void main(){
     vec2 uv=vUv; float d=distance(uv*vec2(.7,1.),uMouse*vec2(.7,1.)); float spot=smoothstep(.6,.0,d);
     vec2 o=(uv-uMouse)*.014*spot;
@@ -114,7 +114,7 @@ const heroMat = new THREE.ShaderMaterial({
     if(bl>.0004){ vec3 s=c; for(int i=0;i<8;i++){ float an=float(i)*.785398; vec2 dir=vec2(cos(an),sin(an)*1.3); s+=texture2D(uTex,uv+dir*bl).rgb; s+=texture2D(uTex,uv+dir*bl*2.).rgb; } c=mix(c,s/17.,clamp(bl*300.,0.,1.)); }
     c*=mix(.62+.7*spot,1.,uLight);
     c=mix(c,c*(uTint*1.7+.12)+uTint*.05,mix(.55,.9,uLight)*uTintAmt);
-    if(uBatOn>.5&&uRev>.001){ float dd=distance(uv*vec2(1.5,1.),uRevPos*vec2(1.5,1.)); float r=uRev*(1.-smoothstep(uRad*.72,uRad,dd)); c=mix(c,texture2D(uBat,uv).rgb,r); c+=vec3(1.,.42,.08)*r*(1.-r)*.9*step(uRad,.8); }
+    if(uBatOn>.5){ float m=smoothstep(.22,.62,texture2D(uMask,uv).r); float dd=distance(uv*vec2(1.5,1.),uRevPos*vec2(1.5,1.)); float lk=uRev*(1.-smoothstep(uRad*.72,uRad,dd)); float r=max(m,lk); if(r>.001){ c=mix(c,texture2D(uBat,uv).rgb,r); c+=vec3(1.,.42,.08)*m*(1.-m)*(1.-uRev)*1.1; } }
     vec2 e=smoothstep(0.,.16,uv)*smoothstep(1.,.84,uv); float a=e.x*e.y*texture2D(uTex,uv).a;
     float n=fract(sin(dot(uv*vec2(1000.,700.)+uTime,vec2(12.9898,78.233)))*43758.5453); c+=(n-.5)*.025;
     gl_FragColor=vec4(c,a);
@@ -125,6 +125,14 @@ const heroMat = new THREE.ShaderMaterial({
 const gotham = mk('div', { id: 'gotham', ariaHidden: 'true', innerHTML: '<i class="fog"></i><i class="flash"></i><div class="signal"><svg viewBox="0 0 64 32" class="bat"><path d="M32 6 28 0l-2 8C20 4 10 4 0 10c8 0 12 4 14 10 4-4 8-4 12 0l6 10 6-10c4-4 8-4 12 0 2-6 6-10 14-10C54 4 44 4 38 8l-2-8z"/></svg></div><svg viewBox="0 0 64 32" class="bat b1"><path d="M32 6 28 0l-2 8C20 4 10 4 0 10c8 0 12 4 14 10 4-4 8-4 12 0l6 10 6-10c4-4 8-4 12 0 2-6 6-10 14-10C54 4 44 4 38 8l-2-8z"/></svg><svg viewBox="0 0 64 32" class="bat b2"><path d="M32 6 28 0l-2 8C20 4 10 4 0 10c8 0 12 4 14 10 4-4 8-4 12 0l6 10 6-10c4-4 8-4 12 0 2-6 6-10 14-10C54 4 44 4 38 8l-2-8z"/></svg><svg viewBox="0 0 64 32" class="bat b3"><path d="M32 6 28 0l-2 8C20 4 10 4 0 10c8 0 12 4 14 10 4-4 8-4 12 0l6 10 6-10c4-4 8-4 12 0 2-6 6-10 14-10C54 4 44 4 38 8l-2-8z"/></svg><svg viewBox="0 0 64 32" class="bat b4"><path d="M32 6 28 0l-2 8C20 4 10 4 0 10c8 0 12 4 14 10 4-4 8-4 12 0l6 10 6-10c4-4 8-4 12 0 2-6 6-10 14-10C54 4 44 4 38 8l-2-8z"/></svg>' }); document.body.append(gotham);
 const batHint = mk('div', { id: 'batHint', hidden: true, innerHTML: '<svg viewBox="0 0 64 32"><path d="M32 6 28 0l-2 8C20 4 10 4 0 10c8 0 12 4 14 10 4-4 8-4 12 0l6 10 6-10c4-4 8-4 12 0 2-6 6-10 14-10C54 4 44 4 38 8l-2-8z"/></svg>Click to lock' }); document.body.append(batHint);
 const h1s = [...document.querySelectorAll('#hero h1 span')], h1Name = h1s.map((e) => e.textContent); let gothamOn = false;
+const revCv = document.createElement('canvas'); revCv.width = 192; revCv.height = 128; const tctx = revCv.getContext('2d'), trailTex = new THREE.CanvasTexture(revCv); let tPrev = null;   // mask the cursor paints into; it fades, so the Batman look flows after the mouse and closes up
+tctx.fillStyle = '#000'; tctx.fillRect(0, 0, 192, 128); heroMat.uniforms.uMask.value = trailTex;
+function paintTrail(uvx, uvy, speed) {
+  const x = uvx * 192, y = (1 - uvy) * 128, r = 18 + Math.min(speed, 1.5) * 10, from = tPrev || [x, y], n = Math.max(1, Math.ceil(Math.hypot(x - from[0], y - from[1]) / 4));
+  for (let i = 1; i <= n; i++) { const px = from[0] + (x - from[0]) * i / n, py = from[1] + (y - from[1]) * i / n, g = tctx.createRadialGradient(px, py, 0, px, py, r); g.addColorStop(0, 'rgba(255,255,255,.55)'); g.addColorStop(1, 'rgba(255,255,255,0)'); tctx.fillStyle = g; tctx.fillRect(px - r, py - r, r * 2, r * 2); }
+  tPrev = [x, y];
+}
+let cvel = 0, cpx = 0, cpy = 0;
 const heroRev = { inside: false, locked: false, ready: false };   // Batman reveal under the cursor (mice only)
 if (!LITE) { const bt = new THREE.Texture(); bt.colorSpace = THREE.SRGBColorSpace; heroMat.uniforms.uBat.value = bt; later(() => imgLoader.load('/media/img/ash-batman.webp', (img) => { bt.image = img; bt.needsUpdate = true; heroMat.uniforms.uBatOn.value = 1; heroRev.ready = true; })); }
 const portrait = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), heroMat);
@@ -133,6 +141,27 @@ const haloBlue = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), additive(0x2f7bff
 const neon = (color, arc) => new THREE.Mesh(new THREE.RingGeometry(.985, 1, 128, 1, 0, arc), new THREE.MeshBasicMaterial({ color, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
 const ring = neon(0xffa24a, Math.PI * 2), ring2 = neon(0x4d93ff, Math.PI * 1.1);
 hero.add(haloBlue, halo, ring, ring2, portrait);
+/* topographic contour lines behind the portrait: simplex noise + domain warp, pushed away by the cursor with a springy dip at the rim (desktop only) */
+const topo = LITE ? null : new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false, uniforms: { uTime: { value: 0 }, uIntro: { value: 0 }, uVel: { value: 0 }, uAspect: { value: 1.6 }, uPtr: { value: new THREE.Vector2(.5, .5) }, uCol: { value: new THREE.Color(0xff6a13) } },
+  vertexShader: 'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+  fragmentShader: `varying vec2 vUv;uniform float uTime;uniform float uIntro;uniform float uVel;uniform float uAspect;uniform vec2 uPtr;uniform vec3 uCol;
+  vec3 mod289(vec3 x){return x-floor(x*(1./289.))*289.;}vec2 mod289(vec2 x){return x-floor(x*(1./289.))*289.;}vec3 permute(vec3 x){return mod289(((x*34.)+1.)*x);}
+  float snoise(vec2 v){const vec4 C=vec4(.211324865405187,.366025403784439,-.577350269189626,.024390243902439);vec2 i=floor(v+dot(v,C.yy));vec2 x0=v-i+dot(i,C.xx);vec2 i1=(x0.x>x0.y)?vec2(1.,0.):vec2(0.,1.);vec4 x12=x0.xyxy+C.xxzz;x12.xy-=i1;i=mod289(i);vec3 p=permute(permute(i.y+vec3(0.,i1.y,1.))+i.x+vec3(0.,i1.x,1.));vec3 m=max(.5-vec3(dot(x0,x0),dot(x12.xy,x12.xy),dot(x12.zw,x12.zw)),0.);m=m*m;m=m*m;vec3 x=2.*fract(p*C.www)-1.;vec3 h=abs(x)-.5;vec3 ox=floor(x+.5);vec3 a0=x-ox;m*=1.79284291400159-.85373472095314*(a0*a0+h*h);vec3 g;g.x=a0.x*x0.x+h.x*x0.y;g.yz=a0.yz*x12.xz+h.yz*x12.yw;return 130.*dot(m,g);}
+  void main(){
+    vec2 q=(vUv-.5)*vec2(uAspect,1.), m=(uPtr-.5)*vec2(uAspect,1.); float dm=distance(q,m);
+    float cone=smoothstep(.6,0.,dm), ring=smoothstep(.3,.45,dm)*(1.-smoothstep(.45,.62,dm));
+    q+=normalize(q-m+1e-4)*(cone-.55*ring)*uVel*.15;
+    q.y*=mix(.08,1.,uIntro); q.y-=(1.-uIntro)*.4;
+    vec2 w=q*1.15+vec2(uTime*.02,-uTime*.012); float warp=snoise(q*.55-uTime*.015);
+    float n=snoise(w+warp*.8)*.5+.5; float h=n*9.; float f=abs(fract(h-.5)-.5)/max(fwidth(h),1e-4);
+    float line=1.-smoothstep(0.,1.3,f); float band=step(.5,fract(h*.5));
+    float a=line*(.26+cone*.45)+band*cone*.1; a*=(.25+.75*smoothstep(1.3,.2,length(vUv-.5)*2.))*uIntro;
+    gl_FragColor=vec4(uCol,a);
+    #include <colorspace_fragment>
+  }`,
+}));
+if (topo) { topo.position.z = -2; topo.renderOrder = -2; scene.add(topo); }
 let heroLight = false;
 function layoutHero() {
   const visH = 2 * 6 * Math.tan(THREE.MathUtils.degToRad(19)), visW = visH * cam.aspect, wide = cam.aspect > 1;
@@ -141,6 +170,7 @@ function layoutHero() {
   else if (wide) { w = visW * .58; h = w / AR; x = visW * .21; y = -.05; hx = x; hy = y + h * .18; }
   else { w = visW * 1.12; h = w / AR; x = 0; y = visH * .2; hx = x; hy = y + h * .18; }
   portrait.scale.set(w, h, 1); portrait.position.set(x, y, 0);
+  if (topo) { const th = 2 * 8 * Math.tan(THREE.MathUtils.degToRad(19)) * 1.15; topo.scale.set(th * cam.aspect, th, 1); topo.material.uniforms.uAspect.value = cam.aspect; }
   const R = (heroLight ? h : visH) * .36;
   [halo, haloBlue, ring, ring2].forEach((m) => { m.visible = heroLight; });
   halo.scale.setScalar(R * 3.4); halo.position.set(hx, hy, -.4); haloBlue.scale.setScalar(R * 4.4); haloBlue.position.set(hx - R * .5, hy + R * .3, -.5);
@@ -610,13 +640,17 @@ function tick() {
   if (introT0 > 0) { const k = clamp((performance.now() - introT0 - 500) / 2400), e = 1 - Math.pow(1 - k, 3); heroMat.uniforms.uBlur.value = .014 * (1 - e); hero.scale.setScalar(1 + .1 * (1 - e)); if (k >= 1) introT0 = -2; }
   else if (introT0 === -2 && heroMat.uniforms.uBlur.value !== 0) { heroMat.uniforms.uBlur.value = 0; hero.scale.setScalar(1); }
   // hero
+  { const dx = ptr.px - cpx, dy = ptr.py - cpy; cpx = ptr.px; cpy = ptr.py; cvel = lerp(cvel, Math.min(1.5, Math.hypot(dx, dy) / innerHeight * 40), .15); }
   heroMat.uniforms.uTime.value = t;
+  if (topo) { const T = topo.material.uniforms; topo.visible = id === 'hero' && !heroLight; T.uTime.value = t; T.uVel.value = cvel; T.uPtr.value.lerp(v2.set(.5 + ptr.x * .5 / 1.15, .5 + ptr.y * .5 / 1.15), .25); T.uCol.value.copy(tintC); T.uIntro.value = introT0 > 0 ? 1 - Math.pow(1 - clamp((performance.now() - introT0 - 300) / 2800), 3) : introT0 === -2 ? 1 : 0; }
   { const U = heroMat.uniforms, on = id === 'hero' && heroRev.ready && !heroLight && cam.aspect > 1;
-    heroRev.inside = false; if (on) { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); const hit = ray.intersectObject(portrait, false)[0]; if (hit) { heroRev.inside = true; U.uRevPos.value.lerp(hit.uv, .35); } }
+    tctx.fillStyle = 'rgba(0,0,0,.035)'; tctx.fillRect(0, 0, 192, 128);
+    heroRev.inside = false; if (on) { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); const hit = ray.intersectObject(portrait, false)[0]; if (hit) { heroRev.inside = true; U.uRevPos.value.lerp(hit.uv, .35); paintTrail(U.uRevPos.value.x, U.uRevPos.value.y, cvel); } else tPrev = null; } else tPrev = null;
+    if (on || U.uRev.value > .01) trailTex.needsUpdate = true;
     if (!on) heroRev.locked = false;
     if (gothamOn !== heroRev.locked) { gothamOn = heroRev.locked; document.documentElement.classList.toggle('gotham', gothamOn); const w = gothamOn ? ['I am', 'Batman'] : h1Name; h1s.forEach((e, n) => { e.textContent = w[n]; }); }
     batHint.hidden = !(on && !heroRev.locked && !heroRev.inside);
-    U.uRev.value = lerp(U.uRev.value, on && (heroRev.inside || heroRev.locked) ? 1 : 0, .12); U.uRad.value = lerp(U.uRad.value, heroRev.locked ? 1.7 : .12, .07); }
+    U.uRev.value = lerp(U.uRev.value, on && heroRev.locked ? 1 : 0, .12); U.uRad.value = lerp(U.uRad.value, heroRev.locked ? 1.7 : .12, .07); }
   heroMat.uniforms.uMouse.value.lerp(mouseUv.set(.5 + ptr.x * .32, .55 + ptr.y * .3), .08);
   hero.rotation.y = lerp(hero.rotation.y, ptr.x * .1, .06); hero.rotation.x = lerp(hero.rotation.x, -ptr.y * .05, .06);
   { const G = gradeIdx === null ? GRADE.warm : [tintC, gradeComp.set(SW[(gradeIdx + 4) % SW.length]), tintC, gradeComp]; halo.material.color.lerp(G[0], .06); haloBlue.material.color.lerp(G[1], .06); ring.material.color.lerp(G[2], .06); ring2.material.color.lerp(G[3], .06); }
