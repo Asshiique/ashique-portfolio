@@ -26,7 +26,7 @@ main a,main button,main img,main h1,main h2,main p,main li,main form,main label,
 /* hero */
 #hero{height:125vh}
 .heroTx{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 clamp(18px,5vw,72px) clamp(90px,12vh,130px);mix-blend-mode:normal}
-h1{font:900 clamp(70px,12.6vw,240px)/1.04 "Big Shoulders Display";text-transform:uppercase;letter-spacing:-.012em;color:transparent;background:linear-gradient(100deg,#f3ead9 0,#f3ead9 16%,#d9a066 30%,#a8683a 44%,#7a4a2a 58%,#f3ead9 74%,#f3ead9 100%);background-size:260% 100%;background-position:50% 0;-webkit-background-clip:text;background-clip:text}
+h1{font:900 clamp(70px,12.6vw,240px)/1.04 "Big Shoulders Display";text-transform:uppercase;letter-spacing:-.012em;color:transparent;background:linear-gradient(100deg,#f3ead9 0,#f3ead9 38%,#e0b36b 50%,#f3ead9 62%,#f3ead9 100%);background-size:260% 100%;background-position:50% 0;-webkit-background-clip:text;background-clip:text}
 h1 span{display:block}h1 span+span{padding-left:.22em}
 .lower{margin-top:clamp(18px,3vh,34px);max-width:520px}
 .roles{font:800 clamp(22px,2.6vw,34px)/1.1 "Big Shoulders Display";letter-spacing:.03em;text-transform:uppercase;color:var(--or)}
@@ -98,8 +98,8 @@ h1 span{display:block}h1 span+span{padding-left:.22em}
 #grain{position:fixed;inset:-50%;z-index:5;pointer-events:none;opacity:.08;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");animation:gr .7s steps(6) infinite}
 @keyframes gr{0%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-3%)}60%{transform:translate(-2%,-1%)}80%{transform:translate(3%,3%)}100%{transform:translate(0,0)}}
 .lite #fx,.lite #leak,.lite #grain{display:none}
-.wa{position:fixed;right:clamp(16px,3vw,36px);bottom:92px;z-index:25;display:flex;align-items:center;gap:10px;padding:14px 20px 14px 16px;border-radius:99px;background:#25d366;color:#04230f;font-weight:800;box-shadow:0 10px 40px #25d36655;transition:transform .25s,box-shadow .25s}
-.wa:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 14px 50px #25d36699}
+.wa{position:fixed;right:clamp(16px,3vw,36px);bottom:92px;z-index:25;display:flex;align-items:center;gap:10px;padding:14px 20px 14px 16px;border-radius:99px;background:#f3ead9;color:#2a1810;font-weight:800;box-shadow:0 10px 40px #25d36655;transition:transform .25s,box-shadow .25s}
+.wa:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 14px 50px #c98d4f88}
 @media(max-width:760px){.wa span{display:none}.wa{padding:15px;bottom:84px}.snd span{display:none}.snd{padding:10px 12px}}
 @media(prefers-reduced-motion:reduce){#grain{animation:none}}
 
@@ -163,7 +163,7 @@ h1 span{display:block}h1 span+span{padding-left:.22em}
 .light #chapter p{background:#f4f1eacc;text-shadow:none}
 .light #caption span{color:#5e5a54}
 .light .btn.ghost{color:var(--ink);border-color:#10101455}.light .btn.ghost:hover{border-color:var(--or);color:var(--or)}
-.light h1{background:linear-gradient(100deg,#101014 0,#101014 16%,#d9a066 30%,#a8683a 44%,#7a4a2a 58%,#101014 74%,#101014 100%);background-size:260% 100%;-webkit-background-clip:text;background-clip:text}
+.light h1{background:linear-gradient(100deg,#2a1810 0,#2a1810 38%,#a8683a 50%,#2a1810 62%,#2a1810 100%);background-size:260% 100%;-webkit-background-clip:text;background-clip:text}
 .light .svc,.light .brief{background:#ffffffb0;border-color:#10101426}.light .svc li{border-color:#10101426}
 .light .brief input,.light .brief select,.light .brief textarea{background:#fffffff2;color:var(--ink);border-color:#10101433}
 .light #hover{background:#101014;color:#f4f1ea}
