@@ -62,9 +62,9 @@ const canvas = $('#gl');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: !LITE, powerPreference: 'high-performance' });
 renderer.setPixelRatio(Math.min(devicePixelRatio, LITE ? 1.25 : 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.setClearColor(0x05060a);
+renderer.setClearColor(0x120c08);
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x05060a, 0.017);
+scene.fog = new THREE.FogExp2(0x120c08, 0.017);
 const cam = new THREE.PerspectiveCamera(40, 1, 0.1, 600);
 scene.add(new THREE.HemisphereLight(0xaab4ff, 0x2a1208, 1.0));
 const sun = new THREE.DirectionalLight(0xfff0dd, 2.4); sun.position.set(2, 4, 8); scene.add(sun);
@@ -93,7 +93,7 @@ const loadTex = (url, hi = false) => {
 let dustMat;
 // dust that streaks past while you fly between rooms
 {
-  const N = LITE ? 700 : 2600, p = new Float32Array(N * 3), c = new Float32Array(N * 3), col = [new THREE.Color(0xff6a13), new THREE.Color(0x2f7bff), new THREE.Color(0xffffff)];
+  const N = LITE ? 700 : 2600, p = new Float32Array(N * 3), c = new Float32Array(N * 3), col = [new THREE.Color(0xc98d4f), new THREE.Color(0xe0b36b), new THREE.Color(0xffffff)];
   for (let i = 0; i < N; i++) { p.set([(Math.random() - .5) * 60, (Math.random() - .5) * 28, 14 - Math.random() * 520], i * 3); const k = col[(Math.random() * 3) | 0]; c.set([k.r, k.g, k.b], i * 3); }
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(p, 3)); g.setAttribute('color', new THREE.BufferAttribute(c, 3));
   scene.add(new THREE.Points(g, dustMat = new THREE.PointsMaterial({ size: .07, vertexColors: true, transparent: true, opacity: .8, depthWrite: false, blending: THREE.AdditiveBlending })));
@@ -107,7 +107,7 @@ const hero = new THREE.Group(); scene.add(hero); hero.scale.setScalar(1.1);
 const HERO_SRC = LITE ? '/media/img/ash-hero2-s.webp' : '/media/img/ash-hero2.webp', heroDark = loadTex(HERO_SRC, true), heroCut = loadTex('/media/img/ash-cutout.webp');
 const heroMat = new THREE.ShaderMaterial({
   transparent: true, depthWrite: false,
-  uniforms: { uTex: { value: heroDark }, uLight: { value: 0 }, uTint: { value: new THREE.Color(0xff6a13) }, uTintAmt: { value: 0 }, uBlur: { value: .014 }, uDof: { value: .0012 }, uMouse: { value: new THREE.Vector2(.5, .6) }, uTime: { value: 0 }, uBat: { value: null }, uBatOn: { value: 0 }, uMask: { value: null }, uRev: { value: 0 }, uRevPos: { value: new THREE.Vector2(.5, .5) }, uRad: { value: .12 } },
+  uniforms: { uTex: { value: heroDark }, uLight: { value: 0 }, uTint: { value: new THREE.Color(0xc98d4f) }, uTintAmt: { value: 0 }, uBlur: { value: .014 }, uDof: { value: .0012 }, uMouse: { value: new THREE.Vector2(.5, .6) }, uTime: { value: 0 }, uBat: { value: null }, uBatOn: { value: 0 }, uMask: { value: null }, uRev: { value: 0 }, uRevPos: { value: new THREE.Vector2(.5, .5) }, uRad: { value: .12 } },
   vertexShader: 'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
   fragmentShader: `varying vec2 vUv;uniform sampler2D uTex;uniform vec2 uMouse;uniform float uTime;uniform float uLight;uniform vec3 uTint;uniform float uTintAmt;uniform float uBlur;uniform float uDof;uniform sampler2D uBat;uniform sampler2D uMask;uniform float uBatOn;uniform float uRev;uniform vec2 uRevPos;uniform float uRad;
   void main(){
@@ -118,7 +118,7 @@ const heroMat = new THREE.ShaderMaterial({
     if(bl>.0004){ vec3 s=c; for(int i=0;i<8;i++){ float an=float(i)*.785398; vec2 dir=vec2(cos(an),sin(an)*1.3); s+=texture2D(uTex,uv+dir*bl).rgb; s+=texture2D(uTex,uv+dir*bl*2.).rgb; } c=mix(c,s/17.,clamp(bl*300.,0.,1.)); }
     c*=mix(.62+.7*spot,1.,uLight);
     c=mix(c,c*(uTint*1.7+.12)+uTint*.05,mix(.55,.9,uLight)*uTintAmt);
-    if(uBatOn>.5){ float m=smoothstep(.22,.62,texture2D(uMask,uv).r); float dd=distance(uv*vec2(1.5,1.),uRevPos*vec2(1.5,1.)); float lk=uRev*(1.-smoothstep(uRad*.72,uRad,dd)); float r=max(m,lk); if(r>.001){ c=mix(c,texture2D(uBat,uv).rgb,r); c+=vec3(1.,.42,.08)*m*(1.-m)*(1.-uRev)*1.1; } }
+    if(uBatOn>.5){ float m=smoothstep(.22,.62,texture2D(uMask,uv).r); float dd=distance(uv*vec2(1.5,1.),uRevPos*vec2(1.5,1.)); float lk=uRev*(1.-smoothstep(uRad*.72,uRad,dd)); float r=max(m,lk); if(r>.001){ c=mix(c,texture2D(uBat,uv).rgb,r); c+=vec3(.79,.55,.31)*m*(1.-m)*(1.-uRev)*1.1; } }
     vec2 e=smoothstep(0.,.16,uv)*smoothstep(1.,.84,uv); float a=e.x*e.y*texture2D(uTex,uv).a;
     float n=fract(sin(dot(uv*vec2(1000.,700.)+uTime,vec2(12.9898,78.233)))*43758.5453); c+=(n-.5)*.025;
     gl_FragColor=vec4(c,a);
@@ -140,14 +140,14 @@ let cvel = 0, cpx = 0, cpy = 0;
 const heroRev = { inside: false, locked: false, ready: false };   // Batman reveal under the cursor (mice only)
 if (!LITE) { const bt = new THREE.Texture(); bt.colorSpace = THREE.SRGBColorSpace; heroMat.uniforms.uBat.value = bt; later(() => imgLoader.load('/media/img/ash-batman.webp', (img) => { bt.image = img; bt.needsUpdate = true; heroMat.uniforms.uBatOn.value = 1; heroRev.ready = true; })); }
 const portrait = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), heroMat);
-const halo = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), additive(0xff5a10, .85));
-const haloBlue = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), additive(0x2f7bff, .55));
+const halo = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), additive(0xb86a2e, .85));
+const haloBlue = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), additive(0xe0b36b, .55));
 const neon = (color, arc) => new THREE.Mesh(new THREE.RingGeometry(.985, 1, 128, 1, 0, arc), new THREE.MeshBasicMaterial({ color, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
-const ring = neon(0xffa24a, Math.PI * 2), ring2 = neon(0x4d93ff, Math.PI * 1.1);
+const ring = neon(0xd9a066, Math.PI * 2), ring2 = neon(0x8b5a3a, Math.PI * 1.1);
 hero.add(haloBlue, halo, ring, ring2, portrait);
 /* topographic contour lines behind the portrait: simplex noise + domain warp, pushed away by the cursor with a springy dip at the rim (desktop only) */
 const topo = LITE ? null : new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.ShaderMaterial({
-  transparent: true, depthWrite: false, uniforms: { uTime: { value: 0 }, uIntro: { value: 0 }, uVel: { value: 0 }, uAspect: { value: 1.6 }, uPtr: { value: new THREE.Vector2(.5, .5) }, uCol: { value: new THREE.Color(0xff6a13) } },
+  transparent: true, depthWrite: false, uniforms: { uTime: { value: 0 }, uIntro: { value: 0 }, uVel: { value: 0 }, uAspect: { value: 1.6 }, uPtr: { value: new THREE.Vector2(.5, .5) }, uCol: { value: new THREE.Color(0xc98d4f) } },
   vertexShader: 'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
   fragmentShader: `varying vec2 vUv;uniform float uTime;uniform float uIntro;uniform float uVel;uniform float uAspect;uniform vec2 uPtr;uniform vec3 uCol;
   vec3 mod289(vec3 x){return x-floor(x*(1./289.))*289.;}vec2 mod289(vec2 x){return x-floor(x*(1./289.))*289.;}vec3 permute(vec3 x){return mod289(((x*34.)+1.)*x);}
@@ -186,8 +186,8 @@ function layoutHero() {
 /* hero backdrop: a colour wheel made of the site's own colours; pick one to grade the whole hero */
 const heroBack = new THREE.Group(); scene.add(heroBack); const fxItems = [];
 const fxPut = (obj, fx, fy, z, sf, rx, ry, rz = 0, flags = {}) => { obj.userData = { fx, fy, z, sf, rx, ry, rz, ...flags, ph: Math.random() * 6, bx: 0, by: 0 }; heroBack.add(obj); fxItems.push(obj); return obj; };
-const SW = [0xff6a13, 0xdc143c, 0x8b4a2b, 0xffc46b, 0x19c79a, 0x2f7bff, 0x8b5cff], SEG = 360 / SW.length;
-let gradeIdx = null, tintAmt = 0, wheel, puck, puckFill; const tintC = new THREE.Color(0xff6a13), gradeComp = new THREE.Color();
+const SW = [0xc98d4f, 0x8b4a2b, 0xe8b657, 0xb5472f, 0x6b8f71, 0x7d8a99, 0x9b6b8a], SEG = 360 / SW.length;
+let gradeIdx = null, tintAmt = 0, wheel, puck, puckFill; const tintC = new THREE.Color(0xc98d4f), gradeComp = new THREE.Color();
 {
   const c = mk('canvas', { width: 512, height: 512 }), x = c.getContext('2d');
   SW.forEach((hex, i) => { const a0 = i * SEG + 1.5, a1 = (i + 1) * SEG - 1.5; x.beginPath(); x.moveTo(256, 256); x.arc(256, 256, 250, -a1 * Math.PI / 180, -a0 * Math.PI / 180); x.closePath(); x.fillStyle = '#' + hex.toString(16).padStart(6, '0'); x.fill(); });
@@ -195,7 +195,7 @@ let gradeIdx = null, tintAmt = 0, wheel, puck, puckFill; const tintC = new THREE
   const wt = new THREE.CanvasTexture(c); wt.colorSpace = THREE.SRGBColorSpace; wt.anisotropy = 4;
   const wg = new THREE.Group(); wg.add(new THREE.Mesh(new THREE.PlaneGeometry(2.4, 2.4), new THREE.MeshBasicMaterial({ map: wt, transparent: true, toneMapped: false, opacity: .95 })));
   wheel = wg.children[0];
-  puck = new THREE.Group(); puckFill = new THREE.Mesh(new THREE.CircleGeometry(.1, 32), new THREE.MeshBasicMaterial({ color: 0xff6a13 })); puck.add(puckFill, new THREE.Mesh(new THREE.RingGeometry(.1, .15, 32), new THREE.MeshBasicMaterial({ color: 0xffffff }))); puck.position.z = .02; wg.add(puck);
+  puck = new THREE.Group(); puckFill = new THREE.Mesh(new THREE.CircleGeometry(.1, 32), new THREE.MeshBasicMaterial({ color: 0xc98d4f })); puck.add(puckFill, new THREE.Mesh(new THREE.RingGeometry(.1, .15, 32), new THREE.MeshBasicMaterial({ color: 0xffffff }))); puck.position.z = .02; wg.add(puck);
   fxPut(wg, .38, .33, .12, (w) => w * (heroLight ? .28 : .17) / 2.4, 0, 0, 0, { deskOnly: true });
 }
 // projector beam (dark mode only: light does nothing on a white page)
@@ -216,18 +216,18 @@ function applyGradeCss() {
 function heroBackTick(t, id, dt) {
   heroBack.visible = id === 'hero'; if (!heroBack.visible) return;
   fxItems.forEach((o) => { const u = o.userData; o.visible = !(u.deskOnly && cam.aspect <= .95) && !(u.lightOff && heroLight); o.position.set(u.bx + ptr.x * .1 * (1 + u.z), u.by + Math.sin(t * .8 + u.ph) * .05, u.z); o.rotation.set(u.rx - ptr.y * .08, u.ry + ptr.x * .12, u.rz + (u.lightOff ? Math.sin(t * .25) * .05 : 0)); });
-  tintAmt = lerp(tintAmt, gradeIdx === null ? 0 : 1, .08);
+  tintAmt = lerp(tintAmt, gradeIdx === null ? .22 : 1, .08);   // the default look carries a gentle brown grade so the photo's orange sits in the palette
   const idx = gradeIdx === null ? 0 : gradeIdx; tintC.set(SW[idx]);
   const a = (idx + .5) * SEG * Math.PI / 180; puck.position.set(Math.cos(a) * .95, Math.sin(a) * .95, .02); puckFill.material.color.copy(tintC);
   heroMat.uniforms.uTint.value.copy(tintC); heroMat.uniforms.uTintAmt.value = tintAmt;
 }
 
-const GRADE = { warm: [0xff5a10, 0x2f7bff, 0xffa24a, 0x4d93ff], cool: [0x2f7bff, 0xff6a13, 0x6fa8ff, 0xff9a4a] }; for (const k in GRADE) GRADE[k] = GRADE[k].map((c) => new THREE.Color(c));
+const GRADE = { warm: [0xb86a2e, 0x5a3420, 0xd9a066, 0x8b5a3a], cool: [0xe0b36b, 0xc98d4f, 0xe8c98a, 0xd9a066] }; for (const k in GRADE) GRADE[k] = GRADE[k].map((c) => new THREE.Color(c));
 /* ───────────── the doors ───────────── */
 const doors = new THREE.Group(); doors.position.set(0, 0, Z.doors); scene.add(doors);
 const DOOR_DEFS = [
-  { label: 'Edits', go: 'edits', color: 0xff6a13, thumb: '/media/vid/edit1.jpg' },
-  { label: 'AI films', go: 'ai', color: 0x2f7bff, thumb: '/media/vid/promo.jpg' },
+  { label: 'Edits', go: 'edits', color: 0xc98d4f, thumb: '/media/vid/edit1.jpg' },
+  { label: 'AI films', go: 'ai', color: 0xe0b36b, thumb: '/media/vid/promo.jpg' },
   { label: 'Posters', go: 'posters', color: 0x8b5cff, thumb: '/media/img/poster-tarang.webp' },
   { label: 'Say hi', go: 'contact', color: 0x19c79a, thumb: '/media/img/ash-studio.webp' },
 ];
@@ -266,9 +266,9 @@ function layoutDoors() {
   });
 }
 document.fonts.load('800 40px "Big Shoulders Display"').finally(() => { DOOR_DEFS.forEach(makeDoor); layoutDoors(); });
-const floor = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.MeshStandardMaterial({ color: 0x0a0b12, roughness: .7, metalness: .1 }));
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.MeshStandardMaterial({ color: 0x1b120c, roughness: .7, metalness: .1 }));
 floor.rotation.x = -Math.PI / 2; floor.position.set(0, -2.1, Z.doors); scene.add(floor);
-const grid = (zc, len) => { const g = new THREE.GridHelper(len, len / 2, 0xff6a13, 0x2f7bff); g.material.transparent = true; g.material.opacity = .28; GRIDS.push(g.material); g.position.set(0, -2.3, zc); scene.add(g); };
+const grid = (zc, len) => { const g = new THREE.GridHelper(len, len / 2, 0xc98d4f, 0xe0b36b); g.material.transparent = true; g.material.opacity = .28; GRIDS.push(g.material); g.position.set(0, -2.3, zc); scene.add(g); };
 grid(Z.doors, 60);
 
 /* ───────────── video corridors ───────────── */
@@ -276,7 +276,7 @@ const STEP = 5.4, tunnels = {};
 function buildTunnel(key, list, z0) {
   const items = [];
   list.forEach((v, i) => {
-    const side = i % 2 ? -1 : 1, w = v.wide ? 4.8 : 2.05, h = v.wide ? 2.7 : 3.65, col = i % 2 ? 0x2f7bff : 0xff6a13;
+    const side = i % 2 ? -1 : 1, w = v.wide ? 4.8 : 2.05, h = v.wide ? 2.7 : 3.65, col = i % 2 ? 0xe0b36b : 0xc98d4f;
     const g = new THREE.Group(); g.position.set(side * (v.wide ? 3.7 : 2.55), Math.sin(i * 1.9) * .3, z0 - i * STEP); g.rotation.y = -side * .3;
     const glow = new THREE.Mesh(new THREE.PlaneGeometry(w * 2.1, h * 1.6), additive(col, .45)); glow.position.z = -.05;
     const edge = new THREE.Mesh(new THREE.PlaneGeometry(w + .12, h + .12), new THREE.MeshBasicMaterial({ color: col })); edge.position.z = -.01;
@@ -305,7 +305,7 @@ let cineScreen, cineVid = null, cineTex = null, cineOpen = 0; const curtains = [
   add(new THREE.PlaneGeometry(9.4, 5.6), new THREE.MeshBasicMaterial({ color: 0x050507 }), 0, 0, -.06);
   cineScreen = add(new THREE.PlaneGeometry(8.8, 4.95), new THREE.MeshBasicMaterial({ map: loadTex('/media/vid/film.jpg'), toneMapped: false }), 0, 0, 0);
   cineScreen.userData.screen = true;
-  add(new THREE.PlaneGeometry(18, 10), additive(0xff6a13, .16), 0, 0, -.6);
+  add(new THREE.PlaneGeometry(18, 10), additive(0xc98d4f, .16), 0, 0, -.6);
   [-1, 1].forEach((side) => { const c = add(new THREE.PlaneGeometry(4.7, 5.9), std(0x4a0d12, .9), side * 2.35, 0, .3); c.userData.side = side; curtains.push(c); });
   add(new THREE.BoxGeometry(11.4, .7, .5), std(0x3a0a0e), 0, 3.1, .35);
   add(new THREE.PlaneGeometry(60, 60), std(0x0a0a0f, .9), 0, -2.45, 0, -Math.PI / 2);
@@ -365,11 +365,11 @@ let deskScreen, deskVid = null, deskTex = null;
   deskParts.push(add(new THREE.BoxGeometry(.12, .5, .1), black, 0, .35, -.37), add(new THREE.BoxGeometry(.8, .04, .45), black, 0, .08, -.3));
   add(new THREE.BoxGeometry(1.1, .03, .32), black, 0, .07, .38);
   add(new THREE.BoxGeometry(.95, .04, .62), black, -1.1, .08, .15, -.12);
-  add(new THREE.PlaneGeometry(.86, .54), new THREE.MeshBasicMaterial({ color: 0x2f7bff }), -1.1, .106, .15, -Math.PI / 2 - .12);
+  add(new THREE.PlaneGeometry(.86, .54), new THREE.MeshBasicMaterial({ color: 0xe0b36b }), -1.1, .106, .15, -Math.PI / 2 - .12);
   add(new THREE.BoxGeometry(.52, .34, .32), black, 1.15, .27, .1);
   const lens = add(new THREE.CylinderGeometry(.13, .15, .2, 24), dark, 1.15, .27, .32, Math.PI / 2);
-  add(new THREE.CircleGeometry(.1, 24), new THREE.MeshBasicMaterial({ color: 0x2f7bff }), 1.15, .27, .425);
-  const glow = new THREE.Mesh(new THREE.PlaneGeometry(4.6, 3.2), additive(0xff6a13, .35)); glow.position.set(0, 1.05, -.6); desk.add(glow);
+  add(new THREE.CircleGeometry(.1, 24), new THREE.MeshBasicMaterial({ color: 0xe0b36b }), 1.15, .27, .425);
+  const glow = new THREE.Mesh(new THREE.PlaneGeometry(4.6, 3.2), additive(0xc98d4f, .35)); glow.position.set(0, 1.05, -.6); desk.add(glow);
 }
 const DESK = ['promo', 'ai1', 'ai4']; let deskI = 0;
 function deskVideo(on) {
@@ -647,11 +647,11 @@ function tick() {
 
   // white mode: background, fog, glows, floor and the hero photo ease over together
   { const lt = document.documentElement.classList.contains('light'); lightK = lerp(lightK, lt ? 1 : 0, .07);
-    bgC.set(0x05060a).lerp(LIGHTC, lightK); renderer.setClearColor(bgC); scene.fog.color.copy(bgC);
+    bgC.set(0x120c08).lerp(LIGHTC, lightK); renderer.setClearColor(bgC); scene.fog.color.copy(bgC);
     const normal = lightK > .5, bl = normal ? THREE.NormalBlending : THREE.AdditiveBlending;
     GLOWS.forEach((g) => { if (g.m.blending !== bl) { g.m.blending = bl; g.m.needsUpdate = true; } g.m.opacity = g.o * (normal ? .5 : 1); });
     [dustMat, ring.material, ring2.material].forEach((m) => { if (m.blending !== bl) { m.blending = bl; m.needsUpdate = true; } }); dustMat.opacity = normal ? .55 : .8;
-    GRIDS.forEach((m) => { m.opacity = normal ? .4 : .28; }); floor.material.color.set(0x0a0b12).lerp(FLOORL, lightK);
+    GRIDS.forEach((m) => { m.opacity = normal ? .4 : .28; }); floor.material.color.set(0x1b120c).lerp(FLOORL, lightK);
     heroMat.uniforms.uLight.value = lightK; const want = normal ? heroCut : heroDark; if (heroMat.uniforms.uTex.value !== want) { heroMat.uniforms.uTex.value = want; heroLight = normal; layoutHero(); } }
   heroBackTick(t, id, dt);
   // opening: the photo pulls into focus while the camera eases in
