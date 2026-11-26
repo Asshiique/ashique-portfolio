@@ -287,3 +287,13 @@ iframe.tv{transition:opacity .8s ease .2s}
 #doorHint button{pointer-events:auto;cursor:pointer;background:#c98d4f;border:0;color:#120c08}
 #doorHint button:hover{background:#f3ead9}
 #doorHint[hidden]{display:none}
+
+/* "see your brand here" bar (cinema, posters, contact) */
+#brandUI{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);z-index:26;display:flex;align-items:center;gap:10px;padding:8px 8px 8px 18px;border-radius:99px;background:#120c08f2;border:1px solid #c98d4f99;box-shadow:0 10px 30px #0008;white-space:nowrap}
+#brandUI[hidden]{display:none}
+#brandUI label{font:800 16px "Big Shoulders Display";letter-spacing:.08em;text-transform:uppercase;color:#f3ead9}
+#brandUI input{width:210px;min-width:0;font:600 16px "Hanken Grotesk";color:#f3ead9;background:#ffffff12;border:1px solid #ffffff2a;border-radius:99px;padding:8px 14px}
+#brandUI a{padding:9px 16px;border-radius:99px;background:#c98d4f;color:#120c08;font:800 15px "Big Shoulders Display";letter-spacing:.06em;text-transform:uppercase}
+#brandUI a[hidden]{display:none}
+#brandUI.top{bottom:auto;top:96px;left:72%;width:max-content}
+@media(max-width:760px){#brandUI{left:12px;right:84px;transform:none;bottom:84px;flex-wrap:wrap;padding:10px;border-radius:18px;white-space:normal}#brandUI label{flex:1 0 100%;font-size:14px}#brandUI input{flex:1;width:auto}}
