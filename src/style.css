@@ -279,3 +279,7 @@ iframe.tv{transition:opacity .8s ease .2s}
 @keyframes flap{to{scale:1 .55}}
 @media(prefers-reduced-motion:reduce){#gotham .bat,#gotham .flash,#gotham .fog,#batHint{animation:none}}
 #hero h1,#hero p,#hero .role,#hero small{pointer-events:none}   /* these boxes cover the portrait; let clicks reach it */
+
+/* doors gate: shown while the rest of the page is locked */
+#doorHint{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:20;pointer-events:none;white-space:nowrap;padding:9px 18px;border-radius:99px;background:#120c08e6;border:1px solid #c98d4f99;color:#f3ead9;font:800 17px "Big Shoulders Display";letter-spacing:.08em;text-transform:uppercase}
+#doorHint[hidden]{display:none}
