@@ -27,7 +27,9 @@ const lerp = (a, b, t) => a + (b - a) * t;
 const mk = (tag, attrs) => Object.assign(document.createElement(tag), attrs);
 const secEls = IDS.map((id) => document.getElementById(id));
 let tops = [], hs = [], total = 1;
-const measure = () => { tops = secEls.map((e) => e.offsetTop); hs = secEls.map((e) => e.offsetHeight); total = Math.max(1, document.documentElement.scrollHeight - innerHeight); };
+let gated = true;   // the page ends at the doors until someone opens one (or asks to get in touch)
+function applyGate() { const m = $('#track'); m.style.overflow = gated ? 'clip' : ''; m.style.height = gated ? `${tops[2] + innerHeight * .5 - 2}px` : ''; }
+const measure = () => { tops = secEls.map((e) => e.offsetTop); hs = secEls.map((e) => e.offsetHeight); const last = tops.length - 1; total = Math.max(1, tops[last] + hs[last] - innerHeight); applyGate(); };
 
 /* ───────────── lightbox ───────────── */
 const lb = $('#lightbox'), lbb = $('#lbbody');
@@ -468,14 +470,15 @@ addEventListener('pointerup', () => {
   drag = null;
 });
 function activate(h) {
-  if (h.door) { const g = h.door; g.userData.force = true; sfx('click'); setTimeout(() => { g.userData.force = false; goTo(g.userData.def.go); }, 520); }
+  if (h.door) { const g = h.door; g.userData.force = true; sfx('click'); setTimeout(() => { g.userData.force = false; unlock(); goTo(g.userData.def.go); }, 520); }
   else if (h.tunnel) openVideo(h.tunnel.v.id);
   else if (h.poster) openImage(h.poster);
   else if (h.gift || h.desk) { if (!giftUsed) gift.click(); }
   else if (h.screen) openVideo('film');
 }
-function goTo(id) { const top = tops[IDS.indexOf(id)]; if (lenis) lenis.scrollTo(top, { duration: 1.6 }); else scrollTo({ top, behavior: 'smooth' }); }
-document.querySelectorAll('[data-go]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); goTo(a.dataset.go); }));
+function unlock() { if (!gated) return; gated = false; applyGate(); lenis?.resize(); }
+function goTo(id) { if (gated && IDS.indexOf(id) > 1) id = 'doors'; const top = tops[IDS.indexOf(id)]; if (lenis) lenis.scrollTo(top, { duration: 1.6 }); else scrollTo({ top, behavior: 'smooth' }); }
+document.querySelectorAll('[data-go]').forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); if (a.dataset.go === 'contact') unlock(); goTo(a.dataset.go); }));   // contacting is never locked
 $('.mark').addEventListener('click', (e) => { e.preventDefault(); goTo('hero'); });
 
 /* ───────────── mouse reactions (mice only): a trailing ring cursor and magnetic buttons ───────────── */
@@ -622,6 +625,7 @@ new ResizeObserver(() => { const t = total; measure(); if (Math.abs(t - total) >
 /* ───────────── loop ───────────── */
 const clock = new THREE.Clock(), camLook = new THREE.Vector3(), camTarget = new THREE.Vector3(), lookTarget = new THREE.Vector3(0, 0, -10), mouseUv = new THREE.Vector2();
 cam.position.set(0, 0, 6);
+const doorHint = mk('div', { id: 'doorHint', hidden: true, textContent: 'Open a door to continue' }); document.body.append(doorHint);
 let shownCh = '', focusKey = '', lightK = 0; const bgC = new THREE.Color(), LIGHTC = new THREE.Color(0xf4f1ea), FLOORL = new THREE.Color(0xe4e0d6);
 const heroH1 = $('h1'); let heroFx = .5, heroP = 50;
 addEventListener('pointermove', (e) => { heroFx = e.clientX / innerWidth; });
@@ -631,7 +635,9 @@ const pick = (objs) => { v2.set(ptr.x, ptr.y); ray.setFromCamera(v2, cam); const
 function tick() {
   const dt = Math.min(clock.getDelta(), .05), t = clock.elapsedTime;
   scrollV = lerp(scrollV, (scrollY - lastY) / Math.max(dt, .001), .15); lastY = scrollY; soundTick(Math.abs(scrollV));
-  const i = sectionIndex(), id = IDS[i], prog = clamp((scrollY - tops[i]) / Math.max(1, hs[i] - innerHeight));
+  const i = sectionIndex(), id = IDS[i];
+  doorHint.hidden = !(gated && id === 'doors');
+  const prog = clamp((scrollY - tops[i]) / Math.max(1, hs[i] - innerHeight));
 
   let fov = 50;
   if (id === 'hero') { camTarget.set(ptr.x * .25, ptr.y * .12, 6); lookTarget.set(0, 0, 0); fov = 38; }
