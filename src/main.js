@@ -625,7 +625,8 @@ new ResizeObserver(() => { const t = total; measure(); if (Math.abs(t - total) >
 /* ───────────── loop ───────────── */
 const clock = new THREE.Clock(), camLook = new THREE.Vector3(), camTarget = new THREE.Vector3(), lookTarget = new THREE.Vector3(0, 0, -10), mouseUv = new THREE.Vector2();
 cam.position.set(0, 0, 6);
-const doorHint = mk('div', { id: 'doorHint', hidden: true, textContent: 'Open a door to continue' }); document.body.append(doorHint);
+const doorHint = mk('div', { id: 'doorHint', hidden: true, innerHTML: '<span>Open a door to continue</span><button type="button">See all work</button>' }); document.body.append(doorHint);
+doorHint.querySelector('button').addEventListener('click', () => { sfx('click'); unlock(); goTo('edits'); });   // for the visitor in a hurry: skip the doors
 let shownCh = '', focusKey = '', lightK = 0; const bgC = new THREE.Color(), LIGHTC = new THREE.Color(0xf4f1ea), FLOORL = new THREE.Color(0xe4e0d6);
 const heroH1 = $('h1'); let heroFx = .5, heroP = 50;
 addEventListener('pointermove', (e) => { heroFx = e.clientX / innerWidth; });
