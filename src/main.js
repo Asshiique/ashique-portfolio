@@ -627,6 +627,40 @@ const clock = new THREE.Clock(), camLook = new THREE.Vector3(), camTarget = new 
 cam.position.set(0, 0, 6);
 const doorHint = mk('div', { id: 'doorHint', hidden: true, innerHTML: '<span>Open a door to continue</span><button type="button">See all work</button>' }); document.body.append(doorHint);
 doorHint.querySelector('button').addEventListener('click', () => { sfx('click'); unlock(); goTo('edits'); });   // for the visitor in a hurry: skip the doors
+/* ───────────── "your brand here": the visitor's name appears on the cinema marquee, a poster and the TV desk ───────────── */
+let brand = '';
+const brandSign = (w, h) => {
+  const cv = mk('canvas', { width: w, height: h }), tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4;
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, h / w), new THREE.MeshBasicMaterial({ map: tex, toneMapped: false, transparent: true })); mesh.visible = false;
+  return { mesh, tex, cv };
+};
+function drawSign({ cv, tex }, rows) {   // rows: [text, y as a fraction of the height, size in px, colour]; long names shrink to fit
+  const x = cv.getContext('2d'), w = cv.width, h = cv.height;
+  x.fillStyle = '#1a100a'; x.fillRect(0, 0, w, h); x.strokeStyle = '#c98d4f'; x.lineWidth = 8; x.strokeRect(14, 14, w - 28, h - 28);
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  rows.forEach(([text, fy, size, colour]) => { let px = size; do { x.font = `900 ${px}px "Big Shoulders Display", Impact, sans-serif`; px -= 4; } while (x.measureText(text).width > w - 70 && px > 18); x.fillStyle = colour; x.fillText(text, w / 2, h * fy); });
+  tex.needsUpdate = true;
+}
+const marquee = brandSign(1024, 176), bPoster = brandSign(512, 716), tvSign = brandSign(1024, 220);
+marquee.mesh.scale.setScalar(6.4); marquee.mesh.position.set(0, 3.15, .72); cinema.add(marquee.mesh);
+tvSign.mesh.scale.setScalar(2.3); tvSign.mesh.position.set(0, -.36, .78); desk.add(tvSign.mesh);
+bPoster.mesh.material.depthTest = false; bPoster.mesh.renderOrder = 10; scene.add(bPoster.mesh);   // stays in front when the ring posters rise toward the cursor
+const brandUI = mk('form', { id: 'brandUI', hidden: true, innerHTML: '<label for="brandIn">See your brand here</label><input id="brandIn" maxlength="22" placeholder="Type your brand name" autocomplete="organization"><a target="_blank" rel="noopener" hidden>Make this real</a>' });
+document.body.append(brandUI);
+brandUI.addEventListener('submit', (e) => { e.preventDefault(); brandUI.querySelector('input').blur(); });
+brandUI.querySelector('input').addEventListener('input', (e) => {
+  const had = brand; brand = e.target.value.trim(); const B = brand.toUpperCase(), link = brandUI.querySelector('a');
+  link.hidden = !brand; if (!brand) return; if (!had) chime(3);
+  link.href = 'https://wa.me/919947045212?text=' + encodeURIComponent(`Hi Ashique, I saw "${brand}" on your portfolio and want to make it real.`);
+  drawSign(marquee, [['NOW SHOWING', .3, 40, '#e0b36b'], [B, .67, 92, '#f3ead9']]);
+  drawSign(bPoster, [['COMING SOON', .14, 62, '#e0b36b'], [B, .46, 170, '#f3ead9'], ['A CAMPAIGN BY', .74, 40, '#a8998a'], ['MUHAMMED ASHIQUE', .82, 50, '#c98d4f']]);
+  drawSign(tvSign, [['NEXT PRODUCTION', .28, 48, '#e0b36b'], [B, .68, 108, '#f3ead9']]);
+});
+function brandTick(id, t) {
+  const wide = cam.aspect > .95; brandUI.hidden = !(!gated && (id === 'cinema' || id === 'posters' || (id === 'contact' && wide)));
+  marquee.mesh.visible = tvSign.mesh.visible = !!brand; brandUI.classList.toggle('top', id === 'contact');   // at Contact the bar moves up, clear of the form
+  bPoster.mesh.visible = !!brand && id === 'posters'; if (bPoster.mesh.visible) { bPoster.mesh.position.set(wide ? 2.5 : 0, (wide ? -.1 : -.55) + Math.sin(t * 1.2) * .06, Z.posters - 6.4); bPoster.mesh.scale.setScalar(wide ? 2.1 : 1.5); bPoster.mesh.rotation.y = (wide ? -.28 : 0) + Math.sin(t * .6) * .08; }
+}
 let shownCh = '', focusKey = '', lightK = 0; const bgC = new THREE.Color(), LIGHTC = new THREE.Color(0xf4f1ea), FLOORL = new THREE.Color(0xe4e0d6);
 const heroH1 = $('h1'); let heroFx = .5, heroP = 50;
 addEventListener('pointermove', (e) => { heroFx = e.clientX / innerWidth; });
@@ -638,6 +672,7 @@ function tick() {
   scrollV = lerp(scrollV, (scrollY - lastY) / Math.max(dt, .001), .15); lastY = scrollY; soundTick(Math.abs(scrollV));
   const i = sectionIndex(), id = IDS[i];
   doorHint.hidden = !(gated && id === 'doors');
+  brandTick(id, t);
   const prog = clamp((scrollY - tops[i]) / Math.max(1, hs[i] - innerHeight));
 
   let fov = 50;
